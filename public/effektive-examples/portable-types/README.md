@@ -1,8 +1,8 @@
 # Sealed types and pure callbacks
 
-This project demonstrates sealed nominal types, pure function types, and optional import rules.
+This project demonstrates sealed types, pure function types, and optional import rules.
 
-The domain module owns `Positive`. Its parser accepts a positive `Int`. Only the domain constructs or changes `Positive` values.
+The domain module owns `Positive`. It declares `sealed type Positive = int`, because a sealed type needs a body with identity and not a bare name. Its parser accepts a positive `Int`. Only the domain constructs or changes `Positive` values.
 The consumer imports the domain's `double` function and passes that pure function to `apply`.
 The consumer can also pass an inline pure callback. The project configuration prevents the domain from importing another module.
 

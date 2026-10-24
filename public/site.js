@@ -20,7 +20,6 @@
     "match",
     "never",
     "new",
-    "nominal",
     "number",
     "provide",
     "pure",

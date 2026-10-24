@@ -2236,3 +2236,40 @@ screenshot and the detailed migration and performance evidence.
 
 These checks cover the selected examples and contracts. They do not establish
 bounded memory, arbitrary backend compatibility, or website deployment.
+
+Draft 0.64 checks, October 24, 2026
+The compiler removes the nominal keyword. A type declaration has identity by
+name, unless its body is a union with a non-literal member or a bare name.
+A record that a union alias of its own module lists is a tagged record. The
+specification and the book state these rules, the literal and numeric operand
+rules, sealed type Name = T, and plain-alias output for non-record identities.
+The chapter Type identity keeps the id nominal-types, and the figure units keep
+their old ids, such as book-nominal-states and spec-nominal-match.
+
+The linked typed-ir.ts is the compiler model at version 5, with the tagged flag
+on a nominal definition. log.ir.json is the maintained compiler fixture at
+version 5. The specification states the version 5 rule.
+
+The figure spec-account no longer shows a tagged record, because a bare-name
+body gives an alias. It declares the fields in the body of Account. The figure
+spec-cents uses total * 2 in place of a constructor call. The figure
+spec-sealed-types declares sealed type Positive = int. The site copies
+contracts.eff and orders.eff from the effektive-lang fixtures.
+
+The compiler built the five example projects with --validate --tsc and
+reported zero diagnostics for each. The compiler also built the ten
+single-file examples as one project with the same flags. The runtime checks of
+order-lifecycle (9) and portable-types (3) passed. The check extracted 52
+Effektive figure units from the two pages. 43 units report zero diagnostics.
+Nine units are fragments that need other context: book-blocks, book-contracts,
+book-modules, explorer-getUser, users, spec-deferred, spec-diagnostics,
+spec-main, and spec-pipe. They report the same counts with the compiler before
+the identity change. Two of them, book-blocks and book-contracts, report zero
+diagnostics when the Users declarations come first.
+
+The site passes 55 strict TypeScript units and 11 server and asset tests.
+
+Limits
+The Effect-TS tabs abbreviate the emitter output. They show the Int helper and
+the int overflow helper once, and they use short tags. The site runs no
+compiler. These checks do not cover the compiler slow tests or the editor.
