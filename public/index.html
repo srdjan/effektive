@@ -574,7 +574,7 @@ const price = (rule: Rule, base: Cents): Cents =&gt;
     Fixed(f) =&gt; f.amount,
     Times(t) =&gt; base * Cents(t.factor),
     Capped(c) =&gt; min(price(c.rule, base), c.cap),
-    Sum(s) =&gt; s.parts |&gt; fold(Cents(0), (acc, part) =&gt; acc + price(part, base))
+    Sum(s) =&gt; s.parts |&gt; fold(0, (acc, part) =&gt; acc + price(part, base))
   }</code></pre></div><div class="code-panel" data-tab="Effect-TS" data-check-id="book-nominal-rules"><pre tabindex="0"><code class="language-typescript">import { Schema } from &quot;effect&quot;
 
 const Count = Int
