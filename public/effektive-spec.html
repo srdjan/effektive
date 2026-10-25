@@ -156,6 +156,7 @@ const sampleAccount = (): Account =&gt;
 <p>A where clause adds a predicate to a type with identity. It also applies to a tagged record. A transparent alias cannot have a predicate.</p>
 <p>Predicates support required fields, integer comparisons, +, -, &amp;&amp;, ||, and len for strings and arrays. String length counts UTF-16 code units.</p>
 <p>Integer predicates use exact mathematical integers. Each integer formula must normalize to difference constraints.</p>
+<p>Integer proof facts use only integer types and integer lengths. A number value cannot establish an integer fact.</p>
 <p>Conditions in if, match, &amp;&amp;, and || supply flow facts. A branch join keeps only facts that every branch establishes.</p>
 <p>Floating-point predicates, optional fields, arbitrary calls, generic predicates, and abstract predicates are unsupported.</p>
 <p>Construction, arithmetic, and record updates must prove the target predicate. Proof exhaustion rejects the obligation instead of accepting it.</p>
@@ -308,6 +309,7 @@ export const totals = (entries: ReadonlyArray&lt;Entry&gt;): ReadonlyArray&lt;Co
 <p>Every exported function requires a result annotation. A parameter can have an annotation, omit it, or use explicit unknown for input inference.</p>
 <p>A function body determines each inferred input contract without caller evidence. Required field paths form nested closed records.</p>
 <p>Known arguments, constructors, annotations, expected function types, and explicit results supply input requirements. An unconstrained input stays unknown.</p>
+<p>A written local annotation remains the binding type while its initializer supplies input requirements.</p>
 <p>Branches combine their required paths into one closed record. Conditional field omission requires an explicit union.</p>
 <p>Repeated uses must keep one identity. Conflicting uses report both sites. An operator alone cannot select a numeric or domain type.</p>
 <p>Callees settle before callers. Recursive input inference and unresolved callback inputs require concrete annotations.</p>
@@ -316,6 +318,7 @@ export const totals = (entries: ReadonlyArray&lt;Entry&gt;): ReadonlyArray&lt;Co
 <p>A checked entry accepts unknown data and validates the finalized contract inside the Effect. Checks run in parameter order before the body.</p>
 <p>Each argument evaluates once in source order. Validation rejects missing fields, extra fields, and failed refinements. Static checking rejects incompatible known identities.</p>
 <p>Known components and identities must fit statically. A typed value with an unproved predicate keeps a proof obligation.</p>
+<p>Unknown inputs of a record predicate defer that predicate to entry validation. Concrete predicate inputs retain static obligations despite unrelated unknown fields.</p>
 <p>Entry validation performs no coercion, defaulting, or user transformation. The exported fails clause must include SchemaError.</p>
 <p>Checked-entry metadata survives aliases, function values, and imports. A conversion can discard the metadata but cannot create it.</p>
 <p>Service methods and host interfaces keep unknown for omitted input types. Opaque, deferred, and foreign sealed inputs require concrete annotations.</p>

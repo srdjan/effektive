@@ -2334,3 +2334,19 @@ The measured 2,000-arrow workload exceeds the 100 millisecond editor budget.
 The solver step allowance does not bound allocation during Boolean splits.
 Independent validation uses a separate allowance for each declaration.
 These measurements establish no module-wide validation or memory bound.
+
+Review corrections, October 25, 2026
+A later review found three cases that the earlier checks missed.
+Float values no longer supply integer proof facts in either implementation.
+Unknown predicate inputs retain raw record types until checked entry validation.
+Unrelated unknown fields cannot remove known predicate obligations.
+Local annotations remain authoritative while their initializers collect input requirements.
+
+Regression checks cover Float guards, nested fields, optional fields, conditional
+records, mutated certificates, incompatible initializers, and annotated callbacks.
+Runtime checks reject fractional raw integer fields, false record predicates,
+and excess fields in nested records. Both forged record mutations now fail.
+The complete gate passes 2,239 fast tests and 212 subprocess tests.
+The website passes 57 strict target units and 11 serving tests.
+Compiler corrections: f5cd01b, 1a047ad, and 9101913.
+No push or browser rendering check ran for this correction batch.

@@ -500,6 +500,7 @@ export const readAmount = (input: unknown): Effect.Effect&lt;
 <p>The body infers the closed input record { amount: Positive }. The exported entry checks missing fields, extra fields, and the Positive predicate.</p>
 <p>The check runs inside the Effect before the body. It performs no coercion or defaulting and can fail with SchemaError.</p>
 <p>Predicates support integer comparisons, +, -, &amp;&amp;, ||, required fields, and string or array length. String length uses UTF-16 code units.</p>
+<p>Floating-point guards supply no integer proof facts. Unknown inputs of a record predicate receive runtime checks at checked entries.</p>
 <p>Floating-point predicates, arbitrary calls, generics, and abstract predicates remain outside this release.</p>
 <p>Host interfaces expose unrefined data. They cannot declare refinements or reference refined contracts, including imported types and services supplied by host providers.</p>
 <figure data-ui class="code" data-tabs data-check="book-nominal-states"><figcaption>Order states as tagged records</figcaption><div class="code-panel" data-tab="Effektive"><pre tabindex="0"><code class="language-effektive">type OrderId = string
