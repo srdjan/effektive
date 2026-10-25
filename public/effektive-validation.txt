@@ -2273,3 +2273,64 @@ Limits
 The Effect-TS tabs abbreviate the emitter output. They show the Int helper and
 the int overflow helper once, and they use short tags. The site runs no
 compiler. These checks do not cover the compiler slow tests or the editor.
+
+Draft 0.65 inferred inputs and concrete refinements, October 25, 2026
+
+An omitted parameter annotation and an explicit unknown annotation now infer
+the same input contract from the body. Local inference is static only. An
+exported inferred input validates unknown data inside its Effect, in parameter
+order, before the body. Its explicit failure contract must include SchemaError.
+Exported result, failure, and service contracts remain closed.
+
+A where clause adds a concrete predicate to a type with identity or a tagged
+record. Supported predicates use Boolean conjunction or disjunction, integer
+comparisons, normalized + and - constraints, required fields, and string or
+array lengths. String length counts UTF-16 code units. Integer predicates use
+exact mathematical integers. Floating-point predicates, arbitrary calls,
+generics, and abstract predicates remain deferred. Solver exhaustion rejects
+an unproved obligation.
+
+The new effektive-examples/refined-entry.eff source has zero diagnostics. An
+in-memory compiler check confirms that it emits an exact entry Schema and the
+Positive refinement. The mini book unit book-refined-entry and specification
+unit spec-refined-entry show the same source contract. Both TypeScript panels
+pass the strict Effect 4 check.
+
+The strict website check passes 57 units. No Effektive panel lacks an Effect-TS
+panel. The site passes all 11 serving and asset tests after asset stamping.
+
+IR version 6 carries predicates, finalized input contracts, checked flags,
+entry validation, and proof certificates. The authoritative typed-ir.ts now
+matches version 6. The final compiler gate passed 2,227 fast tests and 210
+subprocess tests after the refinement and inference review.
+The manual log fixture
+uses the version 6 marker and has no draft 0.65 semantic fields. Independent IR
+validation passes against its synchronized log.lft source.
+
+The validator cannot detect consistent contract erasure without a separate
+trusted contract source. Retained host aliases can mutate values after
+validation. These checks establish no general host-mutation guarantee.
+
+Host interfaces reject declared refinements and reachable refined contracts.
+This restriction includes imported nested types and services supplied by host
+providers. Adapters return unrefined data to checked source entries.
+
+Final integration checks
+The runtime test covers validated optional inputs, pipeline captures, implicit
+tagged construction, exact predicate arithmetic, and checked ordinary arithmetic.
+The source compiler and validator reject unsupported shared proof claims and
+self-justifying local bindings. JSON round-trip tests preserve valid proofs.
+The website example passes checking, lowering, independent validation, and emission.
+The standalone typed-ir.ts model passes TypeScript checking.
+No browser renderer was available for visual inspection of this update.
+
+Generated pipeline bindings carry an explicit marker in version 6. Source-owned
+dollar names retain their proof assumptions. Checked option constructors retain
+raw payload types until entry validation. Direct and piped payload checks pass.
+Signature help preserves returned function types instead of following factory calls.
+
+Compiler commit: 1feb74a. The review reports no remaining actionable findings.
+The measured 2,000-arrow workload exceeds the 100 millisecond editor budget.
+The solver step allowance does not bound allocation during Boolean splits.
+Independent validation uses a separate allowance for each declaration.
+These measurements establish no module-wide validation or memory bound.

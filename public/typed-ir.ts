@@ -1,5 +1,45 @@
-// Copied from /Users/srdjans/Code/effektive/public/typed-ir.ts (Phase A, part A1). Otherwise unchanged.
-/** Proposed IR for the syntax port. */
+/** An integer written without a precision-losing JavaScript number. */
+export type DecimalInteger = string;
+
+/** A value that an input predicate can compare. */
+export type Term =
+  | { readonly kind: "zero" }
+  | { readonly kind: "input" }
+  | { readonly kind: "field"; readonly path: readonly string[] }
+  | {
+    readonly kind: "length";
+    readonly path: readonly string[];
+    readonly unit: "utf16";
+  };
+
+/** A normalized, JSON-serializable input predicate. */
+export type Predicate =
+  | { readonly kind: "constant"; readonly value: boolean }
+  | { readonly kind: "and"; readonly operands: readonly Predicate[] }
+  | { readonly kind: "or"; readonly operands: readonly Predicate[] }
+  | { readonly kind: "not"; readonly operand: Predicate }
+  /** `left - right <= maximum`. */
+  | {
+    readonly kind: "difference";
+    readonly left: Term;
+    readonly right: Term;
+    readonly maximum: DecimalInteger;
+  };
+
+export type UnsatProof =
+  | { readonly kind: "false" }
+  | { readonly kind: "split"; readonly cases: readonly UnsatProof[] }
+  | {
+    readonly kind: "negative-cycle";
+    readonly constraints: readonly number[];
+  };
+
+export interface ProofCertificate {
+  readonly claim: "proved" | "disproved";
+  readonly proof: UnsatProof;
+}
+
+// Typed compiler contract. The sibling website publishes a standalone copy.
 export type TypeId = `type:${string}`;
 export type ErrorId = `error:${string}`;
 export type ServiceId = `service:${string}`;
@@ -38,13 +78,28 @@ export interface FunctionType {
   readonly execution: Execution;
   readonly parameters: readonly Type[];
   readonly borrows?: readonly boolean[];
+  /** Checked inputs accept raw unknown values and validate before body execution. */
+  readonly checked?: readonly boolean[];
   readonly result: Type;
   readonly effects: Effects;
 }
 
 export type Type =
-  | { readonly kind: "primitive"; readonly name: "string" | "boolean" | "int" | "number" | "unit" | "never" | "unknown" }
-  | { readonly kind: "literal"; readonly value: string | number | boolean | null }
+  | {
+    readonly kind: "primitive";
+    readonly name:
+      | "string"
+      | "boolean"
+      | "int"
+      | "number"
+      | "unit"
+      | "never"
+      | "unknown";
+  }
+  | {
+    readonly kind: "literal";
+    readonly value: string | number | boolean | null;
+  }
   | { readonly kind: "named"; readonly id: TypeId | ErrorId }
   | { readonly kind: "record"; readonly fields: readonly Field[] }
   | { readonly kind: "array"; readonly element: Type }
@@ -56,21 +111,55 @@ export type Type =
   | { readonly kind: "retry-schedule"; readonly error: Type }
   | { readonly kind: "codec"; readonly decoded: Type; readonly encoded: Type }
   // Constructor defaults may coexist with one field-presence flag.
-  | { readonly kind: "schema"; readonly decoded: Type; readonly encoded: Type; readonly decodeRequirements: readonly CapabilityId[]; readonly encodeRequirements: readonly CapabilityId[]; readonly optionalKey?: true; readonly encodedOptionalKey?: true; readonly decodedOptionalKey?: true; readonly makeInput?: Type; readonly constructorDefault?: true }
-  | { readonly kind: "fiber"; readonly result: Type; readonly failures: readonly ErrorId[] }
-  | { readonly kind: "effect"; readonly result: Type; readonly effects: Effects }
-  | { readonly kind: "stream"; readonly element: Type; readonly effects: Effects }
-  | { readonly kind: "schedule"; readonly output: Type; readonly input: Type; readonly effects: Effects }
-  | { readonly kind: "sink"; readonly input: Type; readonly result: Type; readonly leftover?: Type; readonly effects: Effects }
+  | {
+    readonly kind: "schema";
+    readonly decoded: Type;
+    readonly encoded: Type;
+    readonly decodeRequirements: readonly CapabilityId[];
+    readonly encodeRequirements: readonly CapabilityId[];
+    readonly optionalKey?: true;
+    readonly encodedOptionalKey?: true;
+    readonly decodedOptionalKey?: true;
+    readonly makeInput?: Type;
+    readonly constructorDefault?: true;
+  }
+  | {
+    readonly kind: "fiber";
+    readonly result: Type;
+    readonly failures: readonly ErrorId[];
+  }
+  | {
+    readonly kind: "effect";
+    readonly result: Type;
+    readonly effects: Effects;
+  }
+  | {
+    readonly kind: "stream";
+    readonly element: Type;
+    readonly effects: Effects;
+  }
+  | {
+    readonly kind: "schedule";
+    readonly output: Type;
+    readonly input: Type;
+    readonly effects: Effects;
+  }
+  | {
+    readonly kind: "sink";
+    readonly input: Type;
+    readonly result: Type;
+    readonly leftover?: Type;
+    readonly effects: Effects;
+  }
   | FunctionType
   | {
-      readonly kind: "provider";
-      readonly provides: readonly CapabilityId[];
-      readonly acquisition: {
-        readonly execution: Execution;
-        readonly effects: Effects;
-      };
+    readonly kind: "provider";
+    readonly provides: readonly CapabilityId[];
+    readonly acquisition: {
+      readonly execution: Execution;
+      readonly effects: Effects;
     };
+  };
 
 export interface Parameter {
   readonly id: LocalId;
@@ -80,7 +169,13 @@ export interface Parameter {
   readonly span: Span;
 }
 
+export interface RefinementProof {
+  readonly target: TypeId;
+  readonly certificate: ProofCertificate;
+}
+
 export interface Annotation {
+  readonly proofs?: readonly RefinementProof[];
   readonly type: Type;
   /** Execution mode remains independent of unhandled failures and requirements. */
   readonly execution: Execution;
@@ -93,12 +188,32 @@ type Node<T> = Readonly<T> & Annotation;
 
 export type Pattern =
   | { readonly kind: "wildcard"; readonly span: Span }
-  | { readonly kind: "literal"; readonly value: string | number | boolean | null; readonly span: Span }
+  | {
+    readonly kind: "literal";
+    readonly value: string | number | boolean | null;
+    readonly span: Span;
+  }
   | { readonly kind: "none"; readonly span: Span }
   | { readonly kind: "some"; readonly binding: Parameter; readonly span: Span }
-  | { readonly kind: "error"; readonly error: ErrorId; readonly binding: Parameter; readonly span: Span }
-  | { readonly kind: "nominal"; readonly nominal: TypeId; readonly binding: Parameter; readonly span: Span }
-  | { readonly kind: "tag"; readonly field: string; readonly value: string; readonly binding: Parameter | null; readonly span: Span };
+  | {
+    readonly kind: "error";
+    readonly error: ErrorId;
+    readonly binding: Parameter;
+    readonly span: Span;
+  }
+  | {
+    readonly kind: "nominal";
+    readonly nominal: TypeId;
+    readonly binding: Parameter;
+    readonly span: Span;
+  }
+  | {
+    readonly kind: "tag";
+    readonly field: string;
+    readonly value: string;
+    readonly binding: Parameter | null;
+    readonly span: Span;
+  };
 
 export interface Arm {
   readonly pattern: Pattern;
@@ -113,10 +228,12 @@ export interface Handler {
 }
 
 export type Step =
-  | { readonly kind: "bind"; readonly binding: Parameter; readonly value: Expr }
+  | { readonly kind: "bind"; readonly binding: Parameter; readonly value: Expr; readonly generated?: true }
   | { readonly kind: "evaluate"; readonly value: Expr };
 
-export type ClosureExpr = Node<{ kind: "closure"; parameters: readonly Parameter[]; body: Expr }>;
+export type ClosureExpr = Node<
+  { kind: "closure"; parameters: readonly Parameter[]; body: Expr }
+>;
 
 /** Calls and capability operations remain distinct after resolution. */
 export type Expr =
@@ -125,15 +242,32 @@ export type Expr =
   // Source null data is distinct from the existing unit marker.
   | Node<{ kind: "null" }>
   | Node<{ kind: "reference"; target: LocalId | ValueId }>
-  | Node<{ kind: "record"; fields: readonly { readonly name: string; readonly value: Expr }[] }>
+  | Node<
+    {
+      kind: "record";
+      fields: readonly { readonly name: string; readonly value: Expr }[];
+    }
+  >
   | Node<{ kind: "array"; elements: readonly Expr[] }>
   | Node<{ kind: "tuple"; elements: readonly Expr[] }>
   | Node<{ kind: "get"; record: Expr; field: string }>
-  | Node<{ kind: "update"; record: Expr; fields: readonly { readonly name: string; readonly value: Expr }[] }>
+  | Node<
+    {
+      kind: "update";
+      record: Expr;
+      fields: readonly { readonly name: string; readonly value: Expr }[];
+    }
+  >
   | Node<{ kind: "nominal"; nominal: TypeId; value: Expr }>
   | Node<{ kind: "some"; value: Expr }>
   | Node<{ kind: "none" }>
-  | Node<{ kind: "error"; error: ErrorId; fields: readonly { readonly name: string; readonly value: Expr }[] }>
+  | Node<
+    {
+      kind: "error";
+      error: ErrorId;
+      fields: readonly { readonly name: string; readonly value: Expr }[];
+    }
+  >
   | ClosureExpr
   | Node<{ kind: "call"; callee: Expr; arguments: readonly Expr[] }>
   | Node<{ kind: "defer"; job: Expr }>
@@ -144,11 +278,33 @@ export type Expr =
   | Node<{ kind: "provide-scope"; owner: Expr; job: Expr }>
   | Node<{ kind: "add-scope-finalizer"; owner: Expr; job: Expr }>
   | Node<{ kind: "close-scope"; owner: Expr }>
-  | Node<{ kind: "with-resource"; acquire: ClosureExpr; use: ClosureExpr; release: ClosureExpr }>
+  | Node<
+    {
+      kind: "with-resource";
+      acquire: ClosureExpr;
+      use: ClosureExpr;
+      release: ClosureExpr;
+    }
+  >
   | Node<{ kind: "unfold"; seed: Expr; next: Expr }>
-  | Node<{ kind: "map-effect"; stream: Expr; transform: Expr; concurrency: number | "unbounded" | undefined }>
+  | Node<
+    {
+      kind: "map-effect";
+      stream: Expr;
+      transform: Expr;
+      concurrency: number | "unbounded" | undefined;
+    }
+  >
   | Node<{ kind: "map-stream"; stream: Expr; transform: Expr }>
-  | Node<{ kind: "map-groups"; stream: Expr; key: ClosureExpr; use: ClosureExpr; bufferSize: number }>
+  | Node<
+    {
+      kind: "map-groups";
+      stream: Expr;
+      key: ClosureExpr;
+      use: ClosureExpr;
+      bufferSize: number;
+    }
+  >
   | Node<{ kind: "scan-stream"; stream: Expr; seed: Expr; update: Expr }>
   | Node<{ kind: "map-accum-stream"; stream: Expr; seed: Expr; update: Expr }>
   | Node<{ kind: "fold-stream"; stream: Expr; seed: Expr; update: Expr }>
@@ -157,12 +313,27 @@ export type Expr =
   | Node<{ kind: "head-stream"; stream: Expr }>
   | Node<{ kind: "last-stream"; stream: Expr }>
   | Node<{ kind: "drain-stream"; stream: Expr }>
-  | Node<{ kind: "flat-map-streams"; stream: Expr; transform: Expr; concurrency: number | "unbounded" | undefined }>
+  | Node<
+    {
+      kind: "flat-map-streams";
+      stream: Expr;
+      transform: Expr;
+      concurrency: number | "unbounded" | undefined;
+    }
+  >
   | Node<{ kind: "switch-map-streams"; stream: Expr; transform: Expr }>
   | Node<{ kind: "catch-stream"; stream: Expr; recover: Expr }>
   | Node<{ kind: "retry-stream"; stream: Expr; policy: Expr }>
   | Node<{ kind: "debounce-stream"; stream: Expr; delayMs: number }>
-  | Node<{ kind: "throttle-stream"; stream: Expr; units: number; durationMs: number; strategy: "shape" | "enforce" }>
+  | Node<
+    {
+      kind: "throttle-stream";
+      stream: Expr;
+      units: number;
+      durationMs: number;
+      strategy: "shape" | "enforce";
+    }
+  >
   | Node<{ kind: "take-stream"; stream: Expr; count: Expr }>
   | Node<{ kind: "drop-stream"; stream: Expr; count: Expr }>
   | Node<{ kind: "drop-while-stream"; stream: Expr; predicate: Expr }>
@@ -173,14 +344,40 @@ export type Expr =
   | Node<{ kind: "drop-while-effect-stream"; stream: Expr; predicate: Expr }>
   | Node<{ kind: "take-while-stream"; stream: Expr; predicate: Expr }>
   | Node<{ kind: "take-until-stream"; stream: Expr; predicate: Expr }>
-  | Node<{ kind: "partition-all"; jobs: Expr; concurrency: number | "unbounded" | undefined }>
-  | Node<{ kind: "validate-all"; jobs: Expr; onErrors: Expr; concurrency: number | "unbounded" | undefined }>
-  | Node<{ kind: "all-results"; jobs: Expr; concurrency: number | "unbounded" | undefined }>
+  | Node<
+    {
+      kind: "partition-all";
+      jobs: Expr;
+      concurrency: number | "unbounded" | undefined;
+    }
+  >
+  | Node<
+    {
+      kind: "validate-all";
+      jobs: Expr;
+      onErrors: Expr;
+      concurrency: number | "unbounded" | undefined;
+    }
+  >
+  | Node<
+    {
+      kind: "all-results";
+      jobs: Expr;
+      concurrency: number | "unbounded" | undefined;
+    }
+  >
   | Node<{ kind: "sink-for-each"; consume: Expr }>
   | Node<{ kind: "take-sink"; count: number }>
   | Node<{ kind: "transduce-stream"; stream: Expr; sink: Expr }>
   | Node<{ kind: "aggregate-stream"; stream: Expr; sink: Expr }>
-  | Node<{ kind: "aggregate-within-stream"; stream: Expr; sink: Expr; schedule: Expr }>
+  | Node<
+    {
+      kind: "aggregate-within-stream";
+      stream: Expr;
+      sink: Expr;
+      schedule: Expr;
+    }
+  >
   | Node<{ kind: "schedule-from-step"; initial: Expr; decide: Expr }>
   | Node<{ kind: "schedule-recurs"; times: Expr }>
   | Node<{ kind: "schedule-spaced"; delayMillis: Expr }>
@@ -203,7 +400,31 @@ export type Expr =
   | Node<{ kind: "retry-schedule"; step: Expr }>
   | Node<{ kind: "retry-with-schedule"; job: Expr; options: Expr }>
   | Node<{ kind: "codec"; decode: Expr; encode: Expr }>
-  | Node<{ kind: "schema"; op: "identity" | "array" | "struct" | "optional-key" | "null-to-missing-key" | "option-from-optional-key" | "default-key" | "constructor-default" | "default-null-key" | "default-encoded-key" | "optional-transform" | "optional-from-required" | "union" | "transform" | "recursive" | "invalid" | "at" | "both"; arguments: readonly Expr[] }>
+  | Node<
+    {
+      kind: "schema";
+      op:
+        | "identity"
+        | "array"
+        | "struct"
+        | "optional-key"
+        | "null-to-missing-key"
+        | "option-from-optional-key"
+        | "default-key"
+        | "constructor-default"
+        | "default-null-key"
+        | "default-encoded-key"
+        | "optional-transform"
+        | "optional-from-required"
+        | "union"
+        | "transform"
+        | "recursive"
+        | "invalid"
+        | "at"
+        | "both";
+      arguments: readonly Expr[];
+    }
+  >
   | Node<{ kind: "schema-decode"; schema: Expr; input: Expr }>
   | Node<{ kind: "schema-encode"; schema: Expr; input: Expr }>
   | Node<{ kind: "schema-make"; schema: Expr; input: Expr }>
@@ -212,7 +433,9 @@ export type Expr =
   | Node<{ kind: "with-fiber"; job: Expr; use: ClosureExpr }>
   | Node<{ kind: "join-fiber"; fiber: Expr }>
   | Node<{ kind: "interrupt-fiber"; fiber: Expr }>
-  | Node<{ kind: "perform"; capability: CapabilityId; arguments: readonly Expr[] }>
+  | Node<
+    { kind: "perform"; capability: CapabilityId; arguments: readonly Expr[] }
+  >
   | Node<{ kind: "block"; steps: readonly Step[]; result: Expr }>
   | Node<{ kind: "if"; condition: Expr; then: Expr; else: Expr }>
   | Node<{ kind: "match"; subject: Expr; arms: readonly Arm[] }>
@@ -221,11 +444,23 @@ export type Expr =
   | Node<{ kind: "retry"; job: Expr; times: number }>
   | Node<{ kind: "provide"; provider: Expr; job: Expr }>
   | Node<{
-      kind: "binary";
-      operator: "+" | "-" | "*" | "/" | "===" | "!==" | "<" | "<=" | ">" | ">=" | "&&" | "||";
-      left: Expr;
-      right: Expr;
-    }>;
+    kind: "binary";
+    operator:
+      | "+"
+      | "-"
+      | "*"
+      | "/"
+      | "==="
+      | "!=="
+      | "<"
+      | "<="
+      | ">"
+      | ">="
+      | "&&"
+      | "||";
+    left: Expr;
+    right: Expr;
+  }>;
 
 export interface TypeDecl {
   readonly kind: "type";
@@ -239,6 +474,7 @@ export interface TypeDecl {
       readonly tagged?: true;
       readonly sealed?: true;
     };
+  readonly predicate?: Predicate;
   readonly opaque?: boolean;
   readonly span: Span;
 }
@@ -282,6 +518,8 @@ export interface FunctionDecl {
   /** The callable interface. Its effects can exceed the inferred body effects. */
   readonly type: FunctionType;
   readonly written: WrittenParts;
+  /** Parameter identities validated in declaration order before the body. */
+  readonly entryValidation?: readonly LocalId[];
   readonly body: Expr;
   readonly span: Span;
 }
@@ -295,16 +533,28 @@ export interface ConstantDecl {
   readonly span: Span;
 }
 
-export type Declaration = TypeDecl | ErrorDecl | ServiceDecl | FunctionDecl | ConstantDecl;
+export type Declaration =
+  | TypeDecl
+  | ErrorDecl
+  | ServiceDecl
+  | FunctionDecl
+  | ConstantDecl;
 export type DeclarationId = TypeId | ErrorId | ServiceId | ValueId;
 
 export interface Import {
   readonly module: string;
   /** These bindings select public names. Other declarations supply transitive type information. */
-  readonly bindings: readonly { readonly name: string; readonly target: DeclarationId }[];
+  readonly bindings: readonly {
+    readonly name: string;
+    readonly target: DeclarationId;
+  }[];
   readonly exports: readonly DeclarationId[];
   /** A module interface supplies these types before body checking. */
-  readonly values: readonly { readonly id: ValueId; readonly name: string; readonly type: Type }[];
+  readonly values: readonly {
+    readonly id: ValueId;
+    readonly name: string;
+    readonly type: Type;
+  }[];
   readonly types: readonly TypeDecl[];
   readonly errors: readonly ErrorDecl[];
   readonly services: readonly ServiceDecl[];
@@ -312,7 +562,7 @@ export interface Import {
 
 export interface ModuleIR {
   readonly format: "light-functional-ir";
-  readonly version: 5;
+  readonly version: 6;
   readonly module: string;
   /** A validator also receives immutable source texts keyed by these identifiers. */
   readonly sources: readonly string[];
@@ -331,6 +581,3 @@ export interface Diagnostic {
 export type Result<A, E> =
   | { readonly ok: true; readonly value: A }
   | { readonly ok: false; readonly error: E };
-
-/** A future compiler can expose this boundary. No compiler is supplied here. */
-export type Compile = (source: string, sourceId: string) => Result<ModuleIR, readonly Diagnostic[]>;
