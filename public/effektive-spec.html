@@ -157,9 +157,9 @@ const sampleAccount = (): Account =&gt;
 <p>Predicates support required fields, integer comparisons, +, -, &amp;&amp;, ||, and len for strings and arrays. String length counts UTF-16 code units.</p>
 <p>Integer predicates use exact mathematical integers. Each integer formula must normalize to difference constraints.</p>
 <p>Integer proof facts use only integer types and integer lengths. A number value cannot establish an integer fact.</p>
-<p>Conditions in if, match, &amp;&amp;, and || supply flow facts. A branch join keeps only facts that every branch establishes.</p>
+<p>Conditions in if, match, &amp;&amp;, and || supply flow facts. A branch join keeps only facts that every branch establishes. Facts compare without regard to the order or grouping of || operands.</p>
 <p>Floating-point predicates, optional fields, arbitrary calls, generic predicates, and abstract predicates are unsupported.</p>
-<p>Construction, arithmetic, and record updates must prove the target predicate. Proof exhaustion rejects the obligation instead of accepting it.</p>
+<p>Construction, arithmetic, and record updates must prove the target predicate. Proof exhaustion rejects the obligation instead of accepting it. A record literal can fit several union members. It takes a member with no predicate when one fits. Otherwise it must prove the predicate of the member that it takes.</p>
 <figure data-ui class="code" data-tabs data-check="spec-refined-entry"><figcaption>An inferred entry validates a refined field <a href="effektive-examples/refined-entry.eff">View complete source</a></figcaption><div class="code-panel" data-tab="Effektive"><pre tabindex="0"><code class="language-effektive">export type Positive = int where n =&gt; n &gt; 0
 
 const amount = (value: Positive): Positive =&gt; value
