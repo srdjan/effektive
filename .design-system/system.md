@@ -56,6 +56,13 @@ Spacing uses an 8px base. The gutter is 32px, 24px below 800px, and 20px below 5
 - Primary: `.button`, minimum height 58px, padding 16px 24px, `--accent` background, square corners, and a trailing arrow `span`.
 - Secondary: `.secondary-action`, transparent background with a 2px inset ring in `--bg`.
 
+### Hero video
+
+- `.hero-video` closes the hero on the `--ink` band, with the gutter at each side and 40px below, or 28px below 520px.
+- The video has `position: relative`, so the `--ink` fill of the hero `h1` does not paint over it.
+- The video does not load until play: `preload="none"` and a WebP poster. An AV1 source comes first, then an H.264 fallback, and a captions track follows.
+- Media files in `public/media/` have a 30-day cache lifetime. Give a changed file a new dated name.
+
 ### Code figure
 
 - `figure.code` holds a caption, Copy, an Effektive tab, and an Effect-TS tab.

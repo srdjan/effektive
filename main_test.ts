@@ -49,9 +49,22 @@ Deno.test("keeps the plain-text type for Effektive and TypeScript sources", asyn
   await response.body?.cancel();
 });
 
-Deno.test("does not compress fonts or images", async () => {
+Deno.test("serves a video byte range so playback can start and seek", async () => {
+  const response = await get("/media/demo-20261026.av1.mp4", {
+    range: "bytes=0-1023",
+  });
+  assertEquals(response.status, 206);
+  assertEquals(response.headers.get("content-type"), "video/mp4");
+  assertEquals((await response.arrayBuffer()).byteLength, 1024);
+});
+
+Deno.test("does not compress fonts, images, or video", async () => {
   for (
-    const path of ["/fonts/bricolage-grotesque-latin.woff2", "/og-image.png"]
+    const path of [
+      "/fonts/bricolage-grotesque-latin.woff2",
+      "/og-image.png",
+      "/media/demo-20261026.h264.mp4",
+    ]
   ) {
     const response = await get(path, { "accept-encoding": "gzip" });
     assertEquals(response.headers.get("content-encoding"), null);
@@ -65,6 +78,7 @@ Deno.test("sets cache lifetimes for assets but not for pages", async () => {
     ["/site.css", "public, max-age=3600"],
     ["/site.js", "public, max-age=3600"],
     ["/fonts/bricolage-grotesque-latin.woff2", "public, max-age=2592000"],
+    ["/media/demo-20261026.av1.mp4", "public, max-age=2592000"],
     ["/", null],
     ["/effektive-spec.html", null],
   ];

@@ -15,7 +15,8 @@ const SECURITY_HEADERS: ReadonlyArray<readonly [string, string]> = [
 
 // HTML has no max-age, so a new deploy reaches readers at once.
 const CACHE_LIFETIMES: ReadonlyArray<readonly [RegExp, number]> = [
-  [/^\/fonts\//, 60 * 60 * 24 * 30],
+  // A changed media file gets a new dated name, so a long lifetime is safe.
+  [/^\/(fonts|media)\//, 60 * 60 * 24 * 30],
   [/\.(css|js)$/, 60 * 60],
 ];
 

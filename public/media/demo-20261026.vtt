@@ -1,0 +1,19 @@
+WEBVTT
+
+00:00:00.300 --> 00:00:05.475
+This is Effektive: plain code with typed effects, compiled to Effect TypeScript.
+
+00:00:06.179 --> 00:00:11.554
+Each function states what it returns, how it can fail, and which services it uses.
+
+00:00:12.263 --> 00:00:17.538
+Now add a function that calls getUser, but leave its failures out of the contract.
+
+00:00:21.176 --> 00:00:26.576
+The compiler catches it. The body can fail in ways that the contract does not list.
+
+00:00:27.360 --> 00:00:31.085
+Add the fails clause, and the problem clears as you type.
+
+00:00:34.217 --> 00:00:39.142
+The generated Effect type now carries both failures and the Users service.
