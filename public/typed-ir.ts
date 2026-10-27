@@ -49,6 +49,13 @@ export const SCOPE_CAPABILITY: CapabilityId = "cap:effect/Scope";
 /** The target Schema parser failure; source code may handle but not construct it. */
 export const SCHEMA_ERROR_ID: ErrorId = "error:effect/SchemaError";
 export const SCHEMA_ISSUE_ID: ErrorId = "error:effect/SchemaIssue";
+/** The target timeout failure of `timeout`; source code may handle but not construct it. */
+export const TIMEOUT_ERROR_ID: ErrorId = "error:effect/TimeoutError";
+/**
+ * The builtin untagged identity over `int` that types a duration. At run time it
+ * is a number of milliseconds. It is closed: an unnamed value never fits it.
+ */
+export const DURATION_ID: TypeId = "type:effect/Duration";
 export type ValueId = `value:${string}`;
 export type LocalId = `local:${string}`;
 export type Execution = "pure" | "effect";
@@ -227,8 +234,20 @@ export interface Handler {
   readonly span: Span;
 }
 
+/** The `Defect(name) => expression` arm of a catch. The binding is `{ message: string }`. */
+export interface DefectHandler {
+  readonly binding: Parameter;
+  readonly body: Expr;
+  readonly span: Span;
+}
+
 export type Step =
-  | { readonly kind: "bind"; readonly binding: Parameter; readonly value: Expr; readonly generated?: true }
+  | {
+    readonly kind: "bind";
+    readonly binding: Parameter;
+    readonly value: Expr;
+    readonly generated?: true;
+  }
   | { readonly kind: "evaluate"; readonly value: Expr };
 
 export type ClosureExpr = Node<
@@ -381,6 +400,8 @@ export type Expr =
   | Node<{ kind: "schedule-from-step"; initial: Expr; decide: Expr }>
   | Node<{ kind: "schedule-recurs"; times: Expr }>
   | Node<{ kind: "schedule-spaced"; delayMillis: Expr }>
+  | Node<{ kind: "schedule-exponential"; baseMs: Expr; factor: Expr | null }>
+  | Node<{ kind: "schedule-jittered"; schedule: Expr }>
   | Node<{ kind: "schedule-map"; schedule: Expr; transform: Expr }>
   | Node<{ kind: "schedule-max"; left: Expr; right: Expr }>
   | Node<{ kind: "schedule-min"; left: Expr; right: Expr }>
@@ -391,6 +412,7 @@ export type Expr =
   | Node<{ kind: "zip-streams"; left: Expr; right: Expr }>
   | Node<{ kind: "concat-streams"; left: Expr; right: Expr }>
   | Node<{ kind: "race"; left: Expr; right: Expr }>
+  | Node<{ kind: "race-all"; jobs: Expr }>
   | Node<{ kind: "make-ref"; value: Expr }>
   | Node<{ kind: "get-ref"; ref: Expr }>
   | Node<{ kind: "set-ref"; ref: Expr; value: Expr }>
@@ -440,8 +462,18 @@ export type Expr =
   | Node<{ kind: "if"; condition: Expr; then: Expr; else: Expr }>
   | Node<{ kind: "match"; subject: Expr; arms: readonly Arm[] }>
   | Node<{ kind: "fail"; error: Expr }>
-  | Node<{ kind: "catch"; body: Expr; handlers: readonly Handler[] }>
+  | Node<{
+    kind: "catch";
+    body: Expr;
+    handlers: readonly Handler[];
+    defect?: DefectHandler;
+  }>
+  | Node<{ kind: "ensure"; body: Expr; finalizer: ClosureExpr }>
   | Node<{ kind: "retry"; job: Expr; times: number }>
+  | Node<{ kind: "timeout"; job: Expr; durationMs: Expr }>
+  | Node<{ kind: "repeat"; job: Expr; options: Expr | null }>
+  | Node<{ kind: "sleep"; durationMs: Expr }>
+  | Node<{ kind: "uninterruptible"; job: Expr }>
   | Node<{ kind: "provide"; provider: Expr; job: Expr }>
   | Node<{
     kind: "binary";
@@ -562,7 +594,7 @@ export interface Import {
 
 export interface ModuleIR {
   readonly format: "light-functional-ir";
-  readonly version: 6;
+  readonly version: 7;
   readonly module: string;
   /** A validator also receives immutable source texts keyed by these identifiers. */
   readonly sources: readonly string[];

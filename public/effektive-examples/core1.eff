@@ -12,7 +12,7 @@ export const supervised = (): Int =>
   }))
 
 export const timedBatches = (source: Stream<Int>): Stream<Int[]> =>
-  aggregateWithinStream(source, takeSink(2), scheduleSpaced(1000))
+  aggregateWithinStream(source, takeSink(2), scheduleSpaced(1s))
 
 const integer: Schema<Int> = schema()
 const optional: SchemaOptional<Int> = schemaOptionalKey(integer)

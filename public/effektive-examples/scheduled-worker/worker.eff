@@ -5,7 +5,7 @@ const policySchema: Schema<Policy> = schema()
 export const retryPolicy = (policy: Policy): RetrySchedule<JobFailure> =>
   retrySchedule((error, attempt) =>
     if (error.kind === "Transient" && attempt <= policy.retries) {
-      Some(policy.retryMillis)
+      Some(policy.retryMillis * 1ms)
     } else { None })
 
 const attempt = () =>
