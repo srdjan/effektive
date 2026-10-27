@@ -56,6 +56,13 @@ export const TIMEOUT_ERROR_ID: ErrorId = "error:effect/TimeoutError";
  * is a number of milliseconds. It is closed: an unnamed value never fits it.
  */
 export const DURATION_ID: TypeId = "type:effect/Duration";
+/**
+ * The builtin untagged identity over `int` that types a point in time. At run
+ * time it is a number of milliseconds since the Unix epoch. It is closed.
+ */
+export const INSTANT_ID: TypeId = "type:effect/Instant";
+/** The levels of `log`. The default is "info". */
+export type LogLevel = "trace" | "debug" | "info" | "warn" | "error" | "fatal";
 export type ValueId = `value:${string}`;
 export type LocalId = `local:${string}`;
 export type Execution = "pure" | "effect";
@@ -113,6 +120,8 @@ export type Type =
   | { readonly kind: "tuple"; readonly elements: readonly Type[] }
   | { readonly kind: "union"; readonly members: readonly Type[] }
   | { readonly kind: "option"; readonly element: Type }
+  | { readonly kind: "map"; readonly key: Type; readonly value: Type }
+  | { readonly kind: "set"; readonly element: Type }
   | { readonly kind: "ref"; readonly element: Type }
   | { readonly kind: "closeable-scope" }
   | { readonly kind: "retry-schedule"; readonly error: Type }
@@ -403,6 +412,17 @@ export type Expr =
   | Node<{ kind: "schedule-spaced"; delayMillis: Expr }>
   | Node<{ kind: "schedule-exponential"; baseMs: Expr; factor: Expr | null }>
   | Node<{ kind: "schedule-cron"; expression: string; zone: string }>
+  | Node<{ kind: "map-of"; entries: Expr }>
+  | Node<{ kind: "get-map"; map: Expr; key: Expr }>
+  | Node<{ kind: "put-map"; map: Expr; key: Expr; value: Expr }>
+  | Node<{ kind: "remove-map"; map: Expr; key: Expr }>
+  | Node<{ kind: "has-map"; map: Expr; key: Expr }>
+  | Node<{ kind: "entries-map"; map: Expr }>
+  | Node<{ kind: "set-of"; items: Expr }>
+  | Node<{ kind: "add-set"; set: Expr; element: Expr }>
+  | Node<{ kind: "remove-set"; set: Expr; element: Expr }>
+  | Node<{ kind: "has-set"; set: Expr; element: Expr }>
+  | Node<{ kind: "items-set"; set: Expr }>
   | Node<{ kind: "schedule-jittered"; schedule: Expr }>
   | Node<{ kind: "schedule-map"; schedule: Expr; transform: Expr }>
   | Node<{ kind: "schedule-max"; left: Expr; right: Expr }>
@@ -475,6 +495,10 @@ export type Expr =
   | Node<{ kind: "timeout"; job: Expr; durationMs: Expr }>
   | Node<{ kind: "repeat"; job: Expr; options: Expr | null }>
   | Node<{ kind: "sleep"; durationMs: Expr }>
+  | Node<{ kind: "now" }>
+  | Node<{ kind: "random" }>
+  | Node<{ kind: "random-int"; min: Expr; max: Expr }>
+  | Node<{ kind: "log"; message: Expr; level: LogLevel; fields: Expr | null }>
   | Node<{ kind: "uninterruptible"; job: Expr }>
   | Node<{ kind: "provide"; provider: Expr; job: Expr }>
   | Node<{
