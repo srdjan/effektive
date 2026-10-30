@@ -2350,3 +2350,30 @@ The complete gate passes 2,239 fast tests and 212 subprocess tests.
 The website passes 57 strict target units and 11 serving tests.
 Compiler corrections: f5cd01b, 1a047ad, and 9101913.
 No push or browser rendering check ran for this correction batch.
+
+Draft 0.69, October 30, 2026
+This edition records compiler release 0.11.0 and the stable base reset.
+It adds no source form and keeps IR version 7.
+Each module now has its own proof budget.
+The validator now accepts a withFiber parameter that names the child type.
+The published scheduled worker now uses Duration values, as its fixture does.
+
+At compiler commit 4e8f41a the complete gate passes 2,869 fast tests and
+282 subprocess tests. Release commit fd20ff5 changes only the version in
+deno.json. At that commit 2,868 fast tests and 282 subprocess tests pass.
+One fast test fails, because CHANGELOG.md has no 0.11.0 heading.
+The typed IR guard passes in both directions.
+
+A temporary copy of all five example directories builds with --validate --tsc.
+core1.eff also builds with --validate --tsc.
+Compiled runtime checks pass: order lifecycle 9, portable types 3,
+scheduled worker 10, service workflow 15, stream processor 13.
+The service workflow also passes 7 integration checks.
+
+The two pages hold 65 Effektive blocks. Each block was checked alone.
+43 blocks give no diagnostic. The other 22 are not fully checked: they are
+fragments, or they need declarations from another block or file.
+The website passes 62 strict target units and 12 serving tests.
+A browser check of both pages shows the changed text, the 0.11.0 asset links,
+and working code tabs, with no console error or warning.
+No push ran for this edition.
