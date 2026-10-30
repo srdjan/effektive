@@ -16,6 +16,8 @@ The [scheduled worker](public/effektive-examples/scheduled-worker/README.md) now
 
 All three application gates are complete. The accepted stopping rule selects no further automatic API additions; release acceptance remains separate work. Item 9 remains deferred. The [remaining and deferred gaps](public/effektive-spec.html#remaining-gaps) distinguish API boundaries, runtime limits and separate release acceptance.
 
+The [unreleased compiler reset](public/effektive-spec.html#compiler-reset) preserves the type definitions of retained program revisions across later edits. It also rejects unsafe playground build paths inside the compiler repository. These fixes preserve source forms and IR version 7.
+
 ## This repository
 
 This repository contains the Effektive mini book, the language specification, and their source files. The site files are in `public/`.

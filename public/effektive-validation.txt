@@ -2379,3 +2379,42 @@ The website passes 62 strict target units and 12 serving tests.
 A browser check of both pages shows the changed text, the 0.11.0 asset links,
 and working code tabs, with no console error or warning.
 No push ran for this edition.
+
+Unreleased compiler reset, October 30, 2026
+Compiler commit 6a68955 preserves type definitions for each retained program revision.
+Later edits cannot change delayed lowering or editor queries for an earlier revision.
+The playground build rejects repository directories outside playground/dist, including children with misleading two-dot prefixes.
+These fixes add no source form and keep IR version 7.
+Compiler release 0.11.0 and design draft 0.69 stay unchanged.
+
+The complete compiler gate passes 2,884 fast tests and 282 subprocess tests.
+The comparison uses the same existing tests on both compiler revisions.
+It records 12,849 results per revision, with zero new or missing results.
+These results preserve the checked corpus, including generated TypeScript bytes.
+Separate regression tests cover delayed queries, cached output, definition edits, configuration recovery, and module reuse.
+Three independent review contexts found no actionable defect in the reset.
+
+The compiler playground passes a browser check of editing, generated output, diagnostics, and recovery.
+Its browser reports no page error or console message during that check.
+That check covers the compiler playground, not this website or installed-editor acceptance.
+Memory samples do not establish peak allocation, memory parity, or garbage-collection timing.
+The reset makes no speedup or memory-reduction claim.
+
+The website examples remain manually authored and are not tied automatically to compiler fixtures.
+The earlier 22 incomplete block checks remain evidence limits; this reset does not remeasure them.
+
+The withFiber correction does not establish a result for mapGroups.
+Three earlier attempts could not express that callback case in source.
+
+tests/target_helpers.ts still uses --no-lock.
+Two fast cases in tests/proof_budget_test.ts remain close to their time limit.
+
+The earlier p90 spike has no confirmed cause; other machine work remains the probable cause.
+A controlled alternating benchmark with machine-load records can test that explanation.
+
+Website checks for this reset note
+The site passes 12 serving and asset tests and 62 strict target units.
+Both pages keep all 169 code elements unchanged.
+Their local links resolve, and their identifiers remain unique.
+A browser check displays the reset note and opens its validation report.
+The browser reports no page error or console message during that check.
