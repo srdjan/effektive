@@ -2362,6 +2362,8 @@ At compiler commit 4e8f41a the complete gate passes 2,869 fast tests and
 282 subprocess tests. Release commit fd20ff5 changes only the version in
 deno.json. At that commit 2,868 fast tests and 282 subprocess tests pass.
 One fast test fails, because CHANGELOG.md has no 0.11.0 heading.
+Compiler commit 26b7eb4 adds that heading. At 6683418 the complete gate
+passes 2,869 fast tests and 282 subprocess tests.
 The typed IR guard passes in both directions.
 
 A temporary copy of all five example directories builds with --validate --tsc.
