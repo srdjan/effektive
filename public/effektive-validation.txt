@@ -2418,3 +2418,50 @@ Both pages keep all 169 code elements unchanged.
 Their local links resolve, and their identifiers remain unique.
 A browser check displays the reset note and opens its validation report.
 The browser reports no page error or console message during that check.
+
+Compiler release 0.12.0 and draft 0.70, November 1, 2026
+Compiler commit 64a03c1 sets version 0.12.0. Draft 0.70 records that release.
+The release adds no source form and keeps IR version 7.
+The compiler changelog states that it changes no wire format and no emitted text.
+
+The checker now rejects a Schema with a foreign sealed make input where a different make input is expected.
+The validator now accepts three cases that the checker accepts.
+These are a null comparison of a foreign sealed type that holds null, schema() for a named Schema type or an equivalent make input, and schemaRecursive under a named Schema type.
+The validator also rejects a literal pattern on an alias chain past its depth bound.
+Only a forged IR reaches that bound, because the checker limits an alias to 128 levels.
+
+At compiler commit 64a03c1, 3,117 of 3,118 fast tests pass, and all 301 subprocess tests pass.
+The failing test is "the newest versioned heading of CHANGELOG.md equals the version in deno.json".
+The version commit left the changelog entries under Unreleased, so the compiler gate fails at the release commit.
+This failure concerns the changelog heading, not compiler behavior.
+
+Compiler commit fdadb8d is the last commit with a source change.
+Its coverage is 97.50% of lines, 95.38% of branches, and 99.30% of functions.
+The check for unfired validator rejections reports 0 sites.
+A behavior capture compares fdadb8d with its parent and records 32,945 results per revision, with zero new or missing results.
+That capture ignores the two tests of the changed depth bound on both sides.
+
+Full mutation runs of src/core/validate/expr.ts, src/core/validate/families/schema.ts, and src/core/check_builtins/schema.ts exit 0.
+These runs use the fast suite and seed 1, so a mutant that only a slow test can kill counts as a survivor.
+They close 126 survivors: 117 with tests, 8 with register rows of proved equivalence, and 1 whose site the repair removed.
+One disproved equivalence proof led to the depth bound repair.
+The first run of one module reported three timeouts on one line, and a repeat of that line reported none.
+The cause of those timeouts is not known.
+
+Published examples under compiler 0.12.0
+This draft changes no Effektive example and no Effect-TS tab.
+Each published program ran through compiler 0.11.1 and compiler 0.12.0, and the outputs were compared.
+The 97 inputs are 11 example files, five example applications, and 81 figure runs.
+The compared output holds checker diagnostics, and validator diagnostics where the checker reports none.
+All 97 outputs are equal.
+On 71 inputs, both compilers report nothing. On the other 26, both report the same diagnostics. This check did not classify those 26.
+A known program proves that the check can see a difference: the foreign sealed make input case gives no diagnostic on 0.11.1 and type-mismatch/003 on 0.12.0.
+This check stops at validation. It does not compare generated TypeScript, and it does not run the compiled examples.
+
+Website checks for draft 0.70
+The site passes 12 serving and asset tests and 62 strict target units.
+Both pages keep all 169 code elements in their source.
+Their local links resolve, and their identifiers remain unique.
+A browser check displays the new text on both pages, loads the assets of version 0.12.0, and opens this report.
+The browser reports no page error, and it reports no console error or warning during that check.
+That check covers this website, not the compiler playground or installed-editor acceptance.
