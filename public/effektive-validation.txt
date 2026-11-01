@@ -2434,6 +2434,8 @@ At compiler commit 64a03c1, 3,117 of 3,118 fast tests pass, and all 301 subproce
 The failing test is "the newest versioned heading of CHANGELOG.md equals the version in deno.json".
 The version commit left the changelog entries under Unreleased, so the compiler gate fails at the release commit.
 This failure concerns the changelog heading, not compiler behavior.
+Compiler commit c580de8 adds that heading.
+At c580de8 the complete gate passes 3,118 fast tests and 301 subprocess tests.
 
 Compiler commit fdadb8d is the last commit with a source change.
 Its coverage is 97.50% of lines, 95.38% of branches, and 99.30% of functions.
