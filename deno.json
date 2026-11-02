@@ -1,6 +1,6 @@
 {
   "name": "@srdjan/effektive",
-  "version": "0.12.0",
+  "version": "0.12.2",
   "license": "MIT",
   "exports": "./main.ts",
   "tasks": {
