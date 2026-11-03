@@ -58,6 +58,11 @@ Spacing uses an 8px base. The gutter is 32px, 24px below 800px, and 20px below 5
 - Arrow: ↓ marks a link inside the page. `.arrow-out`, a ↑ turned 45deg, marks another page. The site font has only the ↑ and ↓ arrows. Other arrow characters fall back to system fonts with a thinner stroke, so do not use them.
 - Press: every `button` and `.button` scales to `.96` in 150ms `ease-out`. Hover lift uses the `translate` property and press uses `scale`. Do not use `transform` for either: an entry animation holds `transform` and hides the change.
 
+### Hero headline
+
+- The second line of the `h1` drifts down by up to 20px while the hero scrolls out. The band then covers its descenders.
+- The drift timeline is `view(block 0px)`. The default `view()` inset takes `scroll-padding-top` from `html`, so the drift starts before any scroll and cuts the descenders at rest.
+
 ### Hero video
 
 - `.hero-video` closes the hero on the `--ink` band, with the gutter at each side and 40px below, or 28px below 520px.

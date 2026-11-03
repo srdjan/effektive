@@ -376,7 +376,7 @@ td code, p code { font-size: .92em; overflow-wrap: anywhere; }
   @keyframes hero-glow-drift { from { transform: translate(-40px, -16px); opacity: .55; } to { transform: translate(40px, 28px); opacity: 1; } }
   @keyframes spark-arrive { from { transform: rotate(-40deg) scale(.3); opacity: 0; } to { transform: rotate(0) scale(1); opacity: 1; } }
   @supports (animation-timeline: view()) {
-    .hero-type { animation: contract-drift linear both; animation-timeline: view(); animation-range: exit 0% exit 100%; }
+    .hero-type { animation: contract-drift linear both; animation-timeline: view(block 0px); animation-range: exit 0% exit 100%; }
     @keyframes contract-drift { from { transform: translateY(0); } to { transform: translateY(20px); } }
   }
 }
