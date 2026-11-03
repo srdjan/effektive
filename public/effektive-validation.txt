@@ -2467,3 +2467,24 @@ Their local links resolve, and their identifiers remain unique.
 A browser check displays the new text on both pages, loads the assets of version 0.12.0, and opens this report.
 The browser reports no page error, and it reports no console error or warning during that check.
 That check covers this website, not the compiler playground or installed-editor acceptance.
+
+Compiler release 0.12.3 and draft 0.72, November 3, 2026
+Compiler commit fbd2592 sets version 0.12.3. Draft 0.72 records that release.
+The release adds no source form and keeps IR version 8.
+The command effektive check --fix adds the missing fails and uses entries to the exported functions of all .eff files.
+The command and the editor quick fix write a service name in uses when a function needs every method of that service.
+They add no import. The user deferred imports on November 2, 2026, and the deferred gaps table records that deferral.
+Draft 0.71 has no entry of its own in this report. It follows compiler release 0.12.2, which removes the builtins that no application used.
+
+At compiler commit e816d85, deno task check passes with 2,736 fast tests and 258 subprocess tests.
+The subprocess tests include tests/website_examples_slow_test.ts and tests/ir_site_slow_test.ts.
+After the draft 0.72 edits, these two files pass again with 19 tests.
+The first runs check and build --tsc on each published example unit and compares the diagnostics with its manifest.
+The second compares public/typed-ir.ts with the IR that the compiler generates.
+
+Site checks after the draft 0.72 edits
+This draft changes no Effektive example and no Effect-TS tab.
+deno task test passes 12 tests, and deno task typecheck passes 62 strict units.
+The page assets now carry version 0.12.3. Before this draft, they carried 0.12.0, and the asset version test failed.
+A local server returns status 200 for both pages, both assets, the validation report, and the sitemap.
+This check used no browser, and it compared no output between compiler releases.
