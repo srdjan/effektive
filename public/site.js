@@ -33,8 +33,8 @@
     "type",
     "typeof",
     "unknown",
-    "uses",
     "void",
+    "with",
   ]);
 
   const functions = {
@@ -49,7 +49,7 @@
     rename: {
       source: `export const rename = (id: UserId, name: Name): User
   fails UserMissing | StoreUnavailable
-  uses Users.find | Users.save => {
+  with Users.find | Users.save => {
   const user = getUser(id)
   const renamed = { ...user, name }
   Users.save(renamed)
@@ -72,7 +72,7 @@
     displayName: {
       source: `export const displayName = (id: UserId): Name
   fails StoreUnavailable
-  uses Users.find =>
+  with Users.find =>
   try {
     getUser(id).name
   } catch {
@@ -95,7 +95,7 @@
     activeNames: {
       source: `export const activeNames = (): Name[]
   fails StoreUnavailable
-  uses Users.all =>
+  with Users.all =>
   Users.all()
     |> filter((user) => user.active)
     |> map((user) => user.name)`,

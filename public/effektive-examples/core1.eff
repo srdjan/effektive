@@ -34,9 +34,9 @@ const defaulted: Schema<Required, Optional, Defaults.make> =
     score: schemaDefaultKey(integer, (): Int => Defaults.make())
   })
 
-export const readShifted = (input: unknown): Optional fails SchemaError uses Read.next =>
+export const readShifted = (input: unknown): Optional fails SchemaError with Read.next =>
   schemaDecode(shifted, input)
-export const readDefault = (input: unknown): Required fails SchemaError uses Defaults.make =>
+export const readDefault = (input: unknown): Required fails SchemaError with Defaults.make =>
   schemaDecode(defaulted, input)
 
 type Name = string
@@ -172,9 +172,9 @@ export const wireTree: Schema<Tree, WireTree, Wire.parse, Wire.print, TreeInput>
       children: schemaConstructorDefault(schemaArray(self), (): TreeInput[] => [])
     })
 )
-export const readWireTree = (input: unknown): Tree fails SchemaError uses Wire.parse =>
+export const readWireTree = (input: unknown): Tree fails SchemaError with Wire.parse =>
   schemaDecode(wireTree, input)
-export const writeWireTree = (input: Tree): WireTree fails SchemaError uses Wire.print =>
+export const writeWireTree = (input: Tree): WireTree fails SchemaError with Wire.print =>
   schemaEncode(wireTree, input)
 export const constructWireTree = (input: TreeInput): Tree fails SchemaIssue =>
   schemaMake(wireTree, input)

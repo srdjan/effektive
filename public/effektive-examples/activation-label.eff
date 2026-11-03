@@ -27,7 +27,7 @@ const activate = (user: User) =>
 
 export const saveActive = (id: UserId): User
   fails UserMissing | StoreUnavailable
-  uses Users.find | Users.save => {
+  with Users.find | Users.save => {
   const user = getUser(id)
   if (user.active) { user } else {
     const active = activate(user)
@@ -40,7 +40,7 @@ type Label = string
 
 export const activationLabel = (id: UserId): Label
   fails StoreUnavailable
-  uses Users.find | Users.save =>
+  with Users.find | Users.save =>
   try {
     saveActive(id)
     "active"

@@ -22,7 +22,7 @@ service Console {
 
 export const log = (message: Message): void
   fails ConsoleUnavailable
-  uses Console.print =&gt; Console.print(message)</code></pre></div><div class="code-panel" data-tab="Effect-TS" data-check-id="spec-log"><pre tabindex="0"><code class="language-typescript">import { Context, Effect, Schema } from &quot;effect&quot;
+  with Console.print =&gt; Console.print(message)</code></pre></div><div class="code-panel" data-tab="Effect-TS" data-check-id="spec-log"><pre tabindex="0"><code class="language-typescript">import { Context, Effect, Schema } from &quot;effect&quot;
 
 type Message = string
 
@@ -48,7 +48,7 @@ const log = (message: Message): Effect.Effect&lt;
 <p>The log function returns void, can fail with ConsoleUnavailable, and requires Console.print. Its call runs in the current source execution context.</p>
 <p>Service declarations use method notation. Function values and function type annotations use arrows. Methods have no implicit receiver or this binding.</p>
 <p>The source return type names the successful value. It does not name an Effect object. The target backend supplies its own execution representation.</p><nav class="section-nav" aria-label="Navigation for section 2"><a href="#status">Previous: Status and scope</a><a href="#lexical">Next: Source and lexical rules</a></nav></section><section class="section" id="lexical" aria-labelledby="heading-lexical"><h2 id="heading-lexical">Source and lexical rules</h2><p>Source text uses UTF-8. Source positions in IR count UTF-16 code units, with an exclusive end offset.</p>
-<p>Identifiers start with an ASCII letter, underscore, or dollar sign. Later characters may also contain decimal digits. Names are case-sensitive.</p><p>A name cannot be a word that a strict ES module reserves (syntax/007). Effektive source therefore has no generator, await, class, or loop form. The 37 reserved words are arguments, await, break, case, class, continue, debugger, default, delete, do, enum, eval, extends, for, function, implements, in, instanceof, interface, let, new, package, private, protected, public, return, static, super, switch, this, throw, typeof, var, void, while, with, and yield. void stays valid as a type, and while stays valid as a record label.</p>
+<p>Identifiers start with an ASCII letter, underscore, or dollar sign. Later characters may also contain decimal digits. Names are case-sensitive.</p><p>A name cannot be a word that a strict ES module reserves (syntax/007). Effektive source therefore has no generator, await, class, or loop form. The 36 reserved words are arguments, await, break, case, class, continue, debugger, default, delete, do, enum, eval, extends, for, function, implements, in, instanceof, interface, let, new, package, private, protected, public, return, static, super, switch, this, throw, typeof, var, void, while, and yield. void stays valid as a type, and while stays valid as a record label.</p><p>The word <code>with</code> is an Effektive keyword. It starts the <code>with</code> clause of a contract. A name cannot be <code>with</code> (<code>syntax/008</code>).</p>
 <p>Line comments start with //. Block comments use /* and */ and do not nest. Comments do not produce runtime values.</p>
 <p>Strings use double quotes with JSON escape sequences. String interpolation, single-quoted strings, and template literals are outside the initial lexical core.</p>
 <p>Numeric literals use decimal notation, with optional fraction and exponent parts. Numeric literal values must be finite. Integral literals infer int unless context requires number. An integer followed directly by ms, s, m, or h is a duration literal. The value 5s means 5000 milliseconds. A fraction or an exponent cannot take a suffix. The null keyword denotes the singleton null data value.</p>
@@ -74,7 +74,7 @@ const doubled = (wait: number): number =&gt; Math.trunc(wait * 2)
 const slices = (total: number): Ratio =&gt; total / 250</code></pre></div></figure>
 <p>The parser recognizes |&gt; before |. The first token denotes a pipeline; the second separates type alternatives and effect-set members.</p>
 <p>A newline or semicolon separates declarations, service methods, and block items. Commas separate record fields, arguments, parameters, and match arms.</p>
-<p>A newline continues an incomplete expression. It also continues a signature before fails, uses, or its final arrow, and an expression before |&gt;.</p>
+<p>A newline continues an incomplete expression. It also continues a signature before fails, with, or its final arrow, and an expression before |&gt;.</p>
 <p>The core does not apply general JavaScript semicolon insertion. Parentheses make grouping explicit when a multiline form would otherwise be unclear.</p><nav class="section-nav" aria-label="Navigation for section 3"><a href="#overview">Previous: A first example</a><a href="#types">Next: Data and types</a></nav></section><section class="section" id="types" aria-labelledby="heading-types"><h2 id="heading-types">Data and types</h2><div class="table-wrap"><table><thead><tr><th scope="col">Source type</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>string</td><td>A string value.</td></tr><tr><td>boolean</td><td>true or false.</td></tr><tr><td>int</td><td>A finite JavaScript safe integer.</td></tr><tr><td>number</td><td>A host numeric value; source numeric literals must be finite.</td></tr><tr><td>null</td><td>The singleton null data value.</td></tr><tr><td>void</td><td>The unit result of an operation.</td></tr><tr><td>never</td><td>No successful value, as with fail.</td></tr><tr><td>unknown</td><td>A value that needs a checked boundary before typed use.</td></tr><tr><td>T[]</td><td>An immutable array of T values.</td></tr><tr><td>[A, B]</td><td>An immutable tuple with the stated positions.</td></tr><tr><td>Option&lt;T&gt;</td><td>Some(value) or None.</td></tr><tr><td>A | B</td><td>A union of alternatives.</td></tr></tbody></table></div>
 <figure data-ui class="code" data-tabs data-check="spec-types"><figcaption>Declarations: names, record, literal union, and optional field</figcaption><div class="code-panel" data-tab="Effektive"><pre tabindex="0"><code class="language-effektive">type UserId = string
 type Name = string
@@ -333,8 +333,8 @@ export const totals = (entries: ReadonlyArray&lt;Entry&gt;): ReadonlyArray&lt;Co
 <p>Checked-entry metadata survives aliases, function values, and imports. A conversion can discard the metadata but cannot create it.</p>
 <p>Service methods and host interfaces keep unknown for omitted input types. Opaque, deferred, and foreign sealed inputs require concrete annotations.</p>
 <p>Host interfaces expose unrefined data. They cannot declare refinements or reference refined contracts, including imported types and services supplied by host providers.</p>
-<p>On a non-exported function, the compiler infers each omitted result type, fails clause, and uses clause from the body. This rule covers module-level functions and inline arrows. A written fails or uses clause closes its own set. A result annotation alone does not close the sets.</p>
-<p>An exported function has a closed contract. Omitted fails means no expected failures. Omitted uses means no unprovided capability requirements.</p>
+<p>On a non-exported function, the compiler infers each omitted result type, fails clause, and with clause from the body. This rule covers module-level functions and inline arrows. A written fails or with clause closes its own set. A result annotation alone does not close the sets.</p>
+<p>An exported function has a closed contract. Omitted fails means no expected failures. Omitted with means no unprovided capability requirements.</p>
 <p>A function type states its sets, so a function type in a binding annotation is closed. Omitted clauses in a function type mean empty sets.</p>
 <p>Those omissions do not assert pure execution. The checker tracks execution mode separately, including effects whose providers are already supplied.</p>
 <p>An unmarked function type defaults to effect execution. Imported interfaces retain their resolved execution modes.</p>
@@ -363,7 +363,7 @@ service Users {
 
 export const getUser = (id: UserId): User
   fails UserMissing | StoreUnavailable
-  uses Users.find =&gt;
+  with Users.find =&gt;
   match Users.find(id) {
     Some(user) =&gt; user,
     None =&gt; fail(UserMissing({ id }))
@@ -406,10 +406,10 @@ export const getUser = (id: UserId): Effect.Effect&lt;
       onSome: (user) =&gt; Effect.succeed(user)
     })
   )</code></pre></div></figure>
-<p>fails names a closed set of expected error identities. uses names a closed set of required service methods.</p>
+<p>fails names a closed set of expected error identities. with names a closed set of required service methods.</p>
 <p>A fails clause can name a type alias whose body is an error or a union of errors, such as <code>type PayFailure = OrderNotFound | PaymentDeclined</code>. An alias of aliases also works. The checker expands the alias to error identities, so the IR keeps sets of errors. A member that is not an error gives failure-contract/004. A catch arm still names one error.</p>
 <p>A whole service name expands to all methods in that service. Method requirements retain resolved identities across module boundaries.</p>
-<p>A service method declaration has no uses clause. Its own invocation adds that method capability to the caller requirements.</p>
+<p>A service method declaration has no with clause. Its own invocation adds that method capability to the caller requirements.</p>
 <p>A host provider captures implementation dependencies. The method interface describes only parameters, success, and expected failures.</p>
 <p>The checker verifies that inferred body failures and requirements fit the declared sets. A body cannot silently widen an explicit contract.</p>
 <p>A declared set may be wider than the body needs. Calls through that interface propagate the declared sets.</p>
@@ -425,7 +425,7 @@ export const getUser = (id: UserId): Effect.Effect&lt;
 <p>Mode propagation uses logical OR over callee evaluation, arguments, invoked functions, and reachable branches.</p>
 <p>An explicit contract with nonempty sets lifts a pure body into an effectful function interface. A pure function may lift into an effectful callback interface.</p>
 <p>An effectful function cannot satisfy a pure callback requirement. Lifting wraps execution; it does not invoke a callback during construction.</p>
-<p>A recursive function requires parameter and result annotations but no fails or uses clause. Only module-level functions may be recursive: a function bound inside a block cannot refer to itself. Inference starts pure, with empty effect sets. It propagates intrinsic effects and effectful calls until the recursive group reaches a fixed point. A group that has not settled after 32 rounds gives execution-mode/004.</p>
+<p>A recursive function requires parameter and result annotations but no fails or with clause. Only module-level functions may be recursive: a function bound inside a block cannot refer to itself. Inference starts pure, with empty effect sets. It propagates intrinsic effects and effectful calls until the recursive group reaches a fixed point. A group that has not settled after 32 rounds gives execution-mode/004.</p>
 <p>defer(job) accepts a zero-argument function and constructs an Effect value from its invocation result, failure set, and requirement set. The job body does not run during construction. Evaluating the job expression may contribute its own active effects. run(value) accepts an Effect value and executes its deferred computation anew on every call. Its active effects combine evaluation of value with the value’s deferred failures and requirements. run has effect execution mode even when those sets are empty.</p>
 <p>Expected failure stops the current normal path. Defects and cancellation use separate runtime outcomes and do not enter ordinary typed recovery. A Defect arm in catch can handle a defect.</p><nav class="section-nav" aria-label="Navigation for section 7"><a href="#services">Previous: Services and contracts</a><a href="#pipelines">Next: Pipelines and collections</a></nav></section><section class="section" id="pipelines" aria-labelledby="heading-pipelines"><h2 id="heading-pipelines">Pipelines and collections</h2><figure data-ui class="code" data-tabs data-check="spec-collections"><figcaption>Collection pipelines with filter, map, and fold</figcaption><div class="code-panel" data-tab="Effektive"><pre tabindex="0"><code class="language-effektive">type Name = string
 type Amount = int
@@ -482,12 +482,12 @@ service Names {
 
 export const lookupAll = (ids: Id[]): Name[]
   fails Missing
-  uses Names.lookup =&gt;
+  with Names.lookup =&gt;
   ids |&gt; map(id =&gt; Names.lookup(id))
 
 export const joined = (ids: Id[]): Name
   fails Missing
-  uses Names.lookup =&gt;
+  with Names.lookup =&gt;
   ids |&gt; fold(&quot;&quot;, (text, id) =&gt; text + Names.lookup(id))</code></pre></div><div class="code-panel" data-tab="Effect-TS" data-check-id="spec-collections-effectful"><pre tabindex="0"><code class="language-typescript">import { Context, Effect, Schema } from &quot;effect&quot;
 
 type Id = string
@@ -663,7 +663,7 @@ const label = (value: Circle | Missing): Label =&gt;
   value._tag === &quot;Circle&quot; ? &quot;circle&quot; : value.reason</code></pre></div></figure>
 <p>A tagged pattern without a binding lowers with a null binding. Pattern-bound values remain immutable and local to their arm.</p><nav class="section-nav" aria-label="Navigation for section 9"><a href="#pipelines">Previous: Pipelines and collections</a><a href="#recovery">Next: Failure and recovery</a></nav></section><section class="section" id="recovery" aria-labelledby="heading-recovery"><h2 id="heading-recovery">Failure and recovery</h2><figure data-ui class="code" data-tabs data-check="spec-recovery" data-check-requires="spec-types spec-users"><figcaption>Recover from a typed failure with try and catch</figcaption><div class="code-panel" data-tab="Effektive"><pre tabindex="0"><code class="language-effektive">export const displayName = (id: UserId): Name
   fails StoreUnavailable
-  uses Users.find =&gt;
+  with Users.find =&gt;
   try {
     getUser(id).name
   } catch {
@@ -694,7 +694,7 @@ service Jobs {
 
 export const runJob = (): Text
   fails JobFailed
-  uses Jobs.run | Jobs.close | Jobs.report =&gt;
+  with Jobs.run | Jobs.close | Jobs.report =&gt;
   try {
     Jobs.run()
   } catch {
@@ -757,7 +757,7 @@ service Jobs {
 
 export const fetchPatient = (): Count
   fails Unavailable | TimeoutError
-  uses Jobs.fetch =&gt;
+  with Jobs.fetch =&gt;
   timeout(() =&gt; retry(() =&gt; Jobs.fetch(), {
     times: 3,
     while: (error) =&gt; error.message !== &quot;fatal&quot;
@@ -765,12 +765,12 @@ export const fetchPatient = (): Count
 
 export const poll = (): Count
   fails Unavailable
-  uses Jobs.fetch =&gt;
+  with Jobs.fetch =&gt;
   repeat(() =&gt; Jobs.fetch(), { times: 2 })
 
 export const settle = (): Count
   fails Unavailable
-  uses Jobs.fetch =&gt; {
+  with Jobs.fetch =&gt; {
   sleep(200ms)
   uninterruptible(() =&gt; Jobs.fetch())
 }</code></pre></div><div class="code-panel" data-tab="Effect-TS" data-check-id="spec-control-time"><pre tabindex="0"><code class="language-typescript">import { Cause, Context, Effect, Schema } from &quot;effect&quot;
@@ -923,7 +923,7 @@ binding      = &quot;const&quot; Name [&quot;:&quot; type] &quot;=&quot; express
 lambda       = (Name | &quot;(&quot; parameters &quot;)&quot; [&quot;:&quot; type effects]) &quot;=&gt;&quot; expression
 functionType = [&quot;pure&quot;] &quot;(&quot; parameters &quot;)&quot; &quot;=&gt;&quot; type effects
 parameter    = [&quot;borrow&quot;] Name [&quot;:&quot; type]
-effects      = [&quot;fails&quot; errorSet] [&quot;uses&quot; requirementSet]
+effects      = [&quot;fails&quot; errorSet] [&quot;with&quot; requirementSet]
 errorSet     = ErrorName (&quot;|&quot; ErrorName)*
 requirementSet = QualifiedName (&quot;|&quot; QualifiedName)*
 recordType   = &quot;{&quot; [field (&quot;,&quot; field)* [&quot;,&quot;]] &quot;}&quot;
@@ -968,7 +968,7 @@ pipeStage    = QualifiedName [&quot;(&quot; arguments &quot;)&quot;]</code></pre
 <p>Arithmetic with a number operand produces number. String addition performs no implicit conversion. Invalid int arithmetic produces a defect.</p><nav class="section-nav" aria-label="Navigation for section 15"><a href="#equations">Previous: Equations and validation</a><a href="#diagnostics">Next: Diagnostics and conformance</a></nav></section><section class="section" id="diagnostics" aria-labelledby="heading-diagnostics"><h2 id="heading-diagnostics">Diagnostics and conformance</h2><p>Diagnostics identify a source span, a category, and a concrete mismatch. The categories are syntax, unknown-name, declaration, type-mismatch, pattern, failure-contract, requirement-contract, execution-mode, module, host-boundary, and validation.</p>
 <p>The effektive-lang compiler reports each diagnostic with a code that joins a category and a number, such as type-mismatch/003. A primitive type outside a type or error declaration gives declaration/013.</p>
 <figure data-ui class="code" data-tabs data-check="spec-diagnostics" data-check-requires="spec-types spec-users"><figcaption>An invalid program that the compiler rejects</figcaption><div class="code-panel" data-tab="Effektive"><pre tabindex="0"><code class="language-effektive">export const broken = (id: UserId): User
-  uses Users.find =&gt; getUser(id)
+  with Users.find =&gt; getUser(id)
 
 // Invalid: getUser can fail, but an exported function with no fails clause allows no failures.</code></pre></div><div class="code-panel" data-tab="Effect-TS"><pre tabindex="0"><code class="language-typescript">export const broken = (id: UserId): Effect.Effect&lt;User, never, Users&gt; =&gt;
   // @ts-expect-error Effect-TS rejects the same contract: getUser can fail.
@@ -1025,7 +1025,7 @@ service Counter {
 
 const count = (): Count
   fails Missing
-  uses Counter.next =&gt; {
+  with Counter.next =&gt; {
   const ref = makeRef(0)
   updateRef(ref, (n) =&gt; n + Counter.next())
   getRef(ref)
@@ -1133,7 +1133,7 @@ export service Users {
 
 export const getUser = (id: UserId): User
   fails UserMissing | StoreUnavailable
-  uses Users.find =&gt;
+  with Users.find =&gt;
   match Users.find(id) {
     Some(user) =&gt; user,
     None =&gt; fail(UserMissing({ id }))
@@ -1141,7 +1141,7 @@ export const getUser = (id: UserId): User
 
 export const rename = (id: UserId, name: Name): User
   fails UserMissing | StoreUnavailable
-  uses Users.find | Users.save =&gt; {
+  with Users.find | Users.save =&gt; {
   const user = getUser(id)
   const renamed = { ...user, name }
   Users.save(renamed)
@@ -1150,7 +1150,7 @@ export const rename = (id: UserId, name: Name): User
 
 export const displayName = (id: UserId): Name
   fails StoreUnavailable
-  uses Users.find =&gt;
+  with Users.find =&gt;
   try {
     getUser(id).name
   } catch {
@@ -1159,7 +1159,7 @@ export const displayName = (id: UserId): Name
 
 export const activeNames = (): Name[]
   fails StoreUnavailable
-  uses Users.all =&gt;
+  with Users.all =&gt;
   Users.all()
     |&gt; filter(user =&gt; user.active)
     |&gt; map(user =&gt; user.name)</code></pre></div><div class="code-panel" data-tab="Effect-TS" data-check-id="spec-example-users"><pre tabindex="0"><code class="language-typescript">import { Context, Effect, Option, Schema } from &quot;effect&quot;
@@ -1282,7 +1282,7 @@ const saveOrder = (order: Order) =&gt; {
 
 export const pay = (id: OrderId): Order
   fails OrderNotFound | PaymentDeclined
-  uses Orders | Payments.charge =&gt;
+  with Orders | Payments.charge =&gt;
   id
     |&gt; findOrder
     |&gt; chargeOrder

@@ -23,5 +23,5 @@ const activeNames = (users: User[]) =>
 
 export const listActiveNames = (): Name[]
   fails StoreUnavailable
-  uses Users.all =>
+  with Users.all =>
   Users.all() |> activeNames

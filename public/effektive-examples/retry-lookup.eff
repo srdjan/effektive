@@ -18,5 +18,5 @@ service Users {
 
 export const lookupWithRetry = (id: UserId): Option<User>
   fails StoreUnavailable
-  uses Users.find =>
+  with Users.find =>
   retry(() => Users.find(id), { times: 2 })

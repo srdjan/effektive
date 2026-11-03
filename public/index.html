@@ -4,7 +4,7 @@
 <header class="topbar"><a class="brand" href="index.html">Effektive<span class="brand-period" aria-hidden="true">.</span></a><nav class="toplinks" aria-label="Documents"><a href="index.html" aria-current="page">Mini book</a><a href="effektive-spec.html">Specification</a></nav></header>
 <main id="site-content"><section class="hero" aria-labelledby="hero-heading"><div class="hero-type"><h1 id="hero-heading"><span>Direct calls.</span><span>Effect types.</span><i class="hero-spark" aria-hidden="true">✳︎</i></h1></div><div class="hero-bottom"><p class="subtitle">You write direct calls with no <code>Effect.gen</code> and no <code>yield*</code>. The contract of each effectful function compiles to an <code>Effect.Effect&lt;A,&nbsp;E,&nbsp;R&gt;</code> type.</p><div class="hero-actions"><a class="button primary-action" href="#orientation">Read the mini book <span aria-hidden="true">↓</span></a><a class="button secondary-action" href="https://github.com/srdjan/effektive-lang">Try the compiler <span class="arrow-out" aria-hidden="true">↑</span></a></div></div><video class="hero-video" controls playsinline preload="none" poster="media/demo-20261026.webp" width="1920" height="1132" aria-label="Effektive demo"><source src="media/demo-20261026.av1.mp4" type='video/mp4; codecs="av01.0.08M.08, opus"'><source src="media/demo-20261026.h264.mp4" type='video/mp4; codecs="avc1.640028, mp4a.40.2"'><track kind="captions" src="media/demo-20261026.vtt" srclang="en" label="English"></video></section><section class="showcase" id="contracts-explorer" aria-labelledby="explorer-heading"><h2 id="explorer-heading">Read a contract.</h2><form data-contract-explorer><div class="contract-controls" hidden><label class="visually-hidden" for="contract-function">Function name</label><div class="function-input"><input id="contract-function" name="function" value="getUser" list="function-names" autocomplete="off" spellcheck="false" aria-describedby="contract-message"><button type="submit" aria-label="Show function contract"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 4v7a4 4 0 0 1-4 4H5"/><path d="m10 10-5 5 5 5"/></svg></button></div><datalist id="function-names"><option value="getUser"></option><option value="rename"></option><option value="displayName"></option><option value="activeNames"></option></datalist><div class="function-choices" aria-label="Example functions"><button type="button" data-function="getUser" aria-pressed="true">Lookup</button><button type="button" data-function="rename" aria-pressed="false">Rename</button><button type="button" data-function="displayName" aria-pressed="false">Recover</button><button type="button" data-function="activeNames" aria-pressed="false">Collect</button></div></div><div class="contract-result"><span class="contract-signal" aria-hidden="true"></span><figure class="code contract-source" data-ui data-tabs data-check="explorer-getUser" data-check-requires="users-declarations"><figcaption>Selected contract <a href="effektive-examples/users.eff">View Users source</a></figcaption><div class="code-panel" data-tab="Effektive"><pre id="contract-source" tabindex="0"><code class="language-effektive">export const getUser = (id: UserId): User
   fails UserMissing | StoreUnavailable
-  uses Users.find =&gt;
+  with Users.find =&gt;
   match Users.find(id) {
     Some(user) =&gt; user,
     None =&gt; fail(UserMissing({ id }))
@@ -103,7 +103,7 @@ const add = (a: Count, b: Count): Count =&gt; a + b
 
 export const load = (id: UserId): Option&lt;User&gt;
   fails StoreUnavailable
-  uses Users.find =&gt; Users.find(id)</code></pre></div><div class="code-panel" data-tab="Effect-TS" data-check-id="book-contracts"><pre tabindex="0"><code class="language-typescript">type Count = number
+  with Users.find =&gt; Users.find(id)</code></pre></div><div class="code-panel" data-tab="Effect-TS" data-check-id="book-contracts"><pre tabindex="0"><code class="language-typescript">type Count = number
 
 const add = (a: Count, b: Count): Count =&gt; a + b
 
@@ -214,7 +214,7 @@ class Users extends Context.Service&lt;Users, {
 
 export const saveActive = (id: UserId): User
   fails UserMissing | StoreUnavailable
-  uses Users.find | Users.save =&gt; {
+  with Users.find | Users.save =&gt; {
   const user = getUser(id)
   if (user.active) { user } else {
     const active = activate(user)
@@ -249,7 +249,7 @@ value |&gt; transform(a, b)    means transform(value, a, b)</code></pre></figure
 
 export const listActiveNames = (): Name[]
   fails StoreUnavailable
-  uses Users.all =&gt;
+  with Users.all =&gt;
   Users.all() |&gt; activeNames</code></pre></div><div class="code-panel" data-tab="Effect-TS" data-check-id="users-collection"><pre tabindex="0"><code class="language-typescript">const activeNames = (
   users: ReadonlyArray&lt;User&gt;
 ): ReadonlyArray&lt;Name&gt; =&gt;
@@ -281,7 +281,7 @@ export const total = (amounts: ReadonlyArray&lt;Amount&gt;): Amount =&gt;
 
 export const activationLabel = (id: UserId): Label
   fails StoreUnavailable
-  uses Users.find | Users.save =&gt;
+  with Users.find | Users.save =&gt;
   try {
     saveActive(id)
     &quot;active&quot;
@@ -303,7 +303,7 @@ export const activationLabel = (id: UserId): Effect.Effect&lt;
 <p>retry requires a deferred operation. The function below runs its first attempt and allows two more attempts. Each attempt can perform the Users.find operation again.</p>
 <figure data-ui class="code" data-tabs data-check="users"><figcaption>Retry using chapter 4 declarations <a href="effektive-examples/retry-lookup.eff">View complete Effektive source</a></figcaption><div class="code-panel" data-tab="Effektive"><pre tabindex="0"><code class="language-effektive">export const lookupWithRetry = (id: UserId): Option&lt;User&gt;
   fails StoreUnavailable
-  uses Users.find =&gt;
+  with Users.find =&gt;
   retry(() =&gt; Users.find(id), { times: 2 })</code></pre></div><div class="code-panel" data-tab="Effect-TS" data-check-id="users-retry"><pre tabindex="0"><code class="language-typescript">export const lookupWithRetry = (id: UserId): Effect.Effect&lt;
   Option.Option&lt;User&gt;,
   StoreUnavailable,
@@ -371,7 +371,7 @@ const saveOrder = (order: Order) =&gt; {
 
 export const pay = (id: OrderId): Order
   fails OrderNotFound | PaymentDeclined
-  uses Orders | Payments.charge =&gt;
+  with Orders | Payments.charge =&gt;
   id
     |&gt; findOrder
     |&gt; chargeOrder
@@ -749,9 +749,9 @@ const defaulted: Schema&lt;Required, Optional, Defaults.make&gt; =
     score: schemaDefaultKey(integer, (): Int =&gt; Defaults.make())
   })
 
-export const readShifted = (input: unknown): Optional fails SchemaError uses Read.next =&gt;
+export const readShifted = (input: unknown): Optional fails SchemaError with Read.next =&gt;
   schemaDecode(shifted, input)
-export const readDefault = (input: unknown): Required fails SchemaError uses Defaults.make =&gt;
+export const readDefault = (input: unknown): Required fails SchemaError with Defaults.make =&gt;
   schemaDecode(defaulted, input)</code></pre></div><div class="code-panel" data-tab="Effect-TS" data-check-id="book-core1-schema"><pre tabindex="0"><code class="language-typescript">import { Context, Effect, Option, Schema, SchemaGetter } from &quot;effect&quot;
 
 const Int = Schema.Finite.check(Schema.makeFilter(
@@ -1134,9 +1134,9 @@ export const wireTree: Schema&lt;Tree, WireTree, Wire.parse, Wire.print, TreeInp
       children: schemaConstructorDefault(schemaArray(self), (): TreeInput[] =&gt; [])
     })
 )
-export const readWireTree = (input: unknown): Tree fails SchemaError uses Wire.parse =&gt;
+export const readWireTree = (input: unknown): Tree fails SchemaError with Wire.parse =&gt;
   schemaDecode(wireTree, input)
-export const writeWireTree = (input: Tree): WireTree fails SchemaError uses Wire.print =&gt;
+export const writeWireTree = (input: Tree): WireTree fails SchemaError with Wire.print =&gt;
   schemaEncode(wireTree, input)
 export const constructWireTree = (input: TreeInput): Tree fails SchemaIssue =&gt;
   schemaMake(wireTree, input)</code></pre></div><div class="code-panel" data-tab="Effect-TS" data-check-id="book-core1-recursive-wire"><pre tabindex="0"><code class="language-typescript">import { Context, Effect, Schema, SchemaIssue, SchemaTransformation } from &quot;effect&quot;
@@ -1287,7 +1287,7 @@ const readDefaultedTree = Schema.decodeUnknownEffect(DefaultedTree)</code></pre>
 
 export const load = (id: UserId): User
   fails UserMissing | StoreUnavailable
-  uses Users.find =&gt; getUser(id)</code></pre></div><div class="code-panel" data-tab="Effect-TS"><pre tabindex="0"><code class="language-typescript">import { Effect } from &quot;effect&quot;
+  with Users.find =&gt; getUser(id)</code></pre></div><div class="code-panel" data-tab="Effect-TS"><pre tabindex="0"><code class="language-typescript">import { Effect } from &quot;effect&quot;
 import {
   User,
   UserId,
