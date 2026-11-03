@@ -8,7 +8,7 @@
 <p>This reference defines language core version 1. The documentation edition is draft 0.72, dated November 3, 2026.</p>
 <p>The <a href="#history">change history</a> lists what each draft changed.</p>
 <p>Core 1 specifies additional source features in stages. The compiler implements the documented core 1 subset, including references, races, buffered streams, source Layers, and unbounded traversal. The validation report identifies which examples run.</p>
-<p>This site contains a specification, teaching examples, and a TypeScript model of typed intermediate representation, or IR. The site does not run the Effektive compiler; a Deno transpiler and CLI exist in the effektive-lang repository.</p>
+<p>This site contains a specification, teaching examples, and a TypeScript model of typed intermediate representation, or IR. The site does not run the Effektive compiler; a Deno transpiler and CLI exist in the <a href="https://github.com/srdjan/effektive-lang">effektive-lang repository</a>.</p>
 <p>Rules in this reference describe intended language behavior. The examples are manually authored. Effect-TS tabs illustrate the intended transpiler output; a transpiler did not generate them.</p>
 <p>Effektive files use the .eff extension. Earlier .lft files remain provisional artifacts from the design discussion.</p>
 <p>The core covers data, functions, services, failures, pipelines, retry, providers, named modules, and the core 1 extensions. Later sections identify deferred features.</p>
@@ -845,7 +845,7 @@ const main = (): Effect.Effect&lt;Name, StoreUnavailable&gt; =&gt;
   -&gt; specialize builtins and lower pipelines
   -&gt; validate typed IR
   -&gt; emit Effect-TS code</code></pre></figure>
-<p>The accompanying <a href="typed-ir.ts">typed-ir.ts</a> describes the current compiler payload model. The independent validator lives in the effektive-lang repository.</p>
+<p>The accompanying <a href="typed-ir.ts">typed-ir.ts</a> describes the current compiler payload model. The independent validator lives in the <a href="https://github.com/srdjan/effektive-lang">effektive-lang repository</a>.</p>
 <p>Core 1 requires light-functional-ir version 8. The compiler, validator, and linked model use version 8. Earlier versions are rejected without conversion.</p>
 <p>Draft 0.62 replaces the function field contract with written. The field holds one flag each for result, fails, and uses. The version stays 3.</p>
 <p>Draft 0.63 exports ClosureExpr and makes closure parameters own scoped identities. Resource acquisition, use, release, fiber use, and grouped-stream callbacks require closures. Read identities from use.parameters[0].id, release.parameters[0].id, and grouped use.parameters[1].id. The duplicate useBinding, releaseBinding, and groupBinding fields are removed. Runtime validation retains closure, arity, type, reference, and borrow checks.</p>
