@@ -83,6 +83,7 @@ Spacing uses an 8px base. The gutter is 32px, 24px below 800px, and 20px below 5
 ### Source drawer
 
 - While a source file loads, its link dims to 55% opacity after 150ms.
+- The drawer adds one history entry while it is open, so Back closes it.
 
 ### Entry motion
 

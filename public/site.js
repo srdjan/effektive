@@ -880,6 +880,14 @@
       if (event.target === drawer) drawer.close();
     });
 
+    globalThis.addEventListener("popstate", () => {
+      if (drawer.open) drawer.close();
+    });
+    // Closing by button, Escape, or backdrop removes the entry that opening added.
+    drawer.addEventListener("close", () => {
+      if (history.state?.effektiveSourceDrawer) history.back();
+    });
+
     const sources = new Map();
     const loadSource = (url) => {
       if (!sources.has(url)) {
@@ -920,7 +928,11 @@
           else numberLines(code);
           code.parentElement.scrollTop = 0;
           link.closest("details.contents-menu")?.removeAttribute("open");
-          if (!drawer.open) drawer.showModal();
+          if (!drawer.open) {
+            drawer.showModal();
+            // A history entry makes Back close the drawer and not leave the page.
+            history.pushState({ effektiveSourceDrawer: true }, "");
+          }
         }).catch(() => {
           sources.delete(url);
           if (requestedUrl === url) globalThis.location.assign(url);
