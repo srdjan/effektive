@@ -2,10 +2,10 @@
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="The Effektive specification defines the source syntax, type rules, execution behavior, typed IR, and Effect-TS translation of language core 1."><title>Effektive - Specification</title><link rel="canonical" href="https://effektive.timok.deno.net/effektive-spec.html"><meta property="og:site_name" content="Effektive"><meta property="og:type" content="article"><meta property="og:title" content="Effektive - Specification"><meta property="og:description" content="The Effektive specification defines the source syntax, type rules, execution behavior, typed IR, and Effect-TS translation of language core 1."><meta property="og:url" content="https://effektive.timok.deno.net/effektive-spec.html"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="Effektive. Direct calls. Effect types. A small functional language that compiles to Effect-TS."><meta property="og:image" content="https://effektive.timok.deno.net/og-image.png"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Effektive - Specification"><meta name="twitter:description" content="The Effektive specification defines the source syntax, type rules, execution behavior, typed IR, and Effect-TS translation of language core 1."><meta name="twitter:image" content="https://effektive.timok.deno.net/og-image.png"><meta name="twitter:image:alt" content="Effektive. Direct calls. Effect types. A small functional language that compiles to Effect-TS."><script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"TechArticle","@id":"https://effektive.timok.deno.net/effektive-spec.html#spec","headline":"Effektive language specification","name":"Effektive - Specification","description":"The Effektive specification defines the source syntax, type rules, execution behavior, typed IR, and Effect-TS translation of language core 1.","url":"https://effektive.timok.deno.net/effektive-spec.html","image":"https://effektive.timok.deno.net/og-image.png","inLanguage":"en","isPartOf":{"@type":"WebSite","@id":"https://effektive.timok.deno.net/#website","name":"Effektive","url":"https://effektive.timok.deno.net/"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Effektive","item":"https://effektive.timok.deno.net/"},{"@type":"ListItem","position":2,"name":"Specification","item":"https://effektive.timok.deno.net/effektive-spec.html"}]}]}</script><link rel="icon" href="data:,"><link rel="stylesheet" href="site.css?v=0.13.5"><script src="site.js?v=0.13.5" defer></script></head>
 <body id="top" class="spec-page"><a class="skip" href="#content">Skip to content</a>
 <header class="topbar"><a class="brand" href="index.html">Effektive<span class="brand-period" aria-hidden="true">.</span></a><nav class="toplinks" aria-label="Documents"><a href="index.html">Mini book</a><a href="effektive-spec.html" aria-current="page">Specification</a></nav></header>
-<main id="site-content"><section class="reference-hero" aria-labelledby="reference-heading"><h1 id="reference-heading">Language<br>specification.</h1><div class="reference-bottom"><p class="edition">Language core 1. Design draft 0.72. November 3, 2026.</p><a class="button" href="#status">Read the specification <span aria-hidden="true">↓</span></a></div></section><div class="layout" id="reader"><details class="contents-menu"><summary>Chapters</summary><nav class="contents mobile-contents" aria-label="Mobile contents"><ol><li><a href="#status">Status and scope</a></li><li><a href="#overview">A first example</a></li><li><a href="#lexical">Source and lexical rules</a></li><li><a href="#types">Data and types</a></li><li><a href="#functions">Functions and blocks</a></li><li><a href="#services">Services and contracts</a></li><li><a href="#execution">Execution order and mode</a></li><li><a href="#pipelines">Pipelines and collections</a></li><li><a href="#matching">Pattern matching</a></li><li><a href="#recovery">Failure and recovery</a></li><li><a href="#control">Retry and providers</a></li><li><a href="#modules">Modules and boundaries</a></li><li><a href="#ir">Typed IR and backends</a></li><li><a href="#equations">Equations and validation</a></li><li><a href="#grammar">Surface grammar</a></li><li><a href="#diagnostics">Diagnostics and conformance</a></li><li><a href="#core1">Core 1 extensions</a><ol><li><a href="#sink-leftovers">Sink leftovers and synchronous transduction</a></li><li><a href="#references-concurrency">References and concurrent effects</a></li><li><a href="#borrowed-resources">Borrowed resources</a></li><li><a href="#buffered-streams">Buffered streams</a></li><li><a href="#retry-schedules">Retry schedules</a></li><li><a href="#first-class-schemas">First-class Schemas and guarded recursion</a></li><li><a href="#source-layers">Source Layers and host adapters</a></li><li><a href="#typed-ir-migration">Typed IR migration</a></li></ol></li><li><a href="#examples">Examples and deferred work</a></li><li><a href="#sources">Sources and lineage</a></li><li><a href="#history">Change history</a></li></ol><p class="contents-title resources-title">Source and evidence</p><a class="resource" href="typed-ir.ts">Typed IR model</a><a class="resource" href="log.ir.json">Manual IR fixture</a><a class="resource" href="effektive-validation.txt">Validation scope</a><a class="resource" href="effektive-examples/users.eff">Users example</a><a class="resource" href="effektive-examples/pay.eff">Payment example</a><a class="resource" href="effektive-examples/core1.eff">Core 1 example</a><a class="resource" href="effektive-examples/refined-entry.eff">Refined entry example</a><a class="resource" href="effektive-examples/main.eff">Application boundary</a></nav></details><nav class="contents" aria-label="Contents"><ol><li><a href="#status">Status and scope</a></li><li><a href="#overview">A first example</a></li><li><a href="#lexical">Source and lexical rules</a></li><li><a href="#types">Data and types</a></li><li><a href="#functions">Functions and blocks</a></li><li><a href="#services">Services and contracts</a></li><li><a href="#execution">Execution order and mode</a></li><li><a href="#pipelines">Pipelines and collections</a></li><li><a href="#matching">Pattern matching</a></li><li><a href="#recovery">Failure and recovery</a></li><li><a href="#control">Retry and providers</a></li><li><a href="#modules">Modules and boundaries</a></li><li><a href="#ir">Typed IR and backends</a></li><li><a href="#equations">Equations and validation</a></li><li><a href="#grammar">Surface grammar</a></li><li><a href="#diagnostics">Diagnostics and conformance</a></li><li><a href="#core1">Core 1 extensions</a><ol><li><a href="#sink-leftovers">Sink leftovers and synchronous transduction</a></li><li><a href="#references-concurrency">References and concurrent effects</a></li><li><a href="#borrowed-resources">Borrowed resources</a></li><li><a href="#buffered-streams">Buffered streams</a></li><li><a href="#retry-schedules">Retry schedules</a></li><li><a href="#first-class-schemas">First-class Schemas and guarded recursion</a></li><li><a href="#source-layers">Source Layers and host adapters</a></li><li><a href="#typed-ir-migration">Typed IR migration</a></li></ol></li><li><a href="#examples">Examples and deferred work</a></li><li><a href="#sources">Sources and lineage</a></li><li><a href="#history">Change history</a></li></ol><p class="contents-title resources-title">Source and evidence</p><a class="resource" href="typed-ir.ts">Typed IR model</a><a class="resource" href="log.ir.json">Manual IR fixture</a><a class="resource" href="effektive-validation.txt">Validation scope</a><a class="resource" href="effektive-examples/users.eff">Users example</a><a class="resource" href="effektive-examples/pay.eff">Payment example</a><a class="resource" href="effektive-examples/core1.eff">Core 1 example</a><a class="resource" href="effektive-examples/refined-entry.eff">Refined entry example</a><a class="resource" href="effektive-examples/main.eff">Application boundary</a></nav>
+<main id="site-content"><section class="reference-hero" aria-labelledby="reference-heading"><h1 id="reference-heading">Language<br>specification.</h1><div class="reference-bottom"><p class="edition">Language core 1. Design draft 0.73. November 3, 2026.</p><a class="button" href="#status">Read the specification <span aria-hidden="true">↓</span></a></div></section><div class="layout" id="reader"><details class="contents-menu"><summary>Chapters</summary><nav class="contents mobile-contents" aria-label="Mobile contents"><ol><li><a href="#status">Status and scope</a></li><li><a href="#overview">A first example</a></li><li><a href="#lexical">Source and lexical rules</a></li><li><a href="#types">Data and types</a></li><li><a href="#functions">Functions and blocks</a></li><li><a href="#services">Services and contracts</a></li><li><a href="#execution">Execution order and mode</a></li><li><a href="#pipelines">Pipelines and collections</a></li><li><a href="#matching">Pattern matching</a></li><li><a href="#recovery">Failure and recovery</a></li><li><a href="#control">Retry and providers</a></li><li><a href="#modules">Modules and boundaries</a></li><li><a href="#ir">Typed IR and backends</a></li><li><a href="#equations">Equations and validation</a></li><li><a href="#grammar">Surface grammar</a></li><li><a href="#diagnostics">Diagnostics and conformance</a></li><li><a href="#core1">Core 1 extensions</a><ol><li><a href="#sink-leftovers">Sink leftovers and synchronous transduction</a></li><li><a href="#references-concurrency">References and concurrent effects</a></li><li><a href="#borrowed-resources">Borrowed resources</a></li><li><a href="#buffered-streams">Buffered streams</a></li><li><a href="#retry-schedules">Retry schedules</a></li><li><a href="#first-class-schemas">First-class Schemas and guarded recursion</a></li><li><a href="#source-layers">Source Layers and host adapters</a></li><li><a href="#typed-ir-migration">Typed IR migration</a></li></ol></li><li><a href="#examples">Examples and deferred work</a></li><li><a href="#sources">Sources and lineage</a></li><li><a href="#history">Change history</a></li></ol><p class="contents-title resources-title">Source and evidence</p><a class="resource" href="typed-ir.ts">Typed IR model</a><a class="resource" href="log.ir.json">Manual IR fixture</a><a class="resource" href="effektive-validation.txt">Validation scope</a><a class="resource" href="effektive-examples/users.eff">Users example</a><a class="resource" href="effektive-examples/pay.eff">Payment example</a><a class="resource" href="effektive-examples/core1.eff">Core 1 example</a><a class="resource" href="effektive-examples/refined-entry.eff">Refined entry example</a><a class="resource" href="effektive-examples/main.eff">Application boundary</a></nav></details><nav class="contents" aria-label="Contents"><ol><li><a href="#status">Status and scope</a></li><li><a href="#overview">A first example</a></li><li><a href="#lexical">Source and lexical rules</a></li><li><a href="#types">Data and types</a></li><li><a href="#functions">Functions and blocks</a></li><li><a href="#services">Services and contracts</a></li><li><a href="#execution">Execution order and mode</a></li><li><a href="#pipelines">Pipelines and collections</a></li><li><a href="#matching">Pattern matching</a></li><li><a href="#recovery">Failure and recovery</a></li><li><a href="#control">Retry and providers</a></li><li><a href="#modules">Modules and boundaries</a></li><li><a href="#ir">Typed IR and backends</a></li><li><a href="#equations">Equations and validation</a></li><li><a href="#grammar">Surface grammar</a></li><li><a href="#diagnostics">Diagnostics and conformance</a></li><li><a href="#core1">Core 1 extensions</a><ol><li><a href="#sink-leftovers">Sink leftovers and synchronous transduction</a></li><li><a href="#references-concurrency">References and concurrent effects</a></li><li><a href="#borrowed-resources">Borrowed resources</a></li><li><a href="#buffered-streams">Buffered streams</a></li><li><a href="#retry-schedules">Retry schedules</a></li><li><a href="#first-class-schemas">First-class Schemas and guarded recursion</a></li><li><a href="#source-layers">Source Layers and host adapters</a></li><li><a href="#typed-ir-migration">Typed IR migration</a></li></ol></li><li><a href="#examples">Examples and deferred work</a></li><li><a href="#sources">Sources and lineage</a></li><li><a href="#history">Change history</a></li></ol><p class="contents-title resources-title">Source and evidence</p><a class="resource" href="typed-ir.ts">Typed IR model</a><a class="resource" href="log.ir.json">Manual IR fixture</a><a class="resource" href="effektive-validation.txt">Validation scope</a><a class="resource" href="effektive-examples/users.eff">Users example</a><a class="resource" href="effektive-examples/pay.eff">Payment example</a><a class="resource" href="effektive-examples/core1.eff">Core 1 example</a><a class="resource" href="effektive-examples/refined-entry.eff">Refined entry example</a><a class="resource" href="effektive-examples/main.eff">Application boundary</a></nav>
 <article class="main" id="content"><section class="section" id="status" aria-labelledby="heading-status"><h2 id="heading-status">Status and scope</h2><p>Effektive is a small functional language that compiles to Effect-TS, the Effect library for TypeScript, version 4. Immutable values, ordinary functions, and explicit contracts define its source style.</p>
 <p>The transpiler targets the effect core modules and selected modules from the Effect ecosystem. The section on typed IR and backends names each module.</p>
-<p>This reference defines language core version 1. The documentation edition is draft 0.72, dated November 3, 2026.</p>
+<p>This reference defines language core version 1. The documentation edition is draft 0.73, dated November 3, 2026.</p>
 <p>The <a href="#history">change history</a> lists what each draft changed.</p>
 <p>Core 1 specifies additional source features in stages. The compiler implements the documented core 1 subset, including references, races, buffered streams, source Layers, and unbounded traversal. The validation report identifies which examples run.</p>
 <p>This site contains a specification, teaching examples, and a TypeScript model of typed intermediate representation, or IR. The site does not run the Effektive compiler; a Deno transpiler and CLI exist in the <a href="https://github.com/srdjan/effektive-lang">effektive-lang repository</a>.</p>
@@ -20,9 +20,8 @@ service Console {
   print(message: Message): void fails ConsoleUnavailable
 }
 
-export const log = (message: Message): void
-  fails ConsoleUnavailable
-  with Console.print =&gt; Console.print(message)</code></pre></div><div class="code-panel" data-tab="Effect-TS" data-check-id="spec-log"><pre tabindex="0"><code class="language-typescript">import { Context, Effect, Schema } from &quot;effect&quot;
+export const log = (message: Message): void with Console =&gt;
+  Console.print(message)</code></pre></div><div class="code-panel" data-tab="Effect-TS" data-check-id="spec-log"><pre tabindex="0"><code class="language-typescript">import { Context, Effect, Schema } from &quot;effect&quot;
 
 type Message = string
 
@@ -45,7 +44,7 @@ const log = (message: Message): Effect.Effect&lt;
 &gt; =&gt; Console.use((console) =&gt; console.print(message))</code></pre></div></figure>
 <p>An error declaration creates a tagged error type and a constructor. The declaration determines which error the value represents.</p>
 <p>A service declaration names external operations. Each service method is a capability, which is a statically tracked requirement for calling that operation.</p>
-<p>The log function returns void, can fail with ConsoleUnavailable, and requires Console.print. Its call runs in the current source execution context.</p>
+<p>The log function returns void, can fail with ConsoleUnavailable, and requires Console. The compiler infers the failure set from the body. Its call runs in the current source execution context.</p>
 <p>Service declarations use method notation. Function values and function type annotations use arrows. Methods have no implicit receiver or this binding.</p>
 <p>The source return type names the successful value. It does not name an Effect object. The target backend supplies its own execution representation.</p><nav class="section-nav" aria-label="Navigation for section 2"><a href="#status">Previous: Status and scope</a><a href="#lexical">Next: Source and lexical rules</a></nav></section><section class="section" id="lexical" aria-labelledby="heading-lexical"><h2 id="heading-lexical">Source and lexical rules</h2><p>Source text uses UTF-8. Source positions in IR count UTF-16 code units, with an exclusive end offset.</p>
 <p>Identifiers start with an ASCII letter, underscore, or dollar sign. Later characters may also contain decimal digits. Names are case-sensitive.</p><p>A name cannot be a word that a strict ES module reserves (syntax/007). Effektive source therefore has no generator, await, class, or loop form. The 36 reserved words are arguments, await, break, case, class, continue, debugger, default, delete, do, enum, eval, extends, for, function, implements, in, instanceof, interface, let, new, package, private, protected, public, return, static, super, switch, this, throw, typeof, var, void, while, and yield. void stays valid as a type, and while stays valid as a record label.</p><p>The word <code>with</code> is an Effektive keyword. It starts the <code>with</code> clause of a contract. A name cannot be <code>with</code> (<code>syntax/008</code>).</p>
@@ -203,7 +202,7 @@ export const readAmount = (input: unknown): Effect.Effect&lt;
   return amount(checked.amount)
 })</code></pre></div></figure>
 <p>The body infers input as the closed record { amount: Positive }. The exported entry accepts unknown and checks the exact record inside its Effect.</p>
-<p>The entry check runs before the body and can fail with SchemaError. The explicit result and failure contracts remain closed.</p>
+<p>The entry check runs before the body and can fail with SchemaError. The explicit result contract remains closed. The inferred failure set includes SchemaError.</p>
 <p>The declaration <code>sealed type Name = T</code> gives its module construction authority. Other modules can pass values, compare primitive values, compare a value with null when the body holds null, and read record fields. Other modules cannot construct values, retain the type through record updates, perform arithmetic, or widen values to the body. The declaring module can export explicit conversions. A sealed declaration with a transparent alias body gives declaration/017, because an alias has no identity to seal. So a sealed type needs a body that is neither a bare name nor a union with a non-literal member, as in sealed type Positive = int.</p>
 <p>Only the declaring module can derive a schema whose decoded type contains that sealed type. Other modules cannot decode or construct values through that schema. This restriction includes nested positions. Encoding remains legal. The owner can export an explicit decoder. Host interface files reject sealed declarations.</p>
 <p>A Schema keeps a sealed make input. Another module cannot derive such a Schema with schema(), and it cannot use one where a different make input is expected. It can use one where the same make input is expected.</p>
@@ -329,13 +328,15 @@ export const totals = (entries: ReadonlyArray&lt;Entry&gt;): ReadonlyArray&lt;Co
 <p>Each argument evaluates once in source order. Validation rejects missing fields, extra fields, and failed refinements. Static checking rejects incompatible known identities.</p>
 <p>Known components and identities must fit statically. A typed value with an unproved predicate keeps a proof obligation.</p>
 <p>Unknown inputs of a record predicate defer that predicate to entry validation. Concrete predicate inputs retain static obligations despite unrelated unknown fields.</p>
-<p>Entry validation performs no coercion, defaulting, or user transformation. The exported fails clause must include SchemaError.</p>
+<p>Entry validation performs no coercion, defaulting, or user transformation. An exported function with no fails clause infers SchemaError. A written fails clause must list SchemaError.</p>
 <p>Checked-entry metadata survives aliases, function values, and imports. A conversion can discard the metadata but cannot create it.</p>
 <p>Service methods and host interfaces keep unknown for omitted input types. Opaque, deferred, and foreign sealed inputs require concrete annotations.</p>
 <p>Host interfaces expose unrefined data. They cannot declare refinements or reference refined contracts, including imported types and services supplied by host providers.</p>
-<p>On a non-exported function, the compiler infers each omitted result type, fails clause, and with clause from the body. This rule covers module-level functions and inline arrows. A written fails or with clause closes its own set. A result annotation alone does not close the sets.</p>
-<p>An exported function has a closed contract. Omitted fails means no expected failures. Omitted with means no unprovided capability requirements.</p>
-<p>A function type states its sets, so a function type in a binding annotation is closed. Omitted clauses in a function type mean empty sets.</p>
+<p>The compiler infers an omitted fails clause from the body of any function with a body, exported or not. A written fails clause closes its set as a checked upper bound. A result annotation alone does not close the failure set.</p>
+<p>On a non-exported function, the compiler also infers each omitted result type and with clause from the body. This rule covers module-level functions and inline arrows. A written with clause closes its own set.</p>
+<p>An exported function closes its with clause. An omitted with clause means no services. The interface of the module carries the inferred failure set of each exported function.</p>
+<p>The emitted type keeps the form <code>Effect.Effect&lt;A, E, R&gt;</code>, where E is the inferred failure set.</p>
+<p>A service method, a function type, and a provider have no body, so each states its sets. A function type in a binding annotation is closed. Omitted clauses in these forms mean empty sets.</p>
 <p>Those omissions do not assert pure execution. The checker tracks execution mode separately, including effects whose providers are already supplied.</p>
 <p>An unmarked function type defaults to effect execution. Imported interfaces retain their resolved execution modes.</p>
 <p>A function type can declare pure execution with <code>pure (value: T) =&gt; U</code>. The contract requires empty failure and requirement sets. Inferred pure functions, imported pure functions, and pure inline callbacks can satisfy that contract. An effectful function cannot satisfy it, even when its effect sets are empty.</p>
@@ -361,9 +362,7 @@ service Users {
   all(): User[] fails StoreUnavailable
 }
 
-export const getUser = (id: UserId): User
-  fails UserMissing | StoreUnavailable
-  with Users.find =&gt;
+export const getUser = (id: UserId): User with Users =&gt;
   match Users.find(id) {
     Some(user) =&gt; user,
     None =&gt; fail(UserMissing({ id }))
@@ -406,13 +405,15 @@ export const getUser = (id: UserId): Effect.Effect&lt;
       onSome: (user) =&gt; Effect.succeed(user)
     })
   )</code></pre></div></figure>
-<p>fails names a closed set of expected error identities. with names a closed set of required service methods.</p>
+<p>A fails clause names a closed set of expected error identities. A with clause names a closed set of required service methods.</p>
+<p>An exported function infers an omitted fails clause from its body. Write a with clause on each exported function that needs a service.</p>
 <p>A fails clause can name a type alias whose body is an error or a union of errors, such as <code>type PayFailure = OrderNotFound | PaymentDeclined</code>. An alias of aliases also works. The checker expands the alias to error identities, so the IR keeps sets of errors. A member that is not an error gives failure-contract/004. A catch arm still names one error.</p>
 <p>A whole service name expands to all methods in that service. Method requirements retain resolved identities across module boundaries.</p>
 <p>A service method declaration has no with clause. Its own invocation adds that method capability to the caller requirements.</p>
 <p>A host provider captures implementation dependencies. The method interface describes only parameters, success, and expected failures.</p>
 <p>The checker verifies that inferred body failures and requirements fit the declared sets. A body cannot silently widen an explicit contract.</p>
 <p>A declared set may be wider than the body needs. Calls through that interface propagate the declared sets.</p>
+<p>A new failure in an exported function with an inferred failure set reaches host TypeScript with no diagnostic, because Effect.runPromise accepts any failure set. To guard against this, write a fails clause. Editor inlay hints show the inferred failures of an export.</p>
 <p>Error constructors produce tagged data. An error constructor takes one record literal argument; a computed record value or a spread-only record is rejected. The field name _tag is reserved for generated error tags.</p>
 <p>The generated code checks tagged record values that a host provider returns. When a service method result contains a tagged record, each module wraps that provider once. Each result, and each element of a result Stream, goes through Schema.is of its type. An optional tagged record field can have the name of an Object.prototype member, such as toString. Then the check first copies the value without a prototype. A wrong value causes a defect that names the service and the method. A provider without tagged record results is not wrapped.</p>
 <p>These positions stay trusted: Sink, Effect values, functions, Ref, opaque types, and typed errors. Arguments that the host passes to source callbacks stay trusted too.</p>
@@ -481,12 +482,10 @@ service Names {
 }
 
 export const lookupAll = (ids: Id[]): Name[]
-  fails Missing
   with Names.lookup =&gt;
   ids |&gt; map(id =&gt; Names.lookup(id))
 
 export const joined = (ids: Id[]): Name
-  fails Missing
   with Names.lookup =&gt;
   ids |&gt; fold(&quot;&quot;, (text, id) =&gt; text + Names.lookup(id))</code></pre></div><div class="code-panel" data-tab="Effect-TS" data-check-id="spec-collections-effectful"><pre tabindex="0"><code class="language-typescript">import { Context, Effect, Schema } from &quot;effect&quot;
 
@@ -661,9 +660,7 @@ const fallback = (shape: Shape): Length =&gt;
 
 const label = (value: Circle | Missing): Label =&gt;
   value._tag === &quot;Circle&quot; ? &quot;circle&quot; : value.reason</code></pre></div></figure>
-<p>A tagged pattern without a binding lowers with a null binding. Pattern-bound values remain immutable and local to their arm.</p><nav class="section-nav" aria-label="Navigation for section 9"><a href="#pipelines">Previous: Pipelines and collections</a><a href="#recovery">Next: Failure and recovery</a></nav></section><section class="section" id="recovery" aria-labelledby="heading-recovery"><h2 id="heading-recovery">Failure and recovery</h2><figure data-ui class="code" data-tabs data-check="spec-recovery" data-check-requires="spec-types spec-users"><figcaption>Recover from a typed failure with try and catch</figcaption><div class="code-panel" data-tab="Effektive"><pre tabindex="0"><code class="language-effektive">export const displayName = (id: UserId): Name
-  fails StoreUnavailable
-  with Users.find =&gt;
+<p>A tagged pattern without a binding lowers with a null binding. Pattern-bound values remain immutable and local to their arm.</p><nav class="section-nav" aria-label="Navigation for section 9"><a href="#pipelines">Previous: Pipelines and collections</a><a href="#recovery">Next: Failure and recovery</a></nav></section><section class="section" id="recovery" aria-labelledby="heading-recovery"><h2 id="heading-recovery">Failure and recovery</h2><figure data-ui class="code" data-tabs data-check="spec-recovery" data-check-requires="spec-types spec-users"><figcaption>Recover from a typed failure with try and catch</figcaption><div class="code-panel" data-tab="Effektive"><pre tabindex="0"><code class="language-effektive">export const displayName = (id: UserId): Name with Users =&gt;
   try {
     getUser(id).name
   } catch {
@@ -693,7 +690,6 @@ service Jobs {
 }
 
 export const runJob = (): Text
-  fails JobFailed
   with Jobs.run | Jobs.close | Jobs.report =&gt;
   try {
     Jobs.run()
@@ -756,7 +752,6 @@ service Jobs {
 }
 
 export const fetchPatient = (): Count
-  fails Unavailable | TimeoutError
   with Jobs.fetch =&gt;
   timeout(() =&gt; retry(() =&gt; Jobs.fetch(), {
     times: 3,
@@ -764,12 +759,10 @@ export const fetchPatient = (): Count
   }), 5s)
 
 export const poll = (): Count
-  fails Unavailable
   with Jobs.fetch =&gt;
   repeat(() =&gt; Jobs.fetch(), { times: 2 })
 
 export const settle = (): Count
-  fails Unavailable
   with Jobs.fetch =&gt; {
   sleep(200ms)
   uninterruptible(() =&gt; Jobs.fetch())
@@ -818,8 +811,7 @@ export const settle = (): Effect.Effect&lt;Count, Unavailable, Jobs&gt; =&gt;
 <p>withResource(acquire, use, release) takes three inline closures. Acquisition has no parameters and returns an operation record with required function fields. Use and release each take that record as one parameter. The use result and operation arguments and results are data only: recursively no function, Effect value, provider, or unknown. Release returns void. It can take a second parameter that binds the outcome of the use block. A scoped parameter may occur only as the direct receiver of an operation call, such as file.read(); it cannot escape through a return, alias, aggregate, nested closure, or host argument. A field cannot be read as a value. Invocation failures and requirements of all three callbacks combine; execution is effectful even with empty sets. Release runs after success, failure, defect, or interruption, and its own typed failure remains in the result channel. Host adapters create operation records and remain responsible for their functions' behavior. Core 1 defines general borrowed handles, source Layers, races, and scoped children below.</p><nav class="section-nav" aria-label="Navigation for section 11"><a href="#recovery">Previous: Failure and recovery</a><a href="#modules">Next: Modules and boundaries</a></nav></section><section class="section" id="modules" aria-labelledby="heading-modules"><h2 id="heading-modules">Modules and boundaries</h2><figure data-ui class="code" data-tabs data-check="spec-main" data-check-requires="spec-types spec-users spec-recovery"><figcaption>Import a function and provide a provider</figcaption><div class="code-panel" data-tab="Effektive"><pre tabindex="0"><code class="language-effektive">import { displayName, Name, StoreUnavailable } from &quot;./users.eff&quot;
 import { UsersLive } from &quot;host:providers&quot;
 
-export const main = (): Name
-  fails StoreUnavailable =&gt;
+export const main = (): Name =&gt;
   provide(UsersLive, () =&gt; displayName(&quot;u1&quot;))</code></pre></div><div class="code-panel" data-tab="Effect-TS"><pre tabindex="0"><code class="language-typescript">import { UsersLive } from &quot;./users-live.js&quot;
 import { displayName, Name, StoreUnavailable } from &quot;./users.js&quot;
 
@@ -968,10 +960,11 @@ pipeStage    = QualifiedName [&quot;(&quot; arguments &quot;)&quot;]</code></pre
 <p>Arithmetic with a number operand produces number. String addition performs no implicit conversion. Invalid int arithmetic produces a defect.</p><nav class="section-nav" aria-label="Navigation for section 15"><a href="#equations">Previous: Equations and validation</a><a href="#diagnostics">Next: Diagnostics and conformance</a></nav></section><section class="section" id="diagnostics" aria-labelledby="heading-diagnostics"><h2 id="heading-diagnostics">Diagnostics and conformance</h2><p>Diagnostics identify a source span, a category, and a concrete mismatch. The categories are syntax, unknown-name, declaration, type-mismatch, pattern, failure-contract, requirement-contract, execution-mode, module, host-boundary, and validation.</p>
 <p>The effektive-lang compiler reports each diagnostic with a code that joins a category and a number, such as type-mismatch/003. A primitive type outside a type or error declaration gives declaration/013.</p>
 <figure data-ui class="code" data-tabs data-check="spec-diagnostics" data-check-requires="spec-types spec-users"><figcaption>An invalid program that the compiler rejects</figcaption><div class="code-panel" data-tab="Effektive"><pre tabindex="0"><code class="language-effektive">export const broken = (id: UserId): User
-  with Users.find =&gt; getUser(id)
+  fails StoreUnavailable
+  with Users =&gt; getUser(id)
 
-// Invalid: getUser can fail, but an exported function with no fails clause allows no failures.</code></pre></div><div class="code-panel" data-tab="Effect-TS"><pre tabindex="0"><code class="language-typescript">export const broken = (id: UserId): Effect.Effect&lt;User, never, Users&gt; =&gt;
-  // @ts-expect-error Effect-TS rejects the same contract: getUser can fail.
+// Invalid: getUser can fail with UserMissing, but the written fails clause does not list it.</code></pre></div><div class="code-panel" data-tab="Effect-TS"><pre tabindex="0"><code class="language-typescript">export const broken = (id: UserId): Effect.Effect&lt;User, StoreUnavailable, Users&gt; =&gt;
+  // @ts-expect-error Effect-TS rejects the same contract: getUser can fail with UserMissing.
   getUser(id)</code></pre></div></figure>
 <p>Acceptance fixtures must check evaluation order, single evaluation, branch selection, failure propagation, explicit contracts, closure deferral, retry, and provider resolution. Effect value fixtures must check construction without execution, repeated run, transport through bindings and functions, and failure and requirement contracts at the run boundary.</p>
 <p>Pipeline fixtures must verify argument placement, stage order, short-circuiting after failure, and source locations for generated bindings.</p>
@@ -1131,35 +1124,27 @@ export service Users {
   all(): User[] fails StoreUnavailable
 }
 
-export const getUser = (id: UserId): User
-  fails UserMissing | StoreUnavailable
-  with Users.find =&gt;
+export const getUser = (id: UserId): User with Users =&gt;
   match Users.find(id) {
     Some(user) =&gt; user,
     None =&gt; fail(UserMissing({ id }))
   }
 
-export const rename = (id: UserId, name: Name): User
-  fails UserMissing | StoreUnavailable
-  with Users.find | Users.save =&gt; {
+export const rename = (id: UserId, name: Name): User with Users =&gt; {
   const user = getUser(id)
   const renamed = { ...user, name }
   Users.save(renamed)
   renamed
 }
 
-export const displayName = (id: UserId): Name
-  fails StoreUnavailable
-  with Users.find =&gt;
+export const displayName = (id: UserId): Name with Users =&gt;
   try {
     getUser(id).name
   } catch {
     UserMissing(error) =&gt; &quot;Guest&quot;
   }
 
-export const activeNames = (): Name[]
-  fails StoreUnavailable
-  with Users.all =&gt;
+export const activeNames = (): Name[] with Users =&gt;
   Users.all()
     |&gt; filter(user =&gt; user.active)
     |&gt; map(user =&gt; user.name)</code></pre></div><div class="code-panel" data-tab="Effect-TS" data-check-id="spec-example-users"><pre tabindex="0"><code class="language-typescript">import { Context, Effect, Option, Schema } from &quot;effect&quot;
@@ -1281,8 +1266,7 @@ const saveOrder = (order: Order) =&gt; {
 }
 
 export const pay = (id: OrderId): Order
-  fails OrderNotFound | PaymentDeclined
-  with Orders | Payments.charge =&gt;
+  with Orders | Payments =&gt;
   id
     |&gt; findOrder
     |&gt; chargeOrder
@@ -1391,7 +1375,7 @@ export const pay = (id: OrderId): Effect.Effect&lt;
 </tbody></table></div>
 <p>Further API work requires a demonstrated application blocker or an explicit target change. Check equivalent existing source compositions before selecting a feature. Item 9 requires the user to revisit its explicit deferral; a new blocker does not revoke that instruction.</p>
 <p>Runtime limits remain recorded alongside the witnesses. Native typed recovery can discard accompanying reasons from a mixed cause. Transaction interruption after COMMIT starts can preserve a committed row. Transduction can emit a partial batch before input failure. Queue capacity establishes no global memory bound, and the applications promise no exactly-once delivery.</p>
-<p>Release acceptance is separate from the language stopping rule. Automated checks now cover editor references, rename, completion, semantic tokens, contract quick fixes, inlay hints for the inferred fails and uses of non-exported module-level functions, bundled local CLI/VSIX installation, installed editor save and restart, and playground keyboard/error recovery at 375, 720 and 1280 pixels. Seven <a href="effektive-examples/service-workflow/integration_checks.ts">loopback HTTP and file-backed SQLite checks</a> extend the service workflow with local persistence, rollback, cancellation and connection cleanup. Full M1/M3/M4 release measurements meet the existing 100 ms p90 diagnostics budget on the large synthetic project, including paired 10,000-edit sessions with three open documents. Finite RSS, heap and type-table observations establish no memory bound. The user’s manual editor/playground acceptance remains pending. The original recording drivers establish no external integration coverage; the new local checks establish no distributed transaction, ambiguous-commit recovery or exactly-once guarantee.</p>
+<p>Release acceptance is separate from the language stopping rule. Automated checks now cover editor references, rename, completion, semantic tokens, contract quick fixes, inlay hints for the inferred failures of module-level functions, the inferred with clauses of non-exported module-level functions, bundled local CLI/VSIX installation, installed editor save and restart, and playground keyboard/error recovery at 375, 720 and 1280 pixels. Seven <a href="effektive-examples/service-workflow/integration_checks.ts">loopback HTTP and file-backed SQLite checks</a> extend the service workflow with local persistence, rollback, cancellation and connection cleanup. Full M1/M3/M4 release measurements meet the existing 100 ms p90 diagnostics budget on the large synthetic project, including paired 10,000-edit sessions with three open documents. Finite RSS, heap and type-table observations establish no memory bound. The user’s manual editor/playground acceptance remains pending. The original recording drivers establish no external integration coverage; the new local checks establish no distributed transaction, ambiguous-commit recovery or exactly-once guarantee.</p>
 <p>The compiler gate covers input inference, concrete refinements, runtime validation, and independent certificate checks. The validation report records the completed checks.</p>
 <p>The validator cannot detect consistent contract erasure without a separate trusted contract source. Retained host aliases can mutate values after validation.</p>
 <p id="application-acceptance">The accepted stopping rule requires three complete applications: a service workflow, a scheduled worker, and a stream processor. Each must compile with precise result, failure, and service contracts and pass failure, cancellation, and cleanup checks. Application orchestration stays in Effektive. Typed host adapters may supply drivers and the runtime entry point. All three application gates now pass using existing forms, including the service workflow’s registered atomic SQL adapter. The accepted language stopping rule is satisfied; release acceptance remains separate work.</p>
@@ -1407,7 +1391,8 @@ export const pay = (id: OrderId): Effect.Effect&lt;
 <p>Source references: <a href="https://forma-lang.com/effect">https://forma-lang.com/effect</a> and <a href="https://forma-lang.com/effect/reference">https://forma-lang.com/effect/reference</a>.</p>
 <p>Direct-call design reference: <a href="https://forma-lang.com/rfcs/0003-direct-style-effects">https://forma-lang.com/rfcs/0003-direct-style-effects</a>. That RFC described proposed behavior when the design research occurred.</p>
 <p>Target references: <a href="https://effect.website/docs/v4/api/effect/Context">https://effect.website/docs/v4/api/effect/Context</a> and <a href="https://effect.website/docs/v4/error-management/expected-errors">https://effect.website/docs/v4/error-management/expected-errors</a>.</p>
-<p>These references support the design lineage and target examples. They do not establish an Effektive implementation.</p><nav class="section-nav" aria-label="Navigation for section 19"><a href="#examples">Previous: Examples and deferred work</a><a href="#history">Next: Change history</a></nav></section><section class="section" id="history" aria-labelledby="heading-history"><h2 id="heading-history">Change history</h2><p>Draft 0.72 records compiler release 0.12.3. It adds no source form and keeps IR version 8. The command effektive check --fix adds the missing fails and uses entries to the exported functions of all .eff files. The command and the editor quick fix write a service name in uses when a function needs every method of that service. They add no import. The <a href="effektive-validation.txt">validation report</a> records the checks and their limits.</p>
+<p>These references support the design lineage and target examples. They do not establish an Effektive implementation.</p><nav class="section-nav" aria-label="Navigation for section 19"><a href="#examples">Previous: Examples and deferred work</a><a href="#history">Next: Change history</a></nav></section><section class="section" id="history" aria-labelledby="heading-history"><h2 id="heading-history">Change history</h2><p>Draft 0.73 renames the keyword <code>uses</code> to <code>with</code>. A name cannot be <code>with</code>. An exported function with a body infers an omitted <code>fails</code> clause from its body, as a non-exported function does. A written <code>fails</code> clause stays a checked upper bound. An exported function closes its <code>with</code> clause, so an omitted <code>with</code> clause means no services. An exported function with a checked input and no <code>fails</code> clause infers <code>SchemaError</code>. The emitted type keeps the form <code>Effect.Effect&lt;A, E, R&gt;</code>, where <code>E</code> is the inferred set. A new failure in an export with an inferred set reaches host TypeScript with no diagnostic. A written <code>fails</code> clause guards against this, and the editor shows the inferred failures as inlay hints. The IR keeps version 8, and its field <code>written</code> keeps the name <code>uses</code>. The examples drop their exported <code>fails</code> clauses.</p>
+<p>Draft 0.72 records compiler release 0.12.3. It adds no source form and keeps IR version 8. The command effektive check --fix adds the missing fails and uses entries to the exported functions of all .eff files. The command and the editor quick fix write a service name in uses when a function needs every method of that service. They add no import. The <a href="effektive-validation.txt">validation report</a> records the checks and their limits.</p>
 <p>Draft 0.71 starts the simplification rebase, which removes builtins that no application uses. It removes the Map and Set types and the operations mapOf, getMap, putMap, removeMap, hasMap, entriesMap, setOf, addSet, removeSet, hasSet, and itemsSet. Map and Set are ordinary names again. It also removes the general Schedule type, the types ScheduleInput, ScheduleMetadata, and ScheduleDecision, the operations scheduleFromStep, scheduleRecurs, scheduleSpaced, scheduleExponential, scheduleCron, scheduleJittered, scheduleMap, scheduleMax, scheduleMin, scheduleConcat, and aggregateWithinStream, and the schedule option of repeat. These are ordinary names again, and a schedule key in the options of repeat is an error. RetrySchedule and the schedule option of retry stay. It also removes the type CloseableScope and the operations makeScope, provideScope, addScopeFinalizer, and closeScope. These are ordinary names again. The scoped and forkScoped forms stay. It also removes the operations partitionAll, validateAll, and allResults. These are ordinary names again. The all and traverse forms stay. It also removes the type Codec and the operations codec, decode, encode, schemaInvalid, schemaAt, and schemaBoth. These are ordinary names again. The Schema builders stay, and SchemaIssue stays as a reserved error. It also removes the type Fiber and the operations withFiber, joinFiber, and interruptFiber. These are ordinary names again. The scoped and forkScoped forms stay. It also removes the operations mapGroups, scanStream, mapAccumStream, foldStream, foldEffectStream, collectStream, headStream, lastStream, drainStream, aggregateStream, mergeStreams, zipStreams, concatStreams, flatMapStreams, switchMapStreams, catchStream, retryStream, debounceStream, throttleStream, takeStream, dropStream, filterEffectStream, takeWhileEffectStream, takeUntilEffectStream, and dropWhileEffectStream. These are ordinary names again. The stream and sink forms unfold, mapEffect, sinkForEach, takeSink, transduceStream, runStream, and bufferStream stay. The IR moves to version 8.</p>
 <p>Draft 0.70 records compiler release 0.12.0. It adds no source form and keeps IR version 7. A Schema keeps a sealed make input, so another module cannot use it where a different make input is expected. The validator now accepts what the checker accepts in three cases. These are a null comparison of a foreign sealed type that holds null, schema() for a named Schema type or an equivalent make input, and schemaRecursive under a named Schema type. The <a href="effektive-validation.txt">validation report</a> records the checks and their limits.</p>
 <p id="compiler-reset">Compiler release 0.11.1 preserves type definitions for each retained program revision. Later edits do not change delayed output or editor queries for earlier revisions. The playground build also rejects unsafe output paths inside the compiler repository. These fixes preserve source forms and IR version 7. The <a href="effektive-validation.txt">validation report</a> records the checks and their limits.</p>

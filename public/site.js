@@ -43,13 +43,11 @@
       source: document.querySelector("#contract-source > code")?.textContent,
       success: "User",
       failures: "UserMissing | StoreUnavailable",
-      uses: "Users.find",
+      services: "Users",
       effect: document.querySelector("#contract-effect > code")?.textContent,
     },
     rename: {
-      source: `export const rename = (id: UserId, name: Name): User
-  fails UserMissing | StoreUnavailable
-  with Users.find | Users.save => {
+      source: `export const rename = (id: UserId, name: Name): User with Users => {
   const user = getUser(id)
   const renamed = { ...user, name }
   Users.save(renamed)
@@ -57,7 +55,7 @@
 }`,
       success: "User",
       failures: "UserMissing | StoreUnavailable",
-      uses: "Users.find | Users.save",
+      services: "Users",
       effect: `const rename = (id: UserId, name: Name): Effect.Effect<
   User,
   UserMissing | StoreUnavailable,
@@ -70,9 +68,7 @@
 })`,
     },
     displayName: {
-      source: `export const displayName = (id: UserId): Name
-  fails StoreUnavailable
-  with Users.find =>
+      source: `export const displayName = (id: UserId): Name with Users =>
   try {
     getUser(id).name
   } catch {
@@ -80,7 +76,7 @@
   }`,
       success: "Name",
       failures: "StoreUnavailable",
-      uses: "Users.find",
+      services: "Users",
       effect: `const displayName = (id: UserId): Effect.Effect<
   Name,
   StoreUnavailable,
@@ -93,15 +89,13 @@
 )`,
     },
     activeNames: {
-      source: `export const activeNames = (): Name[]
-  fails StoreUnavailable
-  with Users.all =>
+      source: `export const activeNames = (): Name[] with Users =>
   Users.all()
-    |> filter((user) => user.active)
-    |> map((user) => user.name)`,
+    |> filter(user => user.active)
+    |> map(user => user.name)`,
       success: "Name[]",
       failures: "StoreUnavailable",
-      uses: "Users.all",
+      services: "Users",
       effect: `const activeNames = (): Effect.Effect<
   ReadonlyArray<Name>,
   StoreUnavailable,
@@ -256,7 +250,7 @@
     const effect = form.querySelector("#contract-effect > code");
     const success = form.querySelector("#contract-success");
     const failures = form.querySelector("#contract-failures");
-    const uses = form.querySelector("#contract-uses");
+    const services = form.querySelector("#contract-with");
     const message = form.querySelector("#contract-message");
     const signal = form.querySelector(".contract-signal");
     const readingRows = Array.from(
@@ -271,7 +265,7 @@
       !effect ||
       !success ||
       !failures ||
-      !uses ||
+      !services ||
       !message
     ) {
       return;
@@ -334,7 +328,7 @@
       highlightCode(effect);
       success.textContent = contract.success;
       failures.textContent = contract.failures;
-      uses.textContent = contract.uses;
+      services.textContent = contract.services;
       // The live contract reading announces a selection, so the status shows only errors.
       message.textContent = "";
 
