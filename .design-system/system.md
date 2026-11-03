@@ -61,7 +61,8 @@ Spacing uses an 8px base. The gutter is 32px, 24px below 800px, and 20px below 5
 ### Hero video
 
 - `.hero-video` closes the hero on the `--ink` band, with the gutter at each side and 40px below, or 28px below 520px.
-- The video has `position: relative`, so the `--ink` fill of the hero `h1` does not paint over it.
+- The video has `position: relative`, so the `--ink` fill of the hero `h1` does not paint over it. That fill also paints the gutters, which are margins of the video.
+- A 1px white outline at 10% opacity, drawn just inside the edge, separates the dark poster from the band.
 - The video does not load until play: `preload="none"` and a WebP poster. An AV1 source comes first, then an H.264 fallback, and a captions track follows.
 - Media files in `public/media/` have a 30-day cache lifetime. Give a changed file a new dated name.
 
