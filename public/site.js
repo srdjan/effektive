@@ -296,16 +296,13 @@
         ],
         { duration: 560, easing },
       );
-      readingRows.forEach((row, index) => {
+      // A reader can choose again at once, so the rows fade together and do not stagger.
+      readingRows.forEach((row) => {
         row.getAnimations().forEach((animation) => animation.cancel());
-        row.animate(
-          [
-            { transform: "translateY(8px)", opacity: .35 },
-            { transform: "translateY(0)", opacity: 1 },
-          ],
-          // Without a backwards fill, a delayed row shows at full opacity until its delay ends.
-          { duration: 360, delay: index * 55, easing, fill: "backwards" },
-        );
+        row.animate([{ opacity: .35 }, { opacity: 1 }], {
+          duration: 150,
+          easing: "ease-out",
+        });
       });
     };
 

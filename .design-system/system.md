@@ -77,6 +77,7 @@ Spacing uses an 8px base. The gutter is 32px, 24px below 800px, and 20px below 5
 - The submit button shows an inline SVG return arrow with a 2px `currentColor` stroke.
 - On a phone, the four choices form a 2 x 2 grid with 8px gaps.
 - `#contract-message` shows text only for an error. The contract reading is the live region.
+- A new choice fades the three contract rows together from 35% opacity in 150ms. The rows do not stagger, because a reader can choose again at once.
 
 ### Entry motion
 
