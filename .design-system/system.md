@@ -95,6 +95,7 @@ Spacing uses an 8px base. The gutter is 32px, 24px below 800px, and 20px below 5
 - Do not add taglines, helper text, or secondary labels. If a screen needs them to make sense, change the layout.
 - Give each fact one home. Before you remove a text, move any fact that occurs only there.
 - Keep every interactive target at least 44 by 44px, with 8px between adjacent targets. Links inside paragraphs are exempt.
+- Anchor offset: only `html` sets `scroll-padding-top`. Do not add `scroll-margin-top` to sections; the two offsets add together.
 - Put hover rules inside `@media (hover: hover) and (pointer: fine)`.
 - Under `prefers-reduced-motion: reduce`, stop all motion, including comets, glow drift, and entry animation.
 - When `site.css` or `site.js` changes, increase `version` in `deno.json` and run `deno task stamp`. Browsers cache these assets for one hour.

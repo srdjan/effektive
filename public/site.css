@@ -133,7 +133,7 @@ a[aria-busy="true"] { cursor: progress; }
 .resources-title { margin-top: 32px; }
 .contents .resource { padding-block: 6px; }
 .main { min-width: 0; }
-.section { padding: 88px 64px 72px; scroll-margin-top: 90px; }
+.section { padding: 88px 64px 72px; }
 .section:nth-of-type(even) { background: var(--surface); }
 .section#contracts, .section#control, .section#services, .section#ir { background: var(--ink); color: var(--bg); }
 .section h2 { margin-bottom: 32px; max-width: 22ch; }
@@ -271,7 +271,7 @@ td code, p code { font-size: .92em; overflow-wrap: anywhere; }
   .mobile-contents li { break-inside: avoid; }
   .mobile-contents .resource { display: inline-block; margin-right: 24px; }
   .section, .document-note { padding-inline: var(--gutter); }
-  .section { padding-block: 64px; scroll-margin-top: calc(var(--topbar-height, 116px) + 60px); }
+  .section { padding-block: 64px; }
   .reference-hero h1 { font-size: 10.1vw; }
   .reference-bottom { gap: 32px; }
 }
