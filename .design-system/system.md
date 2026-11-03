@@ -55,6 +55,7 @@ Spacing uses an 8px base. The gutter is 32px, 24px below 800px, and 20px below 5
 
 - Primary: `.button`, minimum height 58px, padding 16px 24px, `--accent` background, square corners, and a trailing arrow `span`.
 - Secondary: `.secondary-action`, transparent background with a 2px inset ring in `--bg`.
+- Arrow: ↓ marks a link inside the page. `.arrow-out`, a ↑ turned 45deg, marks another page. The site font has only the ↑ and ↓ arrows. Other arrow characters fall back to system fonts with a thinner stroke, so do not use them.
 - Press: every `button` and `.button` scales to `.96` in 150ms `ease-out`. Hover lift uses the `translate` property and press uses `scale`. Do not use `transform` for either: an entry animation holds `transform` and hides the change.
 
 ### Hero video
@@ -72,6 +73,7 @@ Spacing uses an 8px base. The gutter is 32px, 24px below 800px, and 20px below 5
 ### Contract explorer
 
 - The large input shows the selected function name. Its label is visually hidden.
+- The submit button shows an inline SVG return arrow with a 2px `currentColor` stroke.
 - On a phone, the four choices form a 2 x 2 grid with 8px gaps.
 - `#contract-message` shows text only for an error. The contract reading is the live region.
 

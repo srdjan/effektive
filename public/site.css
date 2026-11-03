@@ -67,7 +67,9 @@ a[aria-busy="true"] { cursor: progress; }
 .toplinks a { display: inline-flex; align-items: center; min-height: 44px; padding-block: 10px; text-decoration: none; }
 .toplinks a[aria-current] { text-decoration: underline; }
 .button { display: inline-flex; align-items: center; justify-content: space-between; gap: 36px; min-height: 58px; padding: 16px 24px; background: var(--accent); color: var(--accent-ink); text-decoration: none; font-size: var(--body); font-weight: 500; line-height: 1.3; }
-.button span { font-size: var(--lead); line-height: 1; transition: transform 180ms var(--ease-out); }
+.button span { font-size: var(--lead); line-height: 1; transition: translate 180ms var(--ease-out); }
+/* The site font has only the up and down arrows. A turned up arrow marks another page and keeps the font and weight of the down arrow. */
+.arrow-out { display: inline-block; rotate: 45deg; }
 .button:active, button:active { scale: .96; }
 
 .hero { position: relative; isolation: isolate; overflow: clip; }
@@ -96,6 +98,7 @@ a[aria-busy="true"] { cursor: progress; }
   .function-input input::-webkit-calendar-picker-indicator { display: none !important; }
 }
 .function-input button { flex: none; font-size: var(--lead); min-width: 58px; min-height: 58px; background: var(--surface); }
+.function-input button svg { display: block; margin-inline: auto; }
 .function-choices { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 32px; }
 .function-choices button { position: relative; padding: 12px 20px; background: var(--surface); min-height: 48px; }
 .function-choices button::after { position: absolute; inset: auto 0 0; height: 3px; content: ""; background: var(--accent); transform: scaleX(0); transform-origin: left; transition: transform 260ms var(--ease-out); }
@@ -114,7 +117,7 @@ a[aria-busy="true"] { cursor: progress; }
 .chapter-index { display: grid; gap: 8px; }
 .chapter-index a { position: relative; display: block; padding: 10px 30px 10px 0; font-size: var(--lead); letter-spacing: -.025em; text-decoration: none; line-height: 1.35; }
 .chapter-index a::before { position: absolute; inset: auto 0 0; height: 1px; content: ""; background: var(--accent); transform: scaleX(0); transform-origin: left; transition: transform 260ms var(--ease-out); }
-.chapter-index a::after { position: absolute; top: 50%; right: 0; content: "↗\FE0E"; content: "↗\FE0E" / ""; color: var(--accent); opacity: 0; transform: translate(-6px, -50%); transition: transform 220ms var(--ease-out), opacity 220ms var(--ease-out); }
+.chapter-index a::after { position: absolute; top: 50%; right: 0; content: "↓"; content: "↓" / ""; color: var(--accent); opacity: 0; transform: translate(0, calc(-50% - 6px)); transition: transform 220ms var(--ease-out), opacity 220ms var(--ease-out); }
 
 .layout { display: grid; grid-template-columns: 248px minmax(0, 1fr); }
 .contents { position: sticky; top: 100px; align-self: start; max-height: calc(100svh - 116px); overflow-y: auto; padding: 42px 24px 42px var(--gutter); font-size: var(--small); line-height: 1.45; scrollbar-width: thin; }
@@ -224,8 +227,8 @@ td code, p code { font-size: .92em; overflow-wrap: anywhere; }
 
 @media (hover: hover) and (pointer: fine) {
   .button:hover { translate: 0 -3px; }
-  .button:hover span { transform: translate(3px, -3px); }
-  .button[href^="#"]:hover span, .button[href^="#"]:focus-visible span { transform: translateY(3px); }
+  .button:hover span { translate: 3px -3px; }
+  .button[href^="#"]:hover span, .button[href^="#"]:focus-visible span { translate: 0 3px; }
   .copy-code:hover { color: var(--code-ink); }
   .toplinks a:hover, .contents a:hover, .chapter-index a:hover { text-decoration: underline; }
   .chapter-index a:hover::before { transform: scaleX(1); }
@@ -233,7 +236,7 @@ td code, p code { font-size: .92em; overflow-wrap: anywhere; }
   .function-choices button:hover { translate: 0 -2px; }
   .function-input button:hover { background: var(--field-light); }
 }
-.button:focus-visible span { transform: translate(3px, -3px); }
+.button:focus-visible span { translate: 3px -3px; }
 .chapter-index a:focus-visible::before { transform: scaleX(1); }
 .chapter-index a:focus-visible::after { opacity: 1; transform: translate(0, -50%); }
 @media (max-width: 1150px) {
@@ -371,7 +374,7 @@ td code, p code { font-size: .92em; overflow-wrap: anywhere; }
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation: none !important; transition: none !important; }
   .button:hover, .function-choices button:hover { translate: none; }
-  .button:hover span, .button:focus-visible span, .button[href^="#"]:hover span, .button[href^="#"]:focus-visible span { transform: none; }
+  .button:hover span, .button:focus-visible span, .button[href^="#"]:hover span, .button[href^="#"]:focus-visible span { translate: none; }
   .chapter-index a::after { transform: translateY(-50%); }
 }
 @media print {
