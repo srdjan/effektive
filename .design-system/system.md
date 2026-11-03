@@ -8,7 +8,7 @@ This file records the design rules of the Effektive site. The values come from `
 
 **Foundation:** Warm neutral. White page sheet, warm grey surfaces, and deep navy ink.
 
-**Depth:** Surface tints. Bands of `--bg`, `--surface`, `--ink`, and `--field-light` separate content. Only code figures and the page sheet have a shadow.
+**Depth:** Surface tints. Bands of `--bg`, `--surface`, `--ink`, and `--field-light` separate content. Only code figures, the page sheet, and the open mobile contents have a shadow. The open contents covers the page, so `--overlay-shadow` gives it a 1px ring and a small lift.
 
 ## Tokens
 

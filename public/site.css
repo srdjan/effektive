@@ -33,6 +33,8 @@
   --backdrop: #dcdad4;
   --page-shadow: 0 0 0 1px rgb(31 43 77 / .06), 0 30px 90px -20px rgb(31 43 77 / .28), 0 8px 24px -12px rgb(31 43 77 / .18);
   --ease-out: cubic-bezier(.22, 1, .36, 1);
+  /* An overlay that covers the page, such as the open mobile contents. */
+  --overlay-shadow: 0 0 0 1px oklch(0 0 0 / .06), 0 1px 2px -1px oklch(0 0 0 / .06), 0 2px 4px 0 oklch(0 0 0 / .04);
 }
 
 * { box-sizing: border-box; }
@@ -262,7 +264,7 @@ td code, p code { font-size: .92em; overflow-wrap: anywhere; }
   .contents-menu { position: sticky; z-index: 15; top: var(--topbar-height, 76px); display: block; background: var(--surface); padding: 4px var(--gutter); box-shadow: inset 0 -1px 0 color-mix(in srgb, var(--ink) 12%, transparent); }
   .contents-menu summary { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .contents-menu .contents { position: static; max-block-size: none; padding: 24px 0; }
-  .contents-menu[open] .contents { position: absolute; inset: 100% 0 auto; max-block-size: calc(100svh - var(--topbar-height, 76px) - 60px); max-block-size: calc(100dvh - var(--topbar-height, 76px) - 60px); overflow-y: auto; padding: 24px var(--gutter); padding-block-end: calc(24px + env(safe-area-inset-bottom)); padding-inline: max(var(--gutter), env(safe-area-inset-left)) max(var(--gutter), env(safe-area-inset-right)); background: var(--surface); }
+  .contents-menu[open] .contents { position: absolute; inset: 100% 0 auto; max-block-size: calc(100svh - var(--topbar-height, 76px) - 60px); max-block-size: calc(100dvh - var(--topbar-height, 76px) - 60px); overflow-y: auto; padding: 24px var(--gutter); padding-block-end: calc(24px + env(safe-area-inset-bottom)); padding-inline: max(var(--gutter), env(safe-area-inset-left)) max(var(--gutter), env(safe-area-inset-right)); background: var(--surface); box-shadow: var(--overlay-shadow); }
   .mobile-contents ol { columns: 2; column-gap: 28px; }
   .mobile-contents li { break-inside: avoid; }
   .mobile-contents .resource { display: inline-block; margin-right: 24px; }
