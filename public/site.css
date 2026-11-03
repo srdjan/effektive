@@ -229,7 +229,7 @@ td code, p code { font-size: .92em; overflow-wrap: anywhere; }
   .button:hover { translate: 0 -3px; }
   .button:hover span { translate: 3px -3px; }
   .button[href^="#"]:hover span, .button[href^="#"]:focus-visible span { translate: 0 3px; }
-  .copy-code:hover { color: var(--code-ink); }
+  .copy-code:hover, .code [role="tab"]:hover { color: var(--code-ink); }
   .toplinks a:hover, .contents a:hover, .chapter-index a:hover { text-decoration: underline; }
   .chapter-index a:hover::before { transform: scaleX(1); }
   .chapter-index a:hover::after { opacity: 1; transform: translate(0, -50%); }
