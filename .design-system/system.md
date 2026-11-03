@@ -55,6 +55,7 @@ Spacing uses an 8px base. The gutter is 32px, 24px below 800px, and 20px below 5
 
 - Primary: `.button`, minimum height 58px, padding 16px 24px, `--accent` background, square corners, and a trailing arrow `span`.
 - Secondary: `.secondary-action`, transparent background with a 2px inset ring in `--bg`.
+- Press: every `button` and `.button` scales to `.96` in 150ms `ease-out`. Hover lift uses the `translate` property and press uses `scale`. Do not use `transform` for either: an entry animation holds `transform` and hides the change.
 
 ### Hero video
 
