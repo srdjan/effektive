@@ -60,6 +60,8 @@ Spacing uses an 8px base. The gutter is 32px, 24px below 800px, and 20px below 5
 
 ### Hero headline
 
+- The hero star pulses at random intervals between 2 and 5 seconds. Each pulse scales to 125% and returns over 700ms.
+- The star stops pulsing when the page is hidden or reduced motion is enabled.
 - The second line of the `h1` drifts down by up to 20px while the hero scrolls out. The band then covers its descenders.
 - The drift timeline is `view(block 0px)`. The default `view()` inset takes `scroll-padding-top` from `html`, so the drift starts before any scroll and cuts the descenders at rest.
 

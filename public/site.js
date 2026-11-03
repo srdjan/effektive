@@ -752,6 +752,36 @@
     document.addEventListener("visibilitychange", update);
   };
 
+  const setupHeroSpark = () => {
+    const spark = document.querySelector(".hero-spark");
+    if (!spark || !Element.prototype.animate) return;
+
+    const reduceMotion = globalThis.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    );
+    let timer;
+    let animation;
+
+    const schedule = () => {
+      timer = setTimeout(() => {
+        animation = spark.animate(
+          [{ scale: 1 }, { scale: 1.25 }, { scale: 1 }],
+          { duration: 700, easing: "ease-in-out" },
+        );
+        schedule();
+      }, 2000 + Math.random() * 3000);
+    };
+
+    const update = () => {
+      clearTimeout(timer);
+      animation?.cancel();
+      if (!reduceMotion.matches && !document.hidden) schedule();
+    };
+    reduceMotion.addEventListener("change", update);
+    document.addEventListener("visibilitychange", update);
+    update();
+  };
+
   // An occasional comet crosses a decorative dark surface. Reading sections never get one.
   const setupComets = () => {
     const surfaces = Array.from(
@@ -969,6 +999,7 @@
   setupCopyButtons();
   setupCodeTabs();
   setupHeroGlow();
+  setupHeroSpark();
   setupComets();
   setupEntryMotion();
   // The drawer is added last, so the entry motion does not animate its figure.
