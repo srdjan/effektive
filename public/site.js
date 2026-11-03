@@ -604,6 +604,23 @@
     anchor.parentElement.append(link);
   };
 
+  const setupHeadingLinks = () => {
+    const link = (heading, target) => {
+      const anchor = document.createElement("a");
+      anchor.className = "heading-link";
+      anchor.href = `#${target}`;
+      anchor.append(...heading.childNodes);
+      heading.append(anchor);
+    };
+    document.querySelectorAll(".section > h2").forEach((heading) => {
+      const id = heading.closest(".section")?.id;
+      if (id) link(heading, id);
+    });
+    document.querySelectorAll(".section h3[id]").forEach((heading) => {
+      if (!heading.closest(".exercise")) link(heading, heading.id);
+    });
+  };
+
   const setupContents = () => {
     const anchors = Array.from(
       document.querySelectorAll(".contents a[href^='#']"),
@@ -946,6 +963,7 @@
   setupTopbarHeight();
   setupContractExplorer();
   setupContinueReading();
+  setupHeadingLinks();
   setupContents();
   setupCaptionTitles();
   setupCopyButtons();

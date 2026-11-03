@@ -85,6 +85,11 @@ Spacing uses an 8px base. The gutter is 32px, 24px below 800px, and 20px below 5
 - While a source file loads, its link dims to 55% opacity after 150ms.
 - The drawer adds one history entry while it is open, so Back closes it.
 
+### Heading links
+
+- Each section `h2` and each `h3` with an `id` links to its own target. The link has no underline until hover.
+- The specification contents nest the `h3` subsections of a long section.
+
 ### Entry motion
 
 - Headings, first paragraphs, code figures, exercises, and chapter links animate once when they enter the viewport.
