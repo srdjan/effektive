@@ -74,6 +74,7 @@ Spacing uses an 8px base. The gutter is 32px, 24px below 800px, and 20px below 5
 ### Contract explorer
 
 - The large input shows the selected function name. Its label is visually hidden.
+- The input accepts each function name and each button label. A rejected name turns muted and sets `aria-invalid`; the next keystroke clears both the mark and the message.
 - The submit button shows an inline SVG return arrow with a 2px `currentColor` stroke.
 - On a phone, the four choices form a 2 x 2 grid with 8px gaps.
 - `#contract-message` shows text only for an error. The contract reading is the live region.

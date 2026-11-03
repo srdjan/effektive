@@ -306,12 +306,25 @@
       });
     };
 
+    // A reader can type a button label, so each label maps to its function name.
+    const stripCall = (value) =>
+      value.trim().replace(/\s*\(\s*\)\s*$/, "").toLowerCase();
+    const labelAliases = new Map(
+      buttons.map((button) => [
+        stripCall(button.textContent ?? ""),
+        button.dataset.function,
+      ]),
+    );
+
     const selectFunction = (candidate) => {
-      const name = normalizeFunctionName(candidate);
+      const name = normalizeFunctionName(candidate) ??
+        labelAliases.get(stripCall(candidate)) ?? null;
       if (name === null) {
         message.textContent = `Choose one of: ${functionNames.join(", ")}.`;
+        input.setAttribute("aria-invalid", "true");
         return false;
       }
+      input.removeAttribute("aria-invalid");
 
       const contract = functions[name];
       input.value = name;
@@ -347,6 +360,10 @@
     });
 
     input.addEventListener("change", () => selectFunction(input.value));
+    input.addEventListener("input", () => {
+      input.removeAttribute("aria-invalid");
+      message.textContent = "";
+    });
     form.addEventListener("submit", (event) => {
       event.preventDefault();
       selectFunction(input.value);

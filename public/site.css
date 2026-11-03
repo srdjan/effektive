@@ -101,6 +101,7 @@ a[aria-busy="true"] { cursor: progress; opacity: .55; transition: opacity 150ms 
   /* Chrome reserves picker space on a list input. Its UA rule needs !important to override. */
   .function-input input::-webkit-calendar-picker-indicator { display: none !important; }
 }
+.function-input input[aria-invalid="true"] { color: var(--muted); }
 .function-input button { flex: none; font-size: var(--lead); min-width: 58px; min-height: 58px; background: var(--surface); }
 .function-input button svg { display: block; margin-inline: auto; }
 .function-choices { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 32px; }
