@@ -796,32 +796,33 @@
   const setupEntryMotion = () => {
     if (!("IntersectionObserver" in globalThis)) return;
 
-    const groupCounts = new Map();
     const targets = document.querySelectorAll(
       "h2, .section > p:first-of-type, .code, .exercise, .chapter-index a",
     );
     const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (!entry.isIntersecting) return;
-        observer.unobserve(entry.target);
-        const kind = entry.target.matches("h2")
-          ? "enter-heading"
-          : entry.target.matches(".code")
-          ? "enter-code"
-          : "enter-copy";
-        entry.target.classList.add(kind);
-      });
+      // Targets that enter together stagger in document order. A target that enters alone starts at once.
+      entries.filter((entry) => entry.isIntersecting).forEach(
+        (entry, index) => {
+          const target = entry.target;
+          observer.unobserve(target);
+          const kind = target.matches("h2")
+            ? "enter-heading"
+            : target.matches(".code")
+            ? "enter-code"
+            : "enter-copy";
+          target.style.setProperty(
+            "--entry-delay",
+            `${Math.min(index, 3) * 100}ms`,
+          );
+          target.classList.remove("enter-pending");
+          target.classList.add(kind);
+        },
+      );
     }, { threshold: 0.08 });
 
+    // A pending target stays hidden, so it does not show for one frame before its animation starts.
     targets.forEach((target) => {
-      const group = target.closest(".section, .chapter-index") ||
-        target.parentElement;
-      const index = groupCounts.get(group) || 0;
-      target.style.setProperty(
-        "--entry-delay",
-        `${Math.min(index * 70, 210)}ms`,
-      );
-      groupCounts.set(group, index + 1);
+      target.classList.add("enter-pending");
       observer.observe(target);
     });
   };

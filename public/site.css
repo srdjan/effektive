@@ -342,6 +342,10 @@ td code, p code { font-size: .92em; overflow-wrap: anywhere; }
   }
 }
 
+/* Print shows every target, including one that never scrolled into view. */
+@media screen and (prefers-reduced-motion: no-preference) {
+  .enter-pending { opacity: 0; }
+}
 @media (prefers-reduced-motion: no-preference) {
   .enter-heading { animation: contract-arrive 700ms var(--ease-out) var(--entry-delay, 0ms) both; }
   .enter-copy { animation: quiet-arrive 600ms var(--ease-out) var(--entry-delay, 0ms) both; }

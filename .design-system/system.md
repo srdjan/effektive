@@ -75,6 +75,12 @@ Spacing uses an 8px base. The gutter is 32px, 24px below 800px, and 20px below 5
 - On a phone, the four choices form a 2 x 2 grid with 8px gaps.
 - `#contract-message` shows text only for an error. The contract reading is the live region.
 
+### Entry motion
+
+- Headings, first paragraphs, code figures, exercises, and chapter links animate once when they enter the viewport.
+- Each target stays hidden on screen until it enters, so it does not show for one frame before its animation starts. Print shows every target.
+- Targets that enter together stagger by 100ms in document order, up to 300ms. A target that enters alone starts at once.
+
 ### Tables
 
 - A key and value table uses a 35% key column.
