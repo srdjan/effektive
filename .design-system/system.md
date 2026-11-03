@@ -79,6 +79,10 @@ Spacing uses an 8px base. The gutter is 32px, 24px below 800px, and 20px below 5
 - `#contract-message` shows text only for an error. The contract reading is the live region.
 - A new choice fades the three contract rows together from 35% opacity in 150ms. The rows do not stagger, because a reader can choose again at once.
 
+### Source drawer
+
+- While a source file loads, its link dims to 55% opacity after 150ms.
+
 ### Entry motion
 
 - Headings, first paragraphs, code figures, exercises, and chapter links animate once when they enter the viewport.
