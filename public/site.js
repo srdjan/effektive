@@ -47,7 +47,9 @@
       effect: document.querySelector("#contract-effect > code")?.textContent,
     },
     rename: {
-      source: `export const rename = (id: UserId, name: Name): User with Users => {
+      source: `imports Users from "./users-service.eff"
+
+export const rename = (id: UserId, name: Name): User => {
   const user = getUser(id)
   const renamed = { ...user, name }
   Users.save(renamed)
@@ -56,7 +58,11 @@
       success: "User",
       failures: "UserMissing | StoreUnavailable",
       services: "Users",
-      effect: `const rename = (id: UserId, name: Name): Effect.Effect<
+      effect: `import type { Name } from "./users-service.ts"
+import type { User, UserId } from "./users-service.ts"
+import { StoreUnavailable, UserMissing, Users } from "./users-service.ts"
+
+const rename = (id: UserId, name: Name): Effect.Effect<
   User,
   UserMissing | StoreUnavailable,
   Users
@@ -68,7 +74,9 @@
 })`,
     },
     displayName: {
-      source: `export const displayName = (id: UserId): Name with Users =>
+      source: `imports Users from "./users-service.eff"
+
+export const displayName = (id: UserId): Name =>
   try {
     getUser(id).name
   } catch {
@@ -77,26 +85,34 @@
       success: "Name",
       failures: "StoreUnavailable",
       services: "Users",
-      effect: `const displayName = (id: UserId): Effect.Effect<
+      effect: `import type { Name } from "./users-service.ts"
+import { StoreUnavailable, Users } from "./users-service.ts"
+
+const displayName = (id: UserId): Effect.Effect<
   Name,
   StoreUnavailable,
   Users
 > => Effect.map(getUser(id), (user) => user.name).pipe(
   Effect.catchTag(
-    "UserMissing",
+    "users-service#UserMissing",
     () => Effect.succeed("Guest")
   )
 )`,
     },
     activeNames: {
-      source: `export const activeNames = (): Name[] with Users =>
+      source: `imports Users from "./users-service.eff"
+
+export const activeNames = (): Name[] =>
   Users.all()
     |> filter(user => user.active)
     |> map(user => user.name)`,
       success: "Name[]",
       failures: "StoreUnavailable",
       services: "Users",
-      effect: `const activeNames = (): Effect.Effect<
+      effect: `import type { Name } from "./users-service.ts"
+import { StoreUnavailable, Users } from "./users-service.ts"
+
+const activeNames = (): Effect.Effect<
   ReadonlyArray<Name>,
   StoreUnavailable,
   Users
@@ -114,6 +130,15 @@
     span.className = className;
     span.textContent = value;
     fragment.append(span);
+  };
+
+  const isServiceImportKeyword = (source, start, end) => {
+    if (source.slice(start, end) !== "imports") return false;
+    const lineStart = source.lastIndexOf("\n", start - 1) + 1;
+    if (!/^\s*$/.test(source.slice(lineStart, start))) return false;
+    return /^\s+[A-Za-z_$][A-Za-z0-9_$]*\s+from\s+["']/.test(
+      source.slice(end),
+    );
   };
 
   // The gutter is a sibling of the code, so Copy and textContent never include the numbers.
@@ -177,7 +202,10 @@
         while (end < source.length && /[A-Za-z0-9_$]/.test(source[end])) {
           end += 1;
         }
-        if (keywordNames.has(source.slice(index, end))) {
+        if (
+          keywordNames.has(source.slice(index, end)) ||
+          isServiceImportKeyword(source, index, end)
+        ) {
           className = "syntax-keyword";
         }
       }

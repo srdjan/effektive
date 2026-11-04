@@ -2488,3 +2488,26 @@ deno task test passes 12 tests, and deno task typecheck passes 62 strict units.
 The page assets now carry version 0.12.3. Before this draft, they carried 0.12.0, and the asset version test failed.
 A local server returns status 200 for both pages, both assets, the validation report, and the sitemap.
 This check used no browser, and it compared no output between compiler releases.
+
+Draft 0.75 service headers, November 4, 2026
+
+The Users contract now lives in effektive-examples/users-service.eff.
+The reusable workflow imports that contract through a service header.
+Its exported functions omit with clauses, and the compiler infers their actual requirements.
+
+All 18 website example tests pass.
+The tests check each unit's diagnostics and build each successful unit with strict emitted TypeScript.
+The Users contract, workflow, application boundary, host interface, and provider implementation pass together.
+
+The site passes 65 strict TypeScript units with no missing Effect-TS panel.
+The server and asset suite passes all 12 tests after stamping version 0.14.2.
+The JavaScript syntax check also passes.
+
+The published .eff files pass compiler checks and builds.
+Some HTML source panels remain documentation fragments and do not compile alone.
+Their paired TypeScript panels pass, but that result does not prove each source fragment independently.
+The desktop check exercised Lookup, Rename, and Recover at 1440 by 1000 pixels.
+The mobile check exercised Collect at 390 by 844 pixels.
+Each selected source starts with its service header, and the page shows inferred services.
+The mobile specification contains the separate contract and consumer examples.
+The checked views have no document-level horizontal overflow or console error.
