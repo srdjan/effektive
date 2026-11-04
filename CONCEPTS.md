@@ -10,6 +10,8 @@ One code example on a documentation page, shown as a pair of tabs: the Effektive
 
 The type check requires an Effect-TS tab in each figure that shows Effektive source. The Effect-TS tab is illustrative output written by hand, not compiler output.
 
+The Effektive tab can show more than one module, for example a service contract and the module that imports it. Each module then starts after a comment line that names its file, and each module compiles as a separate file.
+
 ### Check unit
 A named group of Effect-TS tabs that the type check compiles together as one TypeScript file.
 

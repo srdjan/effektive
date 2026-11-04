@@ -42,7 +42,7 @@ In HTML, escape `<` as `&lt;`, `>` as `&gt;`, and `"` as `&quot;`, as the existi
 
 | Unit | Model | Files | Acceptance check | Turn budget |
 | --- | --- | --- | --- | --- |
-| U1 (example sources and compiler fixture) | Sonnet | `public/effektive-examples/**/*.eff`, three new contract files, `effektive-lang/fixtures/website-examples.json` | `deno test --allow-all tests/website_examples_slow_test.ts` in effektive-lang passes all 21 tests. No `.eff` file in the examples has a `with` clause. | 40 |
+| U1 (example sources and compiler fixture) | Sonnet | `public/effektive-examples/**/*.eff`, three new contract files, `effektive-lang/fixtures/website-examples.json` | `deno test --allow-all tests/website_examples_slow_test.ts` in effektive-lang passes all 21 tests: 20 units and the census test. No `.eff` file in the examples has a `with` clause. | 40 |
 | U2 (specification page) | Sonnet | `public/effektive-spec.html` | Each changed Effektive panel compiles in a temporary project. `deno task typecheck` and `deno task test` pass. | 50 |
 | U3 (book page) | Sonnet | `public/index.html` | Each changed Effektive panel compiles in a temporary project. Character counts are measured. `deno task typecheck` and `deno task test` pass. | 50 |
 
@@ -129,7 +129,7 @@ Each count is the number of non-whitespace characters in a panel after HTML deco
 ## Results
 
 - No `.eff` example and no Effektive panel on either page has a `with` clause. The provider declaration in `service-workflow/host.effi` keeps its `with Runtime.database` (see the facts above).
-- The compiler website example test in effektive-lang passes 21 of 21 units, including the three new contract units.
+- The compiler website example test in effektive-lang passes 21 of 21 tests: 20 units, including the three new contract units, and the census test.
 - Each split panel on both pages compiles and builds with `--tsc` with 0 diagnostics. The `log.eff`, `pay.eff`, and contract text in the panels is byte-identical to the example files. The four Users panels are verbatim excerpts of their example files.
 - The `broken` panel still gives exactly one error, `failure-contract/001`.
 - `deno task typecheck` passes 65 strict units. `deno task test` passes 12 tests.
