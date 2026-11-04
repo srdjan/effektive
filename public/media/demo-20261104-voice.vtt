@@ -1,0 +1,19 @@
+WEBVTT
+
+00:00:00.400 --> 00:00:06.347
+This is Effektive. Direct calls compile to typed effects in Effect TypeScript.
+
+00:00:07.347 --> 00:00:14.536
+The service header declares the dependency. The compiler infers the failures and the required operations.
+
+00:00:15.536 --> 00:00:22.193
+Add a function that calls get user. Its contract also carries both failures and the Users service.
+
+00:00:23.693 --> 00:00:30.101
+An explicit fails never clause forbids expected failures. The compiler rejects this bound because the body can fail.
+
+00:00:31.101 --> 00:00:36.352
+Remove the bound. The error clears, and the compiler infers the complete contract.
+
+00:00:37.352 --> 00:00:42.084
+The generated Effect type contains the result, both failures, and the required service.
