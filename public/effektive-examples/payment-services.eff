@@ -1,0 +1,21 @@
+export type Cents = int
+export type ChargeId = string
+
+export type OrderId = string
+export type Order = {
+  id: OrderId,
+  totalCents: int,
+  status: "pending" | "paid"
+}
+
+export error OrderNotFound = { id: OrderId }
+export error PaymentDeclined = { reason: string }
+
+export service Orders {
+  find(id: OrderId): Option<Order>
+  save(order: Order): void
+}
+
+export service Payments {
+  charge(amount: Cents): ChargeId fails PaymentDeclined
+}

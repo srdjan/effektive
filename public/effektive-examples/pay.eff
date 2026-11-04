@@ -1,24 +1,6 @@
-type Cents = int
-type ChargeId = string
-
-type OrderId = string
-type Order = {
-  id: OrderId,
-  totalCents: int,
-  status: "pending" | "paid"
-}
-
-error OrderNotFound = { id: OrderId }
-error PaymentDeclined = { reason: string }
-
-service Orders {
-  find(id: OrderId): Option<Order>
-  save(order: Order): void
-}
-
-service Payments {
-  charge(amount: Cents): ChargeId fails PaymentDeclined
-}
+imports Orders from "./payment-services.eff"
+imports Payments from "./payment-services.eff"
+import { Order, OrderId, OrderNotFound } from "./payment-services.eff"
 
 const findOrder = (id: OrderId) =>
   Orders.find(id) ?? fail(OrderNotFound({ id }))
@@ -36,8 +18,7 @@ const saveOrder = (order: Order) => {
   order
 }
 
-export const pay = (id: OrderId): Order
-  with Orders | Payments =>
+export const pay = (id: OrderId): Order =>
   id
     |> findOrder
     |> chargeOrder

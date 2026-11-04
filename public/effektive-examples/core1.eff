@@ -1,9 +1,10 @@
-type Int = int
+imports Read from "./core1-services.eff"
+imports Defaults from "./core1-services.eff"
+imports Wire from "./core1-services.eff"
+import { Int, Text } from "./core1-services.eff"
 type Optional = { score?: Int }
 type Required = { score: Int }
 
-service Read { next(value: Int): Int }
-service Defaults { make(): Int }
 
 export const supervised = (): Int =>
   scoped(defer(() => {
@@ -34,9 +35,9 @@ const defaulted: Schema<Required, Optional, Defaults.make> =
     score: schemaDefaultKey(integer, (): Int => Defaults.make())
   })
 
-export const readShifted = (input: unknown): Optional fails SchemaError with Read.next =>
+export const readShifted = (input: unknown): Optional fails SchemaError =>
   schemaDecode(shifted, input)
-export const readDefault = (input: unknown): Required fails SchemaError with Defaults.make =>
+export const readDefault = (input: unknown): Required fails SchemaError =>
   schemaDecode(defaulted, input)
 
 type Name = string
@@ -95,13 +96,8 @@ export const defaultedNull: Schema<RequiredName, NullableRecord> = schemaStruct(
 export const readMissingName = (): RequiredName fails SchemaError => schemaDecode(defaultedNull, {})
 export const readClearedName = (): RequiredName fails SchemaError => schemaDecode(defaultedNull, { name: null })
 
-type Text = string
 type RequiredScore = { score: Int }
 type WireRecord = { score?: Text }
-service Wire {
-  parse(value: Text): Int fails SchemaIssue
-  print(value: Int): Text fails SchemaIssue
-}
 const wireText: Schema<Text> = schema()
 const wireScore: Schema<Int, Text, Wire.parse, Wire.print> = schemaTransform(
   wireText, integer,
@@ -172,9 +168,9 @@ export const wireTree: Schema<Tree, WireTree, Wire.parse, Wire.print, TreeInput>
       children: schemaConstructorDefault(schemaArray(self), (): TreeInput[] => [])
     })
 )
-export const readWireTree = (input: unknown): Tree fails SchemaError with Wire.parse =>
+export const readWireTree = (input: unknown): Tree fails SchemaError =>
   schemaDecode(wireTree, input)
-export const writeWireTree = (input: Tree): WireTree fails SchemaError with Wire.print =>
+export const writeWireTree = (input: Tree): WireTree fails SchemaError =>
   schemaEncode(wireTree, input)
 export const constructWireTree = (input: TreeInput): Tree fails SchemaIssue =>
   schemaMake(wireTree, input)

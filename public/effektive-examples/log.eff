@@ -1,10 +1,5 @@
-type Message = string
+imports Console from "./console-service.eff"
+import { Message } from "./console-service.eff"
 
-error ConsoleUnavailable = { message: string }
-
-service Console {
-  print(message: Message): void fails ConsoleUnavailable
-}
-
-export const log = (message: Message): void with Console =>
+export const log = (message: Message): void =>
   Console.print(message)

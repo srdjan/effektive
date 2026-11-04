@@ -1,20 +1,5 @@
-type UserId = string
-type Name = string
-
-type User = {
-  id: string,
-  name: string,
-  active: boolean
-}
-
-error UserMissing = { id: string }
-error StoreUnavailable = { message: string }
-
-service Users {
-  find(id: UserId): Option<User> fails StoreUnavailable
-  save(user: User): void fails StoreUnavailable
-  all(): User[] fails StoreUnavailable
-}
+imports Users from "./users-service.eff"
+import { Name, User, StoreUnavailable } from "./users-service.eff"
 
 const activeNames = (users: User[]) =>
   users
@@ -22,6 +7,5 @@ const activeNames = (users: User[]) =>
     |> map((user) => user.name)
 
 export const listActiveNames = (): Name[]
-  fails StoreUnavailable
-  with Users.all =>
+  fails StoreUnavailable =>
   Users.all() |> activeNames

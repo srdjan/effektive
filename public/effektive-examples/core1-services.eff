@@ -1,0 +1,9 @@
+export type Int = int
+export type Text = string
+
+export service Read { next(value: Int): Int }
+export service Defaults { make(): Int }
+export service Wire {
+  parse(value: Text): Int fails SchemaIssue
+  print(value: Int): Text fails SchemaIssue
+}

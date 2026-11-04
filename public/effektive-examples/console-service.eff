@@ -1,0 +1,7 @@
+export type Message = string
+
+export error ConsoleUnavailable = { message: string }
+
+export service Console {
+  print(message: Message): void fails ConsoleUnavailable
+}

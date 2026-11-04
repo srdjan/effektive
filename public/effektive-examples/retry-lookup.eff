@@ -1,22 +1,6 @@
-type UserId = string
-type Name = string
-
-type User = {
-  id: string,
-  name: string,
-  active: boolean
-}
-
-error UserMissing = { id: string }
-error StoreUnavailable = { message: string }
-
-service Users {
-  find(id: UserId): Option<User> fails StoreUnavailable
-  save(user: User): void fails StoreUnavailable
-  all(): User[] fails StoreUnavailable
-}
+imports Users from "./users-service.eff"
+import { User, UserId, StoreUnavailable } from "./users-service.eff"
 
 export const lookupWithRetry = (id: UserId): Option<User>
-  fails StoreUnavailable
-  with Users.find =>
+  fails StoreUnavailable =>
   retry(() => Users.find(id), { times: 2 })
