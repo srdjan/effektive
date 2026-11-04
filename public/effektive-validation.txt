@@ -2530,3 +2530,28 @@ The checked pages report no console error or warning.
 An immediate mobile resize probe saw overflow. The repeated check after layout settled measures 390 pixels for both document and viewport.
 The specification also has no document overflow at either checked size.
 The agent closed its own tab and preserved the existing tab and server.
+
+
+Effect 4.1.2 target update - November 4, 2026
+
+The compiler target, application configurations, and strict panel checker now pin Effect 4.1.2.
+The platform packages and their transitive dependencies use the regenerated target lock.
+The strict panel check passes all 65 units with zero missing panels.
+The website test task passes all 12 tests.
+The compiler gate passes 2,856 fast tests and 264 slow tests.
+The slow tests include the canonical website examples and the application witnesses.
+The offline installation task passes with an empty cache.
+
+The SQLite adapter now supplies the required SqlClient driver name.
+Constructor replay returns fresh results and leaves earlier results unchanged.
+Typed recovery skips mixed causes that contain defects and preserves typed errors as defects.
+The updated application probes check both preserved reasons, no retry or output, and completed cleanup.
+The emitter and source syntax stay unchanged. Existing schema guards remain.
+Node platform packages require Node.js 22.19.0 or later when applications run on Node.js.
+
+A frozen target check and NodeFileSystem execution pass without changing lockfile bytes.
+The frozen check rejects an import of the old, unpinned Effect version.
+The file-service probe grants Deno read, environment, and uid system permissions.
+These checks ran on macOS arm64 with Deno 2.9.8 and Node.js 24.21.0 installed.
+Earlier entries retain their original dependency versions and evidence limits.
+No new performance measurement or independent model review is claimed.

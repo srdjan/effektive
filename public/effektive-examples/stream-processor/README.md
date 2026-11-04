@@ -42,10 +42,9 @@ The application promises no rollback or exactly-once delivery.
 Cancellation of pending input or output awaits pipeline work and both session
 finalizers. Execution defects and session cleanup defects remain defects.
 Remaining finalizers run after a cleanup defect. Item recovery follows native
-catchTags semantics: a matching typed reason can hide an accompanying defect
-from an arbitrary mixed transformation cause. A separate check records this
-limit. The normal transformation driver has no defecting cleanup, and session
-cleanup occurs outside item recovery.
+catchTags semantics. A mixed cause that contains a defect bypasses typed
+recovery and preserves typed errors as defects. A separate check records both
+reasons and completed cleanup. Session cleanup occurs outside item recovery.
 
 All three accepted application gates now pass using existing forms. The
 accepted language stopping rule is satisfied. External integration, performance,
