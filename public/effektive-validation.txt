@@ -2511,3 +2511,22 @@ The mobile check exercised Collect at 390 by 844 pixels.
 Each selected source starts with its service header, and the page shows inferred services.
 The mobile specification contains the separate contract and consumer examples.
 The checked views have no document-level horizontal overflow or console error.
+
+Draft 0.76 deferred service transfers, November 4, 2026
+
+The specification and mini-book now explain deferred values transferred through arguments and references.
+A void result does not exempt a stored computation from the module service bound.
+The text preserves input-only forwarding and identity updates, and separates active provision from provision inside a deferred computation.
+
+The inline Users.all write example passes with a Users header.
+The same write with an unrelated header produces requirement-contract/002.
+An input-only reference with that unrelated header gives no diagnostic.
+These checks use the published Users contract and the current compiler through its public API.
+
+The site passes 12 serving and asset tests and 65 strict TypeScript units, with no missing target panel.
+The code panels match the preceding draft, and both pages retain unique identifiers.
+The browser check covers the updated module sections at 1440 by 1000 and 390 by 844 pixels.
+The checked pages report no console error or warning.
+An immediate mobile resize probe saw overflow. The repeated check after layout settled measures 390 pixels for both document and viewport.
+The specification also has no document overflow at either checked size.
+The agent closed its own tab and preserved the existing tab and server.
