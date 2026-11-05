@@ -2,5 +2,4 @@ export type Positive = int where n => n > 0
 
 const amount = (value: Positive): Positive => value
 
-export const readAmount = (input): Positive
-  fails SchemaError => amount(input.amount)
+export const readAmount = (input): Positive => amount(input.amount)

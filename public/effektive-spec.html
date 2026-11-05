@@ -180,8 +180,7 @@ const sampleAccount = (): Account =&gt;
 
 const amount = (value: Positive): Positive =&gt; value
 
-export const readAmount = (input): Positive
-  fails SchemaError =&gt; amount(input.amount)</code></pre></div><div class="code-panel" data-tab="Effect-TS"><pre tabindex="0"><code class="language-typescript">import { Effect, Schema } from &quot;effect&quot;
+export const readAmount = (input): Positive =&gt; amount(input.amount)</code></pre></div><div class="code-panel" data-tab="Effect-TS"><pre tabindex="0"><code class="language-typescript">import { Effect, Schema } from &quot;effect&quot;
 
 const $Int = Schema.Finite.check(
   Schema.makeFilter(
@@ -1074,8 +1073,7 @@ service Counter {
   next(): Count fails Missing
 }
 
-const count = (): Count
-  fails Missing =&gt; {
+const count = (): Count =&gt; {
   const ref = makeRef(0)
   updateRef(ref, (n) =&gt; n + Counter.next())
   getRef(ref)

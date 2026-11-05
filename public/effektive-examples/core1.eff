@@ -35,9 +35,9 @@ const defaulted: Schema<Required, Optional, Defaults.make> =
     score: schemaDefaultKey(integer, (): Int => Defaults.make())
   })
 
-export const readShifted = (input: unknown): Optional fails SchemaError =>
+export const readShifted = (input: unknown): Optional =>
   schemaDecode(shifted, input)
-export const readDefault = (input: unknown): Required fails SchemaError =>
+export const readDefault = (input: unknown): Required =>
   schemaDecode(defaulted, input)
 
 type Name = string
@@ -93,8 +93,8 @@ export const passedDefault: Schema<RequiredName, OptionalName> = schemaStruct({
 export const defaultedNull: Schema<RequiredName, NullableRecord> = schemaStruct({
   name: schemaDefaultKey(name, (): Name => "Anonymous", { on: "null" })
 })
-export const readMissingName = (): RequiredName fails SchemaError => schemaDecode(defaultedNull, {})
-export const readClearedName = (): RequiredName fails SchemaError => schemaDecode(defaultedNull, { name: null })
+export const readMissingName = (): RequiredName => schemaDecode(defaultedNull, {})
+export const readClearedName = (): RequiredName => schemaDecode(defaultedNull, { name: null })
 
 type RequiredScore = { score: Int }
 type WireRecord = { score?: Text }
@@ -112,7 +112,7 @@ type ConstructorInput = { score?: Int }
 type ConstructorRecord = { score: Int }
 const constructorRecord: Schema<ConstructorRecord> = schemaStruct({ score: integer })
 
-export const makeScore = (input: ConstructorInput): ConstructorRecord fails SchemaIssue => {
+export const makeScore = (input: ConstructorInput): ConstructorRecord => {
   const score = match input.score { Some(value) => value, None => 4 }
   schemaMake(constructorRecord, { score: score })
 }
@@ -129,7 +129,7 @@ export const nestedDefaults: Schema<NestedRecord, NestedRecord, never, never, Ne
     (): DefaultInput => ({})) })
 export const constructorDefaultsList: Schema<DefaultRecord[], DefaultRecord[], never, never, DefaultInput[]> =
   schemaArray(constructorDefaults)
-export const constructDefaults = (input: NestedInput): NestedRecord fails SchemaIssue =>
+export const constructDefaults = (input: NestedInput): NestedRecord =>
   schemaMake(nestedDefaults, input)
 
 type SettingsRecord = { settings: DefaultRecord }
@@ -143,7 +143,7 @@ export const wireDefaultSettings: Schema<SettingsRecord, SettingsWire, never, ne
     (): DefaultRecord => ({ score: 8 })) })
 export const optionalSettings: Schema<SettingsWire, NullableSettingsWire, never, never, OptionalSettingsInput> =
   schemaStruct({ settings: schemaNullToMissingKey(constructorDefaults) })
-export const constructSettings = (input: SettingsInput): SettingsRecord fails SchemaIssue =>
+export const constructSettings = (input: SettingsInput): SettingsRecord =>
   schemaMake(wireDefaultSettings, input)
 
 type Tree = { score: Int, children: Tree[] }
@@ -156,7 +156,7 @@ export const treeDefaults: Schema<Tree, Tree, never, never, TreeInput> = schemaR
       children: schemaConstructorDefault(schemaArray(self), (): TreeInput[] => [])
     })
 )
-export const constructTree = (input: TreeInput): Tree fails SchemaIssue =>
+export const constructTree = (input: TreeInput): Tree =>
   schemaMake(treeDefaults, input)
 
 type WireTree = { score: Text, children: WireTree[] }
@@ -168,11 +168,11 @@ export const wireTree: Schema<Tree, WireTree, Wire.parse, Wire.print, TreeInput>
       children: schemaConstructorDefault(schemaArray(self), (): TreeInput[] => [])
     })
 )
-export const readWireTree = (input: unknown): Tree fails SchemaError =>
+export const readWireTree = (input: unknown): Tree =>
   schemaDecode(wireTree, input)
-export const writeWireTree = (input: Tree): WireTree fails SchemaError =>
+export const writeWireTree = (input: Tree): WireTree =>
   schemaEncode(wireTree, input)
-export const constructWireTree = (input: TreeInput): Tree fails SchemaIssue =>
+export const constructWireTree = (input: TreeInput): Tree =>
   schemaMake(wireTree, input)
 
 export const dualDefaultField: SchemaEncodedOptionalConstructorDefault<Int> =
@@ -183,7 +183,7 @@ export const optionalDefaultField: SchemaOptionalConstructorDefault<Int> =
   schemaConstructorDefault(schemaOptionalKey(integer), (): Int => 4)
 export const optionalDefaultScores: Schema<Optional> =
   schemaStruct({ score: optionalDefaultField })
-export const makeDualDefaults = (input: Optional): Required fails SchemaIssue =>
+export const makeDualDefaults = (input: Optional): Required =>
   schemaMake(dualDefaultScores, input)
 
 type OptionScores = { score: Option<Int> }
@@ -195,9 +195,9 @@ export const adapterAfterDefaults: Schema<Required, Optional, never, never, Opti
   schemaStruct({ score: adapterAfterDefault })
 export const optionAfterDefaults: Schema<OptionScores, Optional> =
   schemaStruct({ score: schemaOptionFromOptionalKey(constructorFirst) })
-export const makeAdapterAfterDefault = (input: Optional): Required fails SchemaIssue =>
+export const makeAdapterAfterDefault = (input: Optional): Required =>
   schemaMake(adapterAfterDefaults, input)
-export const makeAdaptedOption = (input: OptionScores): OptionScores fails SchemaIssue =>
+export const makeAdaptedOption = (input: OptionScores): OptionScores =>
   schemaMake(optionAfterDefaults, input)
 
 type DefaultWireTree = { score: Int, children?: DefaultWireTree[] }
@@ -210,7 +210,7 @@ export const defaultedTree: Schema<Tree,DefaultWireTree,never,never,TreeInput> =
         (): Tree[] => [{ score: 8, children: [] }])
     })
 )
-export const makeDefaultedTree = (input: TreeInput): Tree fails SchemaIssue =>
+export const makeDefaultedTree = (input: TreeInput): Tree =>
   schemaMake(defaultedTree, input)
-export const readDefaultedTree = (input: unknown): Tree fails SchemaError =>
+export const readDefaultedTree = (input: unknown): Tree =>
   schemaDecode(defaultedTree, input)

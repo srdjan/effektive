@@ -6,6 +6,5 @@ const activeNames = (users: User[]) =>
     |> filter((user) => user.active)
     |> map((user) => user.name)
 
-export const listActiveNames = (): Name[]
-  fails StoreUnavailable =>
+export const listActiveNames = (): Name[] =>
   Users.all() |> activeNames

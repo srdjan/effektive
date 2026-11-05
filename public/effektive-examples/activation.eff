@@ -10,8 +10,7 @@ const getUser = (id: UserId) =>
 const activate = (user: User) =>
   ({ ...user, active: true })
 
-export const saveActive = (id: UserId): User
-  fails UserMissing | StoreUnavailable => {
+export const saveActive = (id: UserId): User => {
   const user = getUser(id)
   if (user.active) { user } else {
     const active = activate(user)
