@@ -1,0 +1,49 @@
+WEBVTT
+
+00:00:00.200 --> 00:00:04.600
+Effektive makes code easier to read.
+
+00:00:04.600 --> 00:00:09.160
+Write the workflow in direct calls.
+
+00:00:09.160 --> 00:00:10.920
+Find the user.
+
+00:00:10.920 --> 00:00:12.470
+Return active users unchanged.
+
+00:00:12.470 --> 00:00:14.940
+Create an active record.
+
+00:00:14.940 --> 00:00:17.865
+Save it. Return the result.
+
+00:00:17.865 --> 00:00:21.465
+The compiler infers failures and service operations.
+
+00:00:21.465 --> 00:00:25.543
+A missing user stops the write.
+
+00:00:25.543 --> 00:00:29.043
+This is actual generated Effect-TS.
+
+00:00:29.043 --> 00:00:31.143
+The result and failures stay typed.
+
+00:00:31.143 --> 00:00:35.225
+The Users service remains required.
+
+00:00:35.225 --> 00:00:38.225
+Independent validation passes.
+
+00:00:38.225 --> 00:00:40.825
+Strict TypeScript checks pass.
+
+00:00:40.825 --> 00:00:49.225
+Four runtime paths match an Effect reference.
+
+00:00:49.225 --> 00:00:52.225
+You write the workflow.
+
+00:00:52.225 --> 00:00:56.200
+The compiler produces checked Effect code.
