@@ -1,0 +1,1343 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="Effektive is a small functional language that compiles to Effect-TS. Eleven chapters pair each Effektive example with its Effect-TS translation."><title>Effektive - Mini book review</title><meta name="source-revision" content="02c591f"><meta name="robots" content="noindex, nofollow"><link rel="icon" href="data:,"><link rel="stylesheet" href="site.css?v=0.15.0"><script src="site.js?v=0.15.0" defer></script></head>
+<body id="top" class="book-page"><a class="skip" href="#content">Skip to content</a>
+<header class="topbar"><a class="brand" href="index.html">Effektive<span class="brand-period" aria-hidden="true">.</span></a><nav class="toplinks" aria-label="Documents"><a href="mini-book-review.html" aria-current="page">Mini book review</a><a href="effektive-spec.html">Specification</a></nav></header>
+<main id="site-content"><section class="hero" aria-labelledby="hero-heading"><div class="hero-type"><h1 id="hero-heading"><span>Direct calls.</span><span>Effect types.</span><i class="hero-spark" aria-hidden="true">✳︎</i></h1></div><div class="hero-bottom"><p class="subtitle">Effectful contracts become <code>Effect.Effect&lt;A, E, R&gt;</code>. Write direct calls without <code>Effect.gen</code> or <code>yield*</code>.</p><div class="hero-actions"><a class="button primary-action" href="#orientation">Read the mini book <span aria-hidden="true">↓</span></a><a class="button secondary-action" href="https://github.com/srdjan/effektive-lang">Try the compiler <span class="arrow-out" aria-hidden="true">↑</span></a></div></div><video class="hero-video" controls playsinline preload="none" poster="media/demo-20261104.webp" width="1920" height="1132" aria-label="Effektive demo"><source src="media/demo-20261104-voice.av1.mp4" type='video/mp4; codecs="av01.0.08M.08, opus"'><source src="media/demo-20261104-voice.h264.mp4" type='video/mp4; codecs="avc1.64002a, mp4a.40.2"'><track kind="captions" src="media/demo-20261104-voice.vtt" srclang="en" label="English"></video></section><section class="showcase" id="contracts-explorer" aria-labelledby="explorer-heading"><h2 id="explorer-heading">Read a contract.</h2><form data-contract-explorer><div class="contract-controls" hidden><label class="visually-hidden" for="contract-function">Function name</label><div class="function-input"><input id="contract-function" name="function" value="getUser" list="function-names" autocomplete="off" spellcheck="false" aria-describedby="contract-message"><button type="submit" aria-label="Show function contract"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 4v7a4 4 0 0 1-4 4H5"/><path d="m10 10-5 5 5 5"/></svg></button></div><datalist id="function-names"><option value="getUser"></option><option value="rename"></option><option value="displayName"></option><option value="activeNames"></option></datalist><div class="function-choices" aria-label="Example functions"><button type="button" data-function="getUser" aria-pressed="true">Lookup</button><button type="button" data-function="rename" aria-pressed="false">Rename</button><button type="button" data-function="displayName" aria-pressed="false">Recover</button><button type="button" data-function="activeNames" aria-pressed="false">Collect</button></div></div><div class="contract-result"><span class="contract-signal" aria-hidden="true"></span><figure class="code contract-source" data-ui data-tabs data-check="explorer-getUser" data-check-requires="users-declarations"><figcaption>Selected contract <a href="effektive-examples/users.eff">View Users source</a></figcaption><div class="code-panel" data-tab="Effektive"><pre id="contract-source" tabindex="0"><code class="language-effektive">imports Users from &quot;./users-service.eff&quot;
+
+export const getUser = (id: UserId): User =&gt;
+  match Users.find(id) {
+    Some(user) =&gt; user,
+    None =&gt; fail(UserMissing({ id }))
+  }</code></pre></div><div class="code-panel" data-tab="Effect-TS" data-check-id="explorer-getUser"><pre id="contract-effect" tabindex="0"><code class="language-typescript">import { type User, type UserId, UserMissing, StoreUnavailable, Users } from &quot;./users-service.ts&quot;
+
+const getUser = (id: UserId): Effect.Effect&lt;
+  User,
+  UserMissing | StoreUnavailable,
+  Users
+&gt; =&gt;
+  Effect.flatMap(
+    Users.use((users) =&gt; users.find(id)),
+    (found) =&gt; Option.match(found, {
+      onNone: () =&gt; Effect.fail(new UserMissing({ id })),
+      onSome: (user) =&gt; Effect.succeed(user)
+    })
+  )</code></pre></div></figure><div class="contract-reading" aria-live="polite" aria-atomic="true"><dl><div><dt>Returns</dt><dd id="contract-success">User</dd></div><div><dt>Inferred failures</dt><dd id="contract-failures">UserMissing | StoreUnavailable</dd></div><div><dt>Inferred services</dt><dd id="contract-with">Users</dd></div></dl></div></div><p id="contract-message" role="status"></p></form></section><section class="book-index" id="book" aria-labelledby="book-heading"><h2 id="book-heading">The mini book.</h2><nav class="chapter-index" aria-label="Book chapters"><a href="#orientation">What Effektive is</a><a href="#values">Values and types</a><a href="#contracts">Function contracts</a><a href="#users-foundation">One domain, two languages</a><a href="#lookup-update">Lookup and update</a><a href="#pipelines-collections">Pipelines and collections</a><a href="#control">Recovery and provision</a><a href="#payment">A payment pipeline</a><a href="#nominal-types">Type identity</a><a href="#core1-showcase">Core 1 in practice</a><a href="#modules-reference">Modules and typed IR</a></nav></section><div class="layout" id="reader"><details class="contents-menu"><summary>Chapters</summary><nav class="contents mobile-contents" aria-label="Mobile contents"><ol><li><a href="#orientation">What Effektive is</a></li><li><a href="#values">Values and types</a></li><li><a href="#contracts">Function contracts</a></li><li><a href="#users-foundation">One domain, two languages</a></li><li><a href="#lookup-update">Lookup and update</a></li><li><a href="#pipelines-collections">Pipelines and collections</a></li><li><a href="#control">Recovery and provision</a></li><li><a href="#payment">A payment pipeline</a></li><li><a href="#nominal-types">Type identity</a></li><li><a href="#core1-showcase">Core 1 in practice</a></li><li><a href="#modules-reference">Modules and typed IR</a></li></ol><p class="contents-title resources-title">Source and evidence</p><a class="resource" href="typed-ir.ts">Typed IR model</a><a class="resource" href="log.ir.json">Manual IR fixture</a><a class="resource" href="effektive-validation.txt">Validation scope</a><a class="resource" href="effektive-examples/users-service.eff">Users contract</a><a class="resource" href="effektive-examples/users.eff">Users example</a><a class="resource" href="effektive-examples/pay.eff">Payment example</a><a class="resource" href="effektive-examples/core1.eff">Core 1 example</a><a class="resource" href="effektive-examples/main.eff">Application boundary</a></nav></details><nav class="contents" aria-label="Contents"><ol><li><a href="#orientation">What Effektive is</a></li><li><a href="#values">Values and types</a></li><li><a href="#contracts">Function contracts</a></li><li><a href="#users-foundation">One domain, two languages</a></li><li><a href="#lookup-update">Lookup and update</a></li><li><a href="#pipelines-collections">Pipelines and collections</a></li><li><a href="#control">Recovery and provision</a></li><li><a href="#payment">A payment pipeline</a></li><li><a href="#nominal-types">Type identity</a></li><li><a href="#core1-showcase">Core 1 in practice</a></li><li><a href="#modules-reference">Modules and typed IR</a></li></ol><p class="contents-title resources-title">Source and evidence</p><a class="resource" href="typed-ir.ts">Typed IR model</a><a class="resource" href="log.ir.json">Manual IR fixture</a><a class="resource" href="effektive-validation.txt">Validation scope</a><a class="resource" href="effektive-examples/users-service.eff">Users contract</a><a class="resource" href="effektive-examples/users.eff">Users example</a><a class="resource" href="effektive-examples/pay.eff">Payment example</a><a class="resource" href="effektive-examples/core1.eff">Core 1 example</a><a class="resource" href="effektive-examples/main.eff">Application boundary</a></nav>
+<article class="main" id="content"><section class="section" id="orientation" aria-labelledby="heading-orientation"><h2 id="heading-orientation">What Effektive is</h2><p class="lead">Effektive is a small functional language that compiles to Effect-TS.</p><p>Effektive combines immutable data, arrow functions, pattern matching, and typed services. Direct calls carry failures and required capabilities.</p>
+<p>A contract with result A, failures E, and requirements R becomes <code>Effect.Effect&lt;A, E, R&gt;</code>.</p>
+<p>Services become Context services; providers become Layer values. Records, types with identity, and errors become Schema declarations; options become Option values.</p>
+
+<div class="table-wrap"><table><thead><tr><th scope="col">Effect-TS module</th><th scope="col">Role in transpiled code</th></tr></thead><tbody><tr><td>effect: Effect, Context, Layer, Option, Schema</td><td>Computations, services, providers, options, records, types with identity, and errors used in these examples.</td></tr><tr><td>effect/http, FileSystem, and @effect/platform-node, -bun, or -browser</td><td>HTTP, files, and host runtimes.</td></tr><tr><td>effect/sql and a driver such as @effect/sql-pg</td><td>Database services.</td></tr><tr><td>@effect/opentelemetry</td><td>Export of traces, metrics, and logs.</td></tr></tbody></table></div>
+<p>Version 0 specifies the core mapping. HTTP, file, SQL, and telemetry bindings need later specifications. Typed host modules will expose these bindings as services.</p>
+<p>The <a href="https://github.com/srdjan/effektive-lang">compiler repository</a> contains the Deno transpiler and command-line tool (CLI). This book uses handwritten translations for Effect 4.1.2, the TypeScript library. The site does not execute Effektive.</p>
+<p>The compiler requires Deno 2.9.8. Clone the repository, check the tutorial, then build its TypeScript.</p>
+<figure data-ui class="code neutral"><figcaption>Try the compiler</figcaption><pre tabindex="0"><code class="language-shell">git clone https://github.com/srdjan/effektive-lang.git
+cd effektive-lang
+deno task effektive check fixtures/tutorial
+deno task effektive build fixtures/tutorial --tsc</code></pre></figure>
+<p>The first <code>--tsc</code> build downloads dependencies. See the <a href="https://github.com/srdjan/effektive-lang/blob/main/docs/tutorial.md">tutorial</a> and <a href="https://github.com/srdjan/effektive-lang/blob/main/docs/installation.md">CLI and VS Code installation guide</a>.</p>
+<p>The transpiler emits a typed intermediate representation (IR): expression types, execution modes, failures, requirements, and source positions. The backend translates checked IR into TypeScript.</p>
+<div class="table-wrap"><table class="peers"><thead><tr><th scope="col">Implemented core 1 subset</th><th scope="col">Later or deferred</th></tr></thead><tbody><tr><td>Immutable records, options, type identity, and concrete refinements</td><td>Macros and general recursive schemas</td></tr><tr><td>Functions, inferred inputs, pipelines, match, and typed catch</td><td>User generics and abstract predicates</td></tr><tr><td>Services, retry, repetition, schedules, providers, and modules</td><td>Arbitrary JavaScript and Promise interoperation</td></tr><tr><td>Scoped operation records, references, races, fibers, and traversal</td><td>Full Scope parity and general concurrency APIs</td></tr><tr><td>Incremental and buffered streams and sinks</td><td>General Stream and Sink APIs</td></tr></tbody></table></div>
+<p>Typed catch handles declared domain failures, such as a missing user. It excludes defects and cancellation. Invalid safe-integer arithmetic is a defect.</p>
+
+<p>Calls propagate failures and service requirements. Execution mode records whether a call performs effects.</p>
+<nav class="section-nav" aria-label="Navigation for section 1"><a href="#top">Back to top</a><a href="#values">Next: Values and types</a></nav></section><section class="section" id="values" aria-labelledby="heading-values"><h2 id="heading-values">Values and types</h2><p class="lead">Bindings and aggregate values are immutable.</p><p>This module is separate from the shared Users domain in <a href="#users-foundation">chapter 4</a>, which defines string-based UserId.</p>
+<p>A record update creates a new value. Effektive has no assignment, class inheritance, or implicit receiver.</p>
+<figure data-ui class="code" data-tabs data-check="book-values"><figcaption>Immutable values</figcaption><div class="code-panel" data-tab="Effektive"><pre tabindex="0"><code class="language-effektive">type UserId = string
+type Label = string
+
+type User = {
+  id: UserId,
+  name: string,
+  active: boolean,
+  nickname?: string
+}
+
+const activate = (user: User): User =&gt;
+  ({ ...user, active: true })
+
+const displayId = (user: User): Label =&gt;
+  Label(user.id)</code></pre></div><div class="code-panel" data-tab="Effect-TS" data-check-id="book-values"><pre tabindex="0"><code class="language-typescript">import { Schema } from &quot;effect&quot;
+
+const UserId = Schema.String
+type UserId = typeof UserId.Type
+
+type Label = string
+
+const User = Schema.Struct({
+  id: UserId,
+  name: Schema.String,
+  active: Schema.Boolean,
+  nickname: Schema.optionalKey(Schema.String)
+})
+type User = typeof User.Type
+
+const activate = (user: User): User =&gt;
+  ({ ...user, active: true })
+
+const displayId = (user: User): Label =&gt;
+  user.id</code></pre></div></figure>
+<p><code>UserId("u1")</code> constructs without validation. Unnamed literals such as <code>"u1"</code> also fit. Other named types require conversion: <code>Label(user.id)</code>.</p>
+<p>Type and error declarations have identity by name, even with identical bodies. UserId and Label are distinct.</p>
+<p>Unions with non-literal members and bare names such as <code>type Alias = Other</code> are transparent aliases, interchangeable with their bodies.</p>
+<p>Signatures use declared types. Primitives such as string and int occur only inside type or error declarations: <code>type Label = string</code>.</p>
+<p>Record declarations have identity: <code>type Account = { name: Name }</code>. A record receives a runtime tag when a union alias in its module lists it. Other bodies, including string, have no runtime marker.</p><p>Values of the same numeric type with identity support comparisons, addition, and subtraction. Literal operands fit: <code>total * 2</code> remains Cents when total is Cents.</p>
+<p>An optional field read returns <code>Option&lt;T&gt;</code>: <code>Some(value)</code> or <code>None</code>, never unchecked undefined.</p>
+<figure data-ui class="code" data-tabs data-check="book-option" data-check-requires="book-values"><figcaption>Option matching</figcaption><div class="code-panel" data-tab="Effektive"><pre tabindex="0"><code class="language-effektive">const nicknameLabel = (user: User): Label =&gt;
+  match user.nickname {
+    Some(nickname) =&gt; nickname,
+    None =&gt; user.name
+  }</code></pre></div><div class="code-panel" data-tab="Effect-TS"><pre tabindex="0"><code class="language-typescript">import { Option } from &quot;effect&quot;
+
+const nicknameLabel = (user: User): Label =&gt;
+  Option.match(Option.fromUndefinedOr(user.nickname), {
+    onNone: () =&gt; user.name,
+    onSome: (nickname) =&gt; nickname
+  })</code></pre></div></figure>
+<p>Match requires complete coverage and compatible results. Record unions need a final wildcard for missing, optional, or open-ended tags. Each arm retains all members that can match at runtime; see <a href="effektive-spec.html#matching">overlapping tags</a>. A never branch such as <code>fail(error)</code> fits any result type.</p>
+<p>The int type contains finite safe integers. Invalid addition, subtraction, or multiplication causes a defect. Division returns number.</p>
+<p>Records reject missing required fields and unknown fields. Updates evaluate the base once, then update fields from left to right.</p>
+<aside class="exercise"><h3>Exercise</h3><p>Write a pure function that renames a user and preserves the input record.</p><details><summary>Show the answer</summary><pre><code>type Name = string
+
+const rename = (user: User, name: Name): User =&gt; ({ ...user, name })</code></pre></details></aside><nav class="section-nav" aria-label="Navigation for section 2"><a href="#orientation">Previous: What Effektive is</a><a href="#contracts">Next: Function contracts</a></nav></section><section class="section" id="contracts" aria-labelledby="heading-contracts"><h2 id="heading-contracts">Function contracts</h2><p class="lead">A function contract records its result, expected failures, and required service methods.</p><p>These examples use User, StoreUnavailable, and Users from <a href="#users-foundation">chapter 4</a>, with the header <code>imports Users from "./users-service.eff"</code>.</p>
+<figure data-ui class="code" data-tabs data-check="book-contracts" data-check-requires="users-declarations"><figcaption>Pure and effectful contracts</figcaption><div class="code-panel" data-tab="Effektive"><pre tabindex="0"><code class="language-effektive">type Count = int
+
+const add = (a: Count, b: Count): Count =&gt; a + b
+
+export const load = (id: UserId): Option&lt;User&gt; =&gt;
+  Users.find(id)</code></pre></div><div class="code-panel" data-tab="Effect-TS" data-check-id="book-contracts"><pre tabindex="0"><code class="language-typescript">type Count = number
+
+const add = (a: Count, b: Count): Count =&gt; a + b
+
+export const load = (id: UserId): Effect.Effect&lt;
+  Option.Option&lt;User&gt;,
+  StoreUnavailable,
+  Users
+&gt; =&gt; Users.use((users) =&gt; users.find(id))</code></pre></div></figure>
+<p>Service calls execute when reached. The source result stays <code>Option&lt;User&gt;</code>; the transpiler adds the Effect wrapper.</p>
+<p>A failure names an expected outcome; a capability names a service method. A with clause naming a service includes all its methods.</p>
+<p>Calls propagate the callee's declared contract. Declared sets may exceed body effects but cannot omit them.</p>
+<p>The compiler infers omitted fails clauses. A written fails clause bounds the allowed failures.</p>
+<p>Service headers permit requirement inference and bound the external services a module can require.</p>
+<p>Without service headers, an exported function that omits with cannot require services.</p>
+<p>Local functions infer omitted results, parameter types, failures, and requirements from their bodies.</p>
+<p>Explicit unknown and omitted input annotations infer alike. An operator alone cannot determine an input type.</p>
+<p>Exports require result annotations. New inferred failures reach host TypeScript without diagnostics. Written fails clauses prevent this; inlay hints show inferred failures.</p>
+<p>Inferred exported inputs validate unknown data inside the Effect.</p>
+<p>Validation adds SchemaError to inferred failures; written fails clauses must include it. Interfaces without bodies retain unknown for omitted inputs.</p>
+<p>Execution mode is independent of failures and requirements. Provision can remove every requirement while execution remains effectful.</p>
+<p>Arrow creation is pure; calls run the body each time. Source function types without bodies default to effect execution in version 0.</p>
+<p>Nonempty failure or requirement sets imply effects. Empty sets permit either execution mode, which the transpiler must preserve.</p>
+<figure data-ui class="code" data-tabs data-check="book-blocks" data-check-requires="users-declarations book-contracts"><figcaption>Final-expression blocks</figcaption><div class="code-panel" data-tab="Effektive"><pre tabindex="0"><code class="language-effektive">const activateAndCount = (user: User): Count =&gt; {
+  const active = ({ ...user, active: true })
+  if (active.active) { 1 } else { 0 }
+}</code></pre></div><div class="code-panel" data-tab="Effect-TS"><pre tabindex="0"><code class="language-typescript">const activateAndCount = (user: User): Count =&gt; {
+  const active = { ...user, active: true }
+  return active.active ? 1 : 0
+}</code></pre></div></figure>
+<p>A block returns its final expression; Effektive has no return statement. Expressions run from left to right. Only the selected branch runs.</p>
+<aside class="exercise"><h3>Exercise</h3><p>What does omitting fails or with mean?</p><details><summary>Show the answer</summary><p>The compiler infers failures from bodies. With service headers, it also infers requirements.</p><p>Without service headers, exports that omit with cannot require services. Local functions still infer requirements.</p></details></aside><nav class="section-nav" aria-label="Navigation for section 3"><a href="#values">Previous: Values and types</a><a href="#users-foundation">Next: One domain, two languages</a></nav></section><section class="section" id="users-foundation" aria-labelledby="heading-users-foundation"><h2 id="heading-users-foundation">One domain, two languages</h2><p class="lead">The next four chapters share the Users contract.</p><p>Service methods have no this binding. Each resolved method remains a distinct capability.</p>
+<figure data-ui class="code" data-tabs data-check="users-declarations"><figcaption>Shared Users contract <a href="effektive-examples/users-service.eff">Source</a></figcaption><div class="code-panel" data-tab="Effektive"><pre tabindex="0"><code class="language-effektive">export type UserId = string
+export type Name = string
+
+export type User = {
+  id: string,
+  name: string,
+  active: boolean
+}
+
+export error UserMissing = { id: string }
+export error StoreUnavailable = { message: string }
+
+export service Users {
+  find(id: UserId): Option&lt;User&gt; fails StoreUnavailable
+  save(user: User): void fails StoreUnavailable
+  all(): User[] fails StoreUnavailable
+}</code></pre></div><div class="code-panel" data-tab="Effect-TS" data-check-id="users-declarations"><pre tabindex="0"><code class="language-typescript">import { Context, Effect, Option, Schema } from &quot;effect&quot;
+
+export type UserId = string
+export type Name = string
+
+export const User = Schema.Struct({
+  id: Schema.String,
+  name: Schema.String,
+  active: Schema.Boolean
+})
+export type User = typeof User.Type
+
+export class UserMissing extends Schema.TaggedError&lt;UserMissing&gt;()(
+  &quot;users-service#UserMissing&quot;,
+  { id: Schema.String }
+) {}
+
+export class StoreUnavailable extends Schema.TaggedError&lt;StoreUnavailable&gt;()(
+  &quot;users-service#StoreUnavailable&quot;,
+  { message: Schema.String }
+) {}
+
+export class Users extends Context.Service&lt;Users, {
+  readonly find: (id: UserId) =&gt; Effect.Effect&lt;
+    Option.Option&lt;User&gt;,
+    StoreUnavailable
+  &gt;
+  readonly save: (user: User) =&gt; Effect.Effect&lt;
+    void,
+    StoreUnavailable
+  &gt;
+  readonly all: () =&gt; Effect.Effect&lt;
+    ReadonlyArray&lt;User&gt;,
+    StoreUnavailable
+  &gt;
+}&gt;()(&quot;users-service#Users&quot;) {}</code></pre></div></figure>
+<p>Each method lists its own failures and has no requirements. A host provider may add acquisition failures and dependencies.</p>
+<p>A contract can require Users.find without Users.save or Users.all. This static tracking does not sandbox host adapters.</p>
+<p><code>Effect.Effect</code> records the result, tagged errors, and Users when a function accesses that service context.</p>
+<p>Later TypeScript examples share these declarations. Effektive uses a service header plus an ordinary import.</p>
+<p>Effect-TS tabs are illustrations, not generated output.</p>
+<p>Effect-TS tracks the whole Users service. Effektive retains individual method requirements in checked IR or backend metadata.</p>
+<p>Error tags and the service key use users-service identities; equal names in different modules remain distinct.</p><nav class="section-nav" aria-label="Navigation for section 4"><a href="#contracts">Previous: Function contracts</a><a href="#lookup-update">Next: Lookup and update</a></nav></section><section class="section" id="lookup-update" aria-labelledby="heading-lookup-update"><h2 id="heading-lookup-update">Lookup and update</h2><p class="lead">Separate service calls, domain decisions, and record updates.</p><p>getUser converts None to a domain failure. activate updates a value. saveActive activates and saves only inactive users.</p>
+<figure data-ui class="code" data-tabs data-check="users-lookup" data-check-requires="users-declarations"><figcaption>Lookup</figcaption><div class="code-panel" data-tab="Effektive"><pre tabindex="0"><code class="language-effektive">imports Users from &quot;./users-service.eff&quot;
+import { User, UserId, UserMissing } from &quot;./users-service.eff&quot;
+
+const getUser = (id: UserId) =&gt;
+  match Users.find(id) {
+    Some(user) =&gt; user,
+    None =&gt; fail(UserMissing({ id }))
+  }</code></pre></div><div class="code-panel" data-tab="Effect-TS" data-check-id="users-lookup"><pre tabindex="0"><code class="language-typescript">import { type User, type UserId, UserMissing, StoreUnavailable, Users } from &quot;./users-service.ts&quot;
+
+const getUser = (id: UserId): Effect.Effect&lt;
+  User,
+  UserMissing | StoreUnavailable,
+  Users
+&gt; =&gt;
+  Effect.flatMap(
+    Users.use((users) =&gt; users.find(id)),
+    (found) =&gt; Option.match(found, {
+      onNone: () =&gt; Effect.fail(new UserMissing({ id })),
+      onSome: (user) =&gt; Effect.succeed(user)
+    })
+  )</code></pre></div></figure>
+<p>The compiler infers UserMissing, StoreUnavailable, and Users.find for local getUser. <code>fail(error)</code> ends normal execution and adds the error identity. Equal error fields do not imply equal types.</p>
+<p>Match reads the option once. None constructs UserMissing with the requested identifier; StoreUnavailable propagates unchanged.</p>
+<figure data-ui class="code" data-tabs data-check="users" data-check-requires="users-declarations users-lookup"><figcaption>Activate and save <a href="effektive-examples/activation.eff">Source</a></figcaption><div class="code-panel" data-tab="Effektive"><pre tabindex="0"><code class="language-effektive">const activate = (user: User) =&gt;
+  ({ ...user, active: true })
+
+export const saveActive = (id: UserId): User
+  fails UserMissing | StoreUnavailable =&gt; {
+  const user = getUser(id)
+  if (user.active) { user } else {
+    const active = activate(user)
+    Users.save(active)
+    active
+  }
+}</code></pre></div><div class="code-panel" data-tab="Effect-TS" data-check-id="users-update"><pre tabindex="0"><code class="language-typescript">const activate = (user: User): User =&gt;
+  ({ ...user, active: true })
+
+export const saveActive = (id: UserId): Effect.Effect&lt;
+  User,
+  UserMissing | StoreUnavailable,
+  Users
+&gt; =&gt; Effect.gen(function* () {
+  const user = yield* getUser(id)
+  if (user.active) return user
+  const active = activate(user)
+  yield* Users.use((users) =&gt; users.save(active))
+  return active
+})</code></pre></div></figure>
+<p>Characters without whitespace: Effektive 223; Effect-TS 304, including the helper and explicit export contracts, excluding chapter 4 declarations. Effect-TS adds the wrapper, generator, <code>yield*</code>, context access, and <code>return</code>.</p>
+<p>Pure calls and service calls share syntax. Typed IR distinguishes them.</p>
+<p>Both read once, skip writes for active users, otherwise activate and save. Success returns the user; failure stops subsequent steps.</p>
+<aside class="exercise"><h3>Exercise</h3><p>Why does saveActive return active after Users.save(active)?</p><details><summary>Show the answer</summary><p>Users.save returns void. Returning active passes the updated user to later operations.</p></details></aside><nav class="section-nav" aria-label="Navigation for section 5"><a href="#users-foundation">Previous: One domain, two languages</a><a href="#pipelines-collections">Next: Pipelines and collections</a></nav></section><section class="section" id="pipelines-collections" aria-labelledby="heading-pipelines-collections"><h2 id="heading-pipelines-collections">Pipelines and collections</h2><p class="lead">A pipeline passes its left value as the first argument to each stage.</p><figure data-ui class="code neutral"><figcaption>Pipeline expansion</figcaption><pre tabindex="0"><code class="language-text">value |&gt; transform          means transform(value)
+value |&gt; transform(a, b)    means transform(value, a, b)</code></pre></figure>
+<p>Stages associate left to right. Evaluation reads the initial value once, then each stage callee and its explicit arguments.</p>
+<p>Stages can name local functions, imports, builtins, or service methods. Version 0 excludes placeholders, currying, inline lambdas, and record-member stages.</p>
+<figure data-ui class="code" data-tabs data-check="users"><figcaption>Collect active names <a href="effektive-examples/active-names.eff">Source</a></figcaption><div class="code-panel" data-tab="Effektive"><pre tabindex="0"><code class="language-effektive">const activeNames = (users: User[]) =&gt;
+  users
+    |&gt; filter((user) =&gt; user.active)
+    |&gt; map((user) =&gt; user.name)
+
+export const listActiveNames = (): Name[]
+  fails StoreUnavailable =&gt;
+  Users.all() |&gt; activeNames</code></pre></div><div class="code-panel" data-tab="Effect-TS" data-check-id="users-collection"><pre tabindex="0"><code class="language-typescript">const activeNames = (
+  users: ReadonlyArray&lt;User&gt;
+): ReadonlyArray&lt;Name&gt; =&gt;
+  users.filter((user) =&gt; user.active).map((user) =&gt; user.name)
+
+export const listActiveNames = (): Effect.Effect&lt;
+  ReadonlyArray&lt;Name&gt;,
+  StoreUnavailable,
+  Users
+&gt; =&gt; Effect.map(
+  Users.use((users) =&gt; users.all()),
+  activeNames
+)</code></pre></div></figure>
+<p>Both pure helpers use collection operations. Characters without whitespace: wrappers 83/144; with helpers and explicit export contracts, 174/266 (Effektive/Effect-TS). Counts exclude chapter 4 declarations. Effect-TS uses <code>Effect.map</code> and context access.</p>
+<p>map, filter, and fold traverse left to right. Map and filter preserve order; fold carries an accumulator.</p>
+<p>Map and filter call callbacks once per visited element; empty inputs produce empty outputs. Empty folds return the initial accumulator.</p>
+<p>Callbacks require pure execution and empty failure and requirement sets. Builtins supply inline-arrow parameter types. Known pure functions also work.</p>
+<p>A callback that provides its own service can still perform effects. Empty failure and requirement sets do not establish purity.</p>
+<p>The checker specializes builtins to closed function types before IR serialization. Users cannot access builtin type variables in version 0.</p>
+<figure data-ui class="code" data-tabs data-check="book-fold"><figcaption>Fold from left to right</figcaption><div class="code-panel" data-tab="Effektive"><pre tabindex="0"><code class="language-effektive">type Amount = int
+
+export const total = (amounts: Amount[]): Amount =&gt;
+  amounts |&gt; fold(0, (sum, amount) =&gt; sum + amount)</code></pre></div><div class="code-panel" data-tab="Effect-TS"><pre tabindex="0"><code class="language-typescript">type Amount = number
+
+export const total = (amounts: ReadonlyArray&lt;Amount&gt;): Amount =&gt;
+  amounts.reduce((sum, amount) =&gt; sum + amount, 0)</code></pre></div></figure>
+<aside class="exercise"><h3>Exercise</h3><p>Why can empty effect sets fail a pure callback requirement?</p><details><summary>Show the answer</summary><p>Function types default to effect execution. The pure modifier declares purity; empty sets do not.</p></details></aside><nav class="section-nav" aria-label="Navigation for section 6"><a href="#lookup-update">Previous: Lookup and update</a><a href="#control">Next: Recovery and provision</a></nav></section><section class="section" id="control" aria-labelledby="heading-control"><h2 id="heading-control">Recovery and provision</h2><p class="lead">Control forms use explicit syntax and deferred zero-argument functions.</p><p>Typed catch handles matching failures from its block. Other failures propagate. Defects and cancellation bypass catch.</p>
+<figure data-ui class="code" data-tabs data-check="users"><figcaption>Recover UserMissing <a href="effektive-examples/activation-label.eff">Source</a></figcaption><div class="code-panel" data-tab="Effektive"><pre tabindex="0"><code class="language-effektive">type Label = string
+
+export const activationLabel = (id: UserId): Label
+  fails StoreUnavailable =&gt;
+  try {
+    saveActive(id)
+    &quot;active&quot;
+  } catch {
+    UserMissing(error) =&gt; &quot;missing: &quot; + error.id
+  }</code></pre></div><div class="code-panel" data-tab="Effect-TS" data-check-id="users-recovery"><pre tabindex="0"><code class="language-typescript">type Label = string
+
+export const activationLabel = (id: UserId): Effect.Effect&lt;
+  Label,
+  StoreUnavailable,
+  Users
+&gt; =&gt; Effect.as(saveActive(id), &quot;active&quot;).pipe(
+  Effect.catchTag(
+    &quot;users-service#UserMissing&quot;,
+    (error) =&gt; Effect.succeed(&quot;missing: &quot; + error.id)
+  )
+)</code></pre></div></figure>
+<p>Characters without whitespace: Effektive 156; Effect-TS 230, including Label and explicit export contracts, excluding shared declarations and saveActive. Effect-TS uses <code>Effect.as</code> and <code>Effect.catchTag</code> for success and UserMissing recovery. Both propagate storage failures.</p>
+<p>retry takes a deferred operation. This policy allows an initial Users.find call and two retries.</p>
+<figure data-ui class="code" data-tabs data-check="users"><figcaption>Retry lookup <a href="effektive-examples/retry-lookup.eff">Source</a></figcaption><div class="code-panel" data-tab="Effektive"><pre tabindex="0"><code class="language-effektive">export const lookupWithRetry = (id: UserId): Option&lt;User&gt;
+  fails StoreUnavailable =&gt;
+  retry(() =&gt; Users.find(id), { times: 2 })</code></pre></div><div class="code-panel" data-tab="Effect-TS" data-check-id="users-retry"><pre tabindex="0"><code class="language-typescript">export const lookupWithRetry = (id: UserId): Effect.Effect&lt;
+  Option.Option&lt;User&gt;,
+  StoreUnavailable,
+  Users
+&gt; =&gt; Effect.retry(
+  Users.use((users) =&gt; users.find(id)),
+  { times: 2 }
+)</code></pre></div></figure>
+<p>Characters without whitespace: Effektive 109; Effect-TS 156, including explicit export contracts, excluding chapter 4 declarations. Effektive defers the call. Effect-TS retries the cold <code>Users.use</code> effect without <code>Effect.suspend</code>.</p>
+<p>Passing <code>Users.find(id)</code> directly executes before retry gains control. A deferred parameter never causes automatic suspension.</p>
+<p>Retry preserves results, failures, and requirements; retry itself is effectful. times requires a finite, nonnegative safe integer literal. schedule, while, and until select policies. General Schedules may add failures and requirements.</p>
+<figure data-ui class="code" data-tabs data-check="users"><figcaption>Provider execution</figcaption><div class="code-panel" data-tab="Effektive"><pre tabindex="0"><code class="language-effektive">import { UsersLive } from &quot;host:providers&quot;
+
+export const runLookup = (id: UserId): Option&lt;User&gt; =&gt;
+  provide(UsersLive, () =&gt; lookupWithRetry(id))</code></pre></div><div class="code-panel" data-tab="Effect-TS" data-check-id="users-provider"><pre tabindex="0"><code class="language-typescript">import { UsersLive } from &quot;./users-live.ts&quot;
+
+const runLookup = (id: UserId): Effect.Effect&lt;
+  Option.Option&lt;User&gt;,
+  StoreUnavailable
+&gt; =&gt; Effect.provide(
+  Effect.suspend(() =&gt; lookupWithRetry(id)),
+  UsersLive
+)</code></pre></div></figure>
+<p>The Effect-TS tab maps the registered host provider to users-live.ts. Effektive imports <code>host:providers</code>.</p>
+<p>Here, <code>UsersLive: Layer&lt;Users&gt;</code> has infallible acquisition and no dependencies. Fallible providers add acquisition failures and requirements.</p>
+<p>Provision removes Users requirements, retaining effect execution. Host modules supply providers; layer constructs them in source.</p>
+<aside class="exercise"><h3>Exercise</h3><p>Why pass () =&gt; operation() to retry and provide?</p><details><summary>Show the answer</summary><p>The zero-argument function defers execution. The builtin controls when and how often the operation runs.</p></details></aside><nav class="section-nav" aria-label="Navigation for section 7"><a href="#pipelines-collections">Previous: Pipelines and collections</a><a href="#payment">Next: A payment pipeline</a></nav></section><section class="section" id="payment" aria-labelledby="heading-payment"><h2 id="heading-payment">A payment pipeline</h2><p class="lead">The payment pipeline combines pure and effectful stages.</p><figure data-ui class="code" data-tabs data-check="payment"><figcaption>Payment module</figcaption><div class="code-panel" data-tab="Effektive"><pre tabindex="0"><code class="language-effektive">// payment-services.eff
+export type Cents = int
+export type ChargeId = string
+
+export type OrderId = string
+export type Order = {
+  id: OrderId,
+  totalCents: int,
+  status: &quot;pending&quot; | &quot;paid&quot;
+}
+
+export error OrderNotFound = { id: OrderId }
+export error PaymentDeclined = { reason: string }
+
+export service Orders {
+  find(id: OrderId): Option&lt;Order&gt;
+  save(order: Order): void
+}
+
+export service Payments {
+  charge(amount: Cents): ChargeId fails PaymentDeclined
+}
+
+// pay.eff
+imports Orders from &quot;./payment-services.eff&quot;
+imports Payments from &quot;./payment-services.eff&quot;
+import { Order, OrderId, OrderNotFound } from &quot;./payment-services.eff&quot;
+
+const findOrder = (id: OrderId) =&gt;
+  Orders.find(id) ?? fail(OrderNotFound({ id }))
+
+const chargeOrder = (order: Order) =&gt; {
+  retry(() =&gt; Payments.charge(order.totalCents), { times: 2 })
+  order
+}
+
+const markPaid = (order: Order) =&gt;
+  ({ ...order, status: &quot;paid&quot; })
+
+const saveOrder = (order: Order) =&gt; {
+  Orders.save(order)
+  order
+}
+
+export const pay = (id: OrderId): Order =&gt;
+  id
+    |&gt; findOrder
+    |&gt; chargeOrder
+    |&gt; markPaid
+    |&gt; saveOrder</code></pre></div><div class="code-panel" data-tab="Effect-TS" data-check-id="payment"><pre tabindex="0"><code class="language-typescript">import { Context, Effect, Option, Schema } from &quot;effect&quot;
+
+type Cents = number
+type ChargeId = string
+
+const OrderId = Schema.String
+type OrderId = typeof OrderId.Type
+
+const Int = Schema.Finite.check(
+  Schema.makeFilter(
+    (value) =&gt; Number.isSafeInteger(value) || &quot;expected a safe integer&quot;
+  )
+)
+
+const Order = Schema.Struct({
+  id: OrderId,
+  totalCents: Int,
+  status: Schema.Literals([&quot;pending&quot;, &quot;paid&quot;])
+})
+type Order = typeof Order.Type
+
+class OrderNotFound extends Schema.TaggedError&lt;OrderNotFound&gt;()(
+  &quot;OrderNotFound&quot;,
+  { id: OrderId }
+) {}
+
+class PaymentDeclined extends Schema.TaggedError&lt;PaymentDeclined&gt;()(
+  &quot;PaymentDeclined&quot;,
+  { reason: Schema.String }
+) {}
+
+class Orders extends Context.Service&lt;Orders, {
+  readonly find: (id: OrderId) =&gt; Effect.Effect&lt;Option.Option&lt;Order&gt;&gt;
+  readonly save: (order: Order) =&gt; Effect.Effect&lt;void&gt;
+}&gt;()(&quot;Orders&quot;) {}
+
+class Payments extends Context.Service&lt;Payments, {
+  readonly charge: (amount: Cents) =&gt; Effect.Effect&lt;
+    ChargeId,
+    PaymentDeclined
+  &gt;
+}&gt;()(&quot;Payments&quot;) {}
+
+const findOrder = (id: OrderId): Effect.Effect&lt;
+  Order,
+  OrderNotFound,
+  Orders
+&gt; =&gt; Effect.flatMap(
+  Orders.use((orders) =&gt; orders.find(id)),
+  (found) =&gt; Option.match(found, {
+    onNone: () =&gt; Effect.fail(new OrderNotFound({ id })),
+    onSome: (order) =&gt; Effect.succeed(order)
+  })
+)
+
+const chargeOrder = (order: Order): Effect.Effect&lt;
+  Order,
+  PaymentDeclined,
+  Payments
+&gt; =&gt; Effect.map(
+  Effect.retry(
+    Effect.suspend(() =&gt;
+      Payments.use((payments) =&gt; payments.charge(order.totalCents))
+    ),
+    { times: 2 }
+  ),
+  () =&gt; order
+)
+
+const markPaid = (order: Order): Order =&gt;
+  ({ ...order, status: &quot;paid&quot; })
+
+const saveOrder = (order: Order): Effect.Effect&lt;Order, never, Orders&gt; =&gt;
+  Effect.map(
+    Orders.use((orders) =&gt; orders.save(order)),
+    () =&gt; order
+  )
+
+const pay = (id: OrderId): Effect.Effect&lt;
+  Order,
+  OrderNotFound | PaymentDeclined,
+  Orders | Payments
+&gt; =&gt; Effect.gen(function* () {
+  const order = yield* findOrder(id)
+  const charged = yield* chargeOrder(order)
+  const paid = markPaid(charged)
+  return yield* saveOrder(paid)
+})</code></pre></div></figure>
+<p>Failure stops the pipeline. chargeOrder retries only the charge. Missing orders and declined payments prevent saveOrder.</p>
+<p>The compiler infers Orders.find, Orders.save, Payments.charge, OrderNotFound, and PaymentDeclined. Both service headers permit the requirements.</p>
+<p>Retry can repeat an external charge. The author must assess whether the provider makes repetition safe, for example through idempotency.</p>
+<p>Effect-TS validates safe integers at the schema boundary. The Effektive checker and runtime must preserve int arithmetic rules.</p>
+<p>Effect-TS orders operations with Effect.gen; Effektive uses blocks and pipeline stages. The source result is Order.</p>
+<aside class="exercise"><h3>Exercise</h3><p>Which pay stage is pure?</p><details><summary>Show the answer</summary><p>markPaid returns a new Order with inferred empty failure and requirement sets.</p></details></aside><nav class="section-nav" aria-label="Navigation for section 8"><a href="#control">Previous: Recovery and provision</a><a href="#nominal-types">Next: Type identity</a></nav></section><section class="section" id="nominal-types" aria-labelledby="heading-nominal-types"><h2 id="heading-nominal-types">Type identity</h2><p class="lead">Type declarations remain distinct even with identical bodies.</p>
+<p>A where clause adds a concrete predicate. The compiler proves known values and emits an Effect Schema check.</p>
+<figure data-ui class="code" data-tabs data-check="book-refined-entry"><figcaption>Validate a refined input <a href="effektive-examples/refined-entry.eff">Source</a></figcaption><div class="code-panel" data-tab="Effektive"><pre tabindex="0"><code class="language-effektive">export type Positive = int where n =&gt; n &gt; 0
+
+const amount = (value: Positive): Positive =&gt; value
+
+export const readAmount = (input): Positive
+  fails SchemaError =&gt; amount(input.amount)</code></pre></div><div class="code-panel" data-tab="Effect-TS"><pre tabindex="0"><code class="language-typescript">import { Effect, Schema } from &quot;effect&quot;
+
+const $Int = Schema.Finite.check(
+  Schema.makeFilter(
+    (value) =&gt; Number.isSafeInteger(value) || &quot;expected a safe integer&quot;
+  )
+)
+
+export const Positive = $Int.check(
+  Schema.makeFilter(
+    (value) =&gt; 0n - BigInt(value) &lt;= -1n || &quot;expected Positive&quot;
+  )
+)
+export type Positive = typeof Positive.Type
+
+const amount = (value: Positive): Positive =&gt; value
+
+export const readAmount = (input: unknown): Effect.Effect&lt;
+  Positive,
+  Schema.SchemaError
+&gt; =&gt; Effect.gen(function* () {
+  const checked = yield* Schema.decodeUnknownEffect(
+    Schema.toType(Schema.Struct({ amount: Positive })),
+    { onExcessProperty: &quot;error&quot; }
+  )(input)
+  return amount(checked.amount)
+})</code></pre></div></figure>
+<p>The inferred closed input is <code>{ amount: Positive }</code>. The export checks required fields, unknown fields, and Positive.</p>
+<p>Validation runs inside the Effect before the body and may fail with SchemaError. It performs no coercion or defaulting.</p>
+<p>Predicates support integer comparisons, +, -, &amp;&amp;, ||, required fields, and string or array length. String length counts UTF-16 code units.</p>
+<p>Floating-point guards provide no integer proofs. Unknown inputs receive runtime record-predicate checks at checked entries.</p>
+<p>This release excludes floating-point predicates, arbitrary calls, generics, and abstract predicates.</p>
+<p>Host interfaces expose unrefined data. They cannot declare refinements or reference refined contracts, including imported types and services from host providers.</p>
+<figure data-ui class="code" data-tabs data-check="book-nominal-states"><figcaption>Order states as tagged records</figcaption><div class="code-panel" data-tab="Effektive"><pre tabindex="0"><code class="language-effektive">type OrderId = string
+type Cents = int
+type Text = string
+
+type Receipt = { number: Text }
+type Tracking = { code: Text }
+type Reason = { note: Text }
+
+type Pending = { id: OrderId, total: Cents }
+type Paid = { id: OrderId, total: Cents, receipt: Receipt }
+type Shipped = { id: OrderId, receipt: Receipt, tracking: Tracking }
+type Cancelled = { id: OrderId, reason: Reason }
+type Order = Pending | Paid | Shipped | Cancelled
+
+const open = (id: OrderId, total: Cents): Pending =&gt;
+  Pending({ id, total })
+
+const reprice = (order: Pending, total: Cents): Pending =&gt;
+  ({ ...order, total })</code></pre></div><div class="code-panel" data-tab="Effect-TS" data-check-id="book-nominal-states"><pre tabindex="0"><code class="language-typescript">import { Schema } from &quot;effect&quot;
+
+const Int = Schema.Finite.check(
+  Schema.makeFilter(
+    (value) =&gt; Number.isSafeInteger(value) || &quot;expected a safe integer&quot;
+  )
+)
+
+const $int = (value: number): number => {
+  if (!Number.isSafeInteger(value)) throw new RangeError(&quot;int overflow&quot;)
+  return value
+}
+
+const OrderId = Schema.String
+type OrderId = typeof OrderId.Type
+
+const Cents = Int
+type Cents = typeof Cents.Type
+
+type Text = string
+
+const Receipt = Schema.Struct({ number: Schema.String })
+type Receipt = typeof Receipt.Type
+
+const Tracking = Schema.Struct({ code: Schema.String })
+type Tracking = typeof Tracking.Type
+
+const Reason = Schema.Struct({ note: Schema.String })
+type Reason = typeof Reason.Type
+
+const Pending = Schema.TaggedStruct(&quot;Pending&quot;, { id: OrderId, total: Cents })
+type Pending = typeof Pending.Type
+
+const Paid = Schema.TaggedStruct(
+  &quot;Paid&quot;,
+  { id: OrderId, total: Cents, receipt: Receipt }
+)
+type Paid = typeof Paid.Type
+
+const Shipped = Schema.TaggedStruct(
+  &quot;Shipped&quot;,
+  { id: OrderId, receipt: Receipt, tracking: Tracking }
+)
+type Shipped = typeof Shipped.Type
+
+const Cancelled = Schema.TaggedStruct(
+  &quot;Cancelled&quot;,
+  { id: OrderId, reason: Reason }
+)
+type Cancelled = typeof Cancelled.Type
+
+const Order = Schema.Union([Pending, Paid, Shipped, Cancelled])
+type Order = typeof Order.Type
+
+const open = (id: OrderId, total: Cents): Pending =&gt;
+  Pending.make({ id, total })
+
+const reprice = (order: Pending, total: Cents): Pending =&gt;
+  ({ ...order, total })</code></pre></div></figure>
+<p>Order lists four record types from its module, giving each a runtime tag. Pending and Paid remain distinct despite sharing id and total.</p>
+<p>A Pending parameter rejects Paid with <code>type-mismatch/003</code>. An unnamed record literal is an exception.</p>
+<p><code>Pending({ id, total })</code> constructs Pending. Literals also work where exactly Pending is expected; computed records require <code>Pending(value)</code>. A literal at Order is an error: it names no state. The spread in reprice preserves the tag in a new Pending.</p>
+<p>JSON has no tag. Decode into an untagged record such as OrderInput, then construct Pending.</p>
+<p>These panels shorten tags to "Pending". Generated tags qualify the module, such as "contracts#Pending", keeping equal names distinct.</p>
+<figure data-ui class="code" data-tabs data-check="book-nominal-match" data-check-requires="book-nominal-states"><figcaption>Match by name over Order</figcaption><div class="code-panel" data-tab="Effektive"><pre tabindex="0"><code class="language-effektive">const describe = (order: Order): Text =&gt;
+  match order {
+    Pending(p) =&gt; &quot;pending&quot;,
+    Paid(p) =&gt; p.receipt.number,
+    Shipped(s) =&gt; s.tracking.code,
+    Cancelled(c) =&gt; c.reason.note
+  }</code></pre></div><div class="code-panel" data-tab="Effect-TS" data-check-id="book-nominal-match"><pre tabindex="0"><code class="language-typescript">const describe = (order: Order): Text =&gt;
+  order._tag === &quot;Pending&quot;
+    ? &quot;pending&quot;
+    : order._tag === &quot;Paid&quot;
+    ? order.receipt.number
+    : order._tag === &quot;Shipped&quot;
+    ? order.tracking.code
+    : order.reason.note</code></pre></div></figure>
+<p>Match covers every state without a wildcard. A missing arm causes <code>pattern/001</code>; adding a state identifies every incomplete match.</p>
+<p>The Effect-TS else branch hides missing states from TypeScript. Effektive reports them.</p>
+<figure data-ui class="code" data-tabs data-check="book-nominal-rules" data-check-requires="book-nominal-states"><figcaption>Recursive pricing rules with Cents</figcaption><div class="code-panel" data-tab="Effektive"><pre tabindex="0"><code class="language-effektive">type Count = int
+
+type Fixed = { amount: Cents }
+type Times = { factor: Count }
+type Capped = { rule: Rule, cap: Cents }
+type Sum = { parts: Rule[] }
+type Rule = Fixed | Times | Capped | Sum
+
+const min = (left: Cents, right: Cents) =&gt;
+  if (left &lt; right) { left } else { right }
+
+const price = (rule: Rule, base: Cents): Cents =&gt;
+  match rule {
+    Fixed(f) =&gt; f.amount,
+    Times(t) =&gt; base * Cents(t.factor),
+    Capped(c) =&gt; min(price(c.rule, base), c.cap),
+    Sum(s) =&gt; s.parts |&gt; fold(0, (acc, part) =&gt; acc + price(part, base))
+  }</code></pre></div><div class="code-panel" data-tab="Effect-TS" data-check-id="book-nominal-rules"><pre tabindex="0"><code class="language-typescript">import { Schema } from &quot;effect&quot;
+
+const Count = Int
+type Count = typeof Count.Type
+
+const Fixed = Schema.TaggedStruct(&quot;Fixed&quot;, { amount: Cents })
+type Fixed = typeof Fixed.Type
+
+const Times = Schema.TaggedStruct(&quot;Times&quot;, { factor: Count })
+type Times = typeof Times.Type
+
+interface Capped {
+  readonly _tag: &quot;Capped&quot;
+  readonly rule: Rule
+  readonly cap: Cents
+}
+interface CappedEncoded {
+  readonly _tag: &quot;Capped&quot;
+  readonly rule: RuleEncoded
+  readonly cap: number
+}
+
+interface Sum {
+  readonly _tag: &quot;Sum&quot;
+  readonly parts: ReadonlyArray&lt;Rule&gt;
+}
+interface SumEncoded {
+  readonly _tag: &quot;Sum&quot;
+  readonly parts: ReadonlyArray&lt;RuleEncoded&gt;
+}
+
+type Rule = Fixed | Times | Capped | Sum
+type RuleEncoded =
+  | Schema.Codec.Encoded&lt;typeof Fixed&gt;
+  | Schema.Codec.Encoded&lt;typeof Times&gt;
+  | CappedEncoded
+  | SumEncoded
+
+const Rule: Schema.Codec&lt;Rule, RuleEncoded&gt; = Schema.Union([
+  Fixed,
+  Times,
+  Schema.suspend((): Schema.Codec&lt;Capped, CappedEncoded&gt; =&gt; Capped),
+  Schema.suspend((): Schema.Codec&lt;Sum, SumEncoded&gt; =&gt; Sum)
+])
+
+const Capped = Schema.TaggedStruct(&quot;Capped&quot;, {
+  rule: Schema.suspend((): Schema.Codec&lt;Rule, RuleEncoded&gt; =&gt; Rule),
+  cap: Cents
+})
+
+const Sum = Schema.TaggedStruct(&quot;Sum&quot;, {
+  parts: Schema.Array(
+    Schema.suspend((): Schema.Codec&lt;Rule, RuleEncoded&gt; =&gt; Rule)
+  )
+})
+
+const min = (left: Cents, right: Cents): Cents =&gt;
+  left &lt; right ? left : right
+
+const price = (rule: Rule, base: Cents): Cents =&gt;
+  rule._tag === &quot;Fixed&quot;
+    ? rule.amount
+    : rule._tag === &quot;Times&quot;
+    ? $int(base * rule.factor)
+    : rule._tag === &quot;Capped&quot;
+    ? min(price(rule.rule, base), rule.cap)
+    : rule.parts.reduce&lt;Cents&gt;(
+      (acc, part) =&gt; $int(acc + price(part, base)),
+      0
+    )</code></pre></div></figure>
+<p>Capped holds one rule; Sum holds an array. The compiler accepts cycles through arrays or unions with members outside the cycle.</p>
+<p>Each recursive Effect-TS type needs an interface and Encoded mirror. References use <code>Schema.suspend</code>; <code>typeof Rule.Type</code> fails checking inside a cycle.</p>
+<p>The <a href="effektive-examples/order-lifecycle/README.md">order lifecycle</a> includes four states across two modules, matching by name, structural decoding, and nine runtime checks.</p>
+<aside class="exercise"><h3>Exercise</h3><p>Why does reprice reject Paid when its fields match Pending?</p><details><summary>Show the answer</summary><p>Pending and Paid have distinct identities and tags. Shared fields do not make them interchangeable.</p></details></aside><nav class="section-nav" aria-label="Navigation for section 9"><a href="#payment">Previous: A payment pipeline</a><a href="#core1-showcase">Next: Core 1 in practice</a></nav></section><section class="section" id="core1-showcase" aria-labelledby="heading-core1-showcase"><h2 id="heading-core1-showcase">Core 1 in practice</h2><p class="lead">Scopes supervise concurrent work. Schedules control streams. Schemas govern field presence and decoding through services.</p><p>The compiler checks the <a href="effektive-examples/core1.eff">full Effektive example</a>. Effect-TS tabs pass checks against Effect 4.1.2.</p>
+<figure data-ui class="code" data-tabs data-check="book-core1-scope"><figcaption>Scoped child cleanup <a href="effektive-examples/core1.eff">Source</a></figcaption><div class="code-panel" data-tab="Effektive"><pre tabindex="0"><code class="language-effektive">type Int = int
+
+export const supervised = (): Int =&gt;
+  scoped(defer(() =&gt; {
+    forkScoped(defer(() =&gt; 3))
+    3
+  }))</code></pre></div><div class="code-panel" data-tab="Effect-TS" data-check-id="book-core1-scope"><pre tabindex="0"><code class="language-typescript">import { Effect } from &quot;effect&quot;
+
+const supervised = (): Effect.Effect&lt;number&gt; =&gt;
+  Effect.scoped(Effect.gen(function* () {
+    yield* Effect.forkScoped(Effect.succeed(3))
+    return 3
+  }))</code></pre></div></figure>
+<p>The scope owns the child. At job completion, Effect interrupts running children and awaits cleanup.</p>
+<figure data-ui class="code" data-tabs data-check="book-core1-stream"><figcaption>Batch a stream into pairs <a href="effektive-examples/core1.eff">Source</a></figcaption><div class="code-panel" data-tab="Effektive"><pre tabindex="0"><code class="language-effektive">type Int = int
+
+export const pairs = (source: Stream&lt;Int&gt;): Stream&lt;Int[]&gt; =&gt;
+  transduceStream(source, takeSink(2))</code></pre></div><div class="code-panel" data-tab="Effect-TS" data-check-id="book-core1-stream"><pre tabindex="0"><code class="language-typescript">import { Sink, Stream } from &quot;effect&quot;
+
+const pairs = (
+  source: Stream.Stream&lt;number&gt;
+): Stream.Stream&lt;ReadonlyArray&lt;number&gt;&gt; =&gt;
+  Stream.transduce(source, Sink.take&lt;number&gt;(2))</code></pre></div></figure>
+<p>The stream runs when consumed. Batches emit when the Sink fills; stream completion emits any partial batch.</p>
+<figure data-ui class="code" data-tabs data-check="book-core1-schema"><figcaption>Getters and defaults with decode services <a href="effektive-examples/core1.eff">Source</a></figcaption><div class="code-panel" data-tab="Effektive"><pre tabindex="0"><code class="language-effektive">// core1-services.eff
+export type Int = int
+
+export service Read { next(value: Int): Int }
+export service Defaults { make(): Int }
+
+// core1.eff
+imports Read from &quot;./core1-services.eff&quot;
+imports Defaults from &quot;./core1-services.eff&quot;
+import { Int } from &quot;./core1-services.eff&quot;
+
+type Optional = { score?: Int }
+type Required = { score: Int }
+
+const integer: Schema&lt;Int&gt; = schema()
+const optional: SchemaOptional&lt;Int&gt; = schemaOptionalKey(integer)
+const shiftedField: SchemaOptional&lt;Int, Int, Read.next&gt; =
+  schemaOptionalTransform(
+    optional,
+    optional,
+    (value: Option&lt;Int&gt;): Option&lt;Int&gt; =&gt;
+      match value {
+        Some(score) =&gt; Some(Read.next(score)),
+        None =&gt; None
+      },
+    (value: Option&lt;Int&gt;): Option&lt;Int&gt; =&gt; value
+  )
+const shifted: Schema&lt;Optional, Optional, Read.next&gt; =
+  schemaStruct({ score: shiftedField })
+const defaulted: Schema&lt;Required, Optional, Defaults.make&gt; =
+  schemaStruct({
+    score: schemaDefaultKey(integer, (): Int =&gt; Defaults.make())
+  })
+
+export const readShifted = (input: unknown): Optional fails SchemaError =&gt;
+  schemaDecode(shifted, input)
+export const readDefault = (input: unknown): Required fails SchemaError =&gt;
+  schemaDecode(defaulted, input)</code></pre></div><div class="code-panel" data-tab="Effect-TS" data-check-id="book-core1-schema"><pre tabindex="0"><code class="language-typescript">import { Context, Effect, Option, Schema, SchemaGetter } from &quot;effect&quot;
+
+const Int = Schema.Finite.check(Schema.makeFilter(
+  (value) =&gt; Number.isSafeInteger(value) || &quot;expected a safe integer&quot;
+))
+type Int = typeof Int.Type
+type Optional = { readonly score?: Int }
+type Required = { readonly score: Int }
+class Read extends Context.Service&lt;Read, {
+  readonly next: (value: Int) =&gt; Effect.Effect&lt;Int&gt;
+}&gt;()(&quot;showcase#Read&quot;) {}
+class Defaults extends Context.Service&lt;Defaults, {
+  readonly make: () =&gt; Effect.Effect&lt;Int&gt;
+}&gt;()(&quot;showcase#Defaults&quot;) {}
+
+const optional = Schema.optionalKey(Int)
+const shifted = Schema.Struct({
+  score: optional.pipe(Schema.decodeTo(optional, {
+    decode: SchemaGetter.transformOptionalEffect((value) =&gt;
+      Option.isSome(value)
+        ? Read.use((service) =&gt;
+            Effect.map(service.next(value.value), Option.some))
+        : Effect.succeed(Option.none())
+    ),
+    encode: SchemaGetter.transformOptional((value) =&gt; value)
+  }))
+})
+const defaulted = Schema.Struct({
+  score: Int.pipe(Schema.withDecodingDefaultTypeKey(
+    Effect.suspend(() =&gt; Defaults.use((service) =&gt; service.make()))
+  ))
+})
+const readShifted = (input: unknown): Effect.Effect&lt;
+  Optional, Schema.SchemaError, Read
+&gt; =&gt; Schema.decodeUnknownEffect(shifted)(input)
+const readDefault = (input: unknown): Effect.Effect&lt;
+  Required, Schema.SchemaError, Defaults
+&gt; =&gt; Schema.decodeUnknownEffect(defaulted)(input)</code></pre></div></figure>
+<p>Getters handle missing and present keys; defaults handle missing keys only. Decoding requires their services; encoding requires neither here.</p>
+<figure data-ui class="code" data-tabs data-check="book-core1-required-optional"><figcaption>Decode a required name to absence <a href="effektive-examples/core1.eff">Source</a></figcaption><div class="code-panel" data-tab="Effektive"><pre tabindex="0"><code class="language-effektive">type Name = string
+type OptionalName = { name?: Name }
+type RequiredName = { name: Name }
+
+const name: Schema&lt;Name&gt; = schema()
+const optionalName: SchemaOptional&lt;Name&gt; = schemaOptionalKey(name)
+const requiredNameField: SchemaDecodedOptional&lt;Name&gt; =
+  schemaOptionalFromRequired(
+    name,
+    optionalName,
+    (value: Name): Option&lt;Name&gt; =&gt; if (value === &quot;&quot;) { None } else { Some(value) },
+    (value: Option&lt;Name&gt;): Name =&gt; match value { Some(current) =&gt; current, None =&gt; &quot;&quot; }
+  )
+export const names: Schema&lt;OptionalName, RequiredName&gt; =
+  schemaStruct({ name: requiredNameField })</code></pre></div><div class="code-panel" data-tab="Effect-TS" data-check-id="book-core1-required-optional"><pre tabindex="0"><code class="language-typescript">import { Effect, Option, Schema, SchemaGetter, SchemaIssue } from &quot;effect&quot;
+
+const Names = Schema.Struct({
+  name: Schema.String.pipe(Schema.decodeTo(Schema.optionalKey(Schema.String), {
+    decode: SchemaGetter.transformOptionalEffect((value) =&gt;
+      Option.isNone(value)
+        ? Effect.fail(new SchemaIssue.InvalidValue({ message: &quot;required name is missing&quot; }))
+        : Effect.succeed(value.value === &quot;&quot; ? Option.none() : value)
+    ),
+    encode: SchemaGetter.transformOptional((value) =&gt;
+      Option.some(Option.getOrElse(value, () =&gt; &quot;&quot;))
+    )
+  }))
+})
+const decoded: typeof Names.Type = {}
+const encoded: typeof Names.Encoded = { name: &quot;&quot; }
+void decoded
+void encoded</code></pre></div></figure>
+<p>Encoded name is required. Empty text decodes to absence; absence encodes to empty text. Missing encoded keys fail before user transformation.</p>
+<figure data-ui class="code" data-tabs data-check="book-core1-general-union"><figcaption>Union branches and Schema fallback <a href="effektive-examples/core1.eff">Source</a></figcaption><div class="code-panel" data-tab="Effektive"><pre tabindex="0"><code class="language-effektive">type Name = string
+type Int = int
+type Scalar = Name | Int
+const name: Schema&lt;Name&gt; = schema()
+const integer: Schema&lt;Int&gt; = schema()
+export const scalar: Schema&lt;Scalar&gt; = schemaUnion([name, integer])
+
+service Validation { accept(value: Name): Name fails SchemaIssue }
+
+const checkedName: Schema&lt;Name, Name, Validation.accept&gt; =
+  schemaTransform(
+    name,
+    name,
+    (value: Name): Name =&gt; Validation.accept(value),
+    (value: Name): Option&lt;Name&gt; =&gt; Some(value)
+  )
+export const fallbackName: Schema&lt;Name, Name, Validation.accept&gt; =
+  schemaUnion([checkedName, name])</code></pre></div><div class="code-panel" data-tab="Effect-TS" data-check-id="book-core1-general-union"><pre tabindex="0"><code class="language-typescript">import { Context, Effect, Schema, SchemaIssue, SchemaTransformation } from &quot;effect&quot;
+
+const Int = Schema.Finite.check(Schema.makeFilter(
+  (value) =&gt; Number.isSafeInteger(value) || &quot;expected a safe integer&quot;
+))
+const Scalar = Schema.Union([Schema.String, Int])
+
+class Validation extends Context.Service&lt;Validation, {
+  readonly accept: (value: string) =&gt; Effect.Effect&lt;string, SchemaIssue.Issue&gt;
+}&gt;()(&quot;showcase#Validation&quot;) {}
+
+const checkedName = Schema.String.pipe(Schema.decodeTo(
+  Schema.String,
+  SchemaTransformation.transformEffect({
+    decode: (value) =&gt; Validation.use((service) =&gt; service.accept(value)),
+    encode: Effect.succeed
+  })
+))
+const FallbackName = Schema.Union([checkedName, Schema.String])</code></pre></div></figure>
+<p>The scalar accepts strings or safe integers. The name union tries the service transformation first; Schema issues permit string fallback. First success wins. Decoding requires Validation; defects and interruption propagate.</p>
+<figure data-ui class="code" data-tabs data-check="book-core1-nullable"><figcaption>Preserve or omit null <a href="effektive-examples/core1.eff">Source</a></figcaption><div class="code-panel" data-tab="Effektive"><pre tabindex="0"><code class="language-effektive">type Name = string
+type Nil = null
+type Nullable = Name | Nil
+type NullableRecord = { name?: Nullable }
+type OptionalName = { name?: Name }
+const name: Schema&lt;Name&gt; = schema()
+const nil: Schema&lt;Nil&gt; = schema()
+const nullable: Schema&lt;Nullable&gt; = schemaUnion([name, nil])
+export const preserveNull: Schema&lt;NullableRecord&gt; =
+  schemaStruct({ name: schemaOptionalKey(nullable) })
+export const omitNull: Schema&lt;OptionalName, NullableRecord&gt; =
+  schemaStruct({ name: schemaNullToMissingKey(name) })
+export const missingName = (): NullableRecord =&gt; ({})
+export const clearedName = (): NullableRecord =&gt; ({ name: null })</code></pre></div><div class="code-panel" data-tab="Effect-TS" data-check-id="book-core1-nullable"><pre tabindex="0"><code class="language-typescript">import { Option, Schema, SchemaGetter } from &quot;effect&quot;
+
+const Nullable = Schema.Union([Schema.String, Schema.Null])
+const PreserveNull = Schema.Struct({
+  name: Schema.optionalKey(Nullable)
+})
+const OmitNull = Schema.Struct({
+  name: Schema.optionalKey(Nullable).pipe(Schema.decodeTo(
+    Schema.optionalKey(Schema.String),
+    {
+      decode: SchemaGetter.transformOptional(
+        Option.filter((value) =&gt; value !== null)
+      ),
+      encode: SchemaGetter.transformOptional((value) =&gt; value)
+    }
+  ))
+})
+const missingName = (): typeof PreserveNull.Type =&gt; ({})
+const clearedName = (): typeof PreserveNull.Type =&gt; ({ name: null })</code></pre></div></figure>
+<p>preserveNull retains null; omitNull decodes null to absence. Both preserve absent keys and omit absent values during encoding. Both reject explicit undefined.</p>
+<figure data-ui class="code" data-tabs data-check="book-core1-default-encoding"><figcaption>Write or omit decoded defaults <a href="effektive-examples/core1.eff">Source</a></figcaption><div class="code-panel" data-tab="Effektive"><pre tabindex="0"><code class="language-effektive">type Name = string
+type RequiredName = { name: Name }
+type OptionalName = { name?: Name }
+const name: Schema&lt;Name&gt; = schema()
+
+export const omittedDefault: Schema&lt;RequiredName, OptionalName&gt; = schemaStruct({
+  name: schemaDefaultKey(name, (): Name =&gt; &quot;Anonymous&quot;, { encodingStrategy: &quot;omit&quot; })
+})
+export const passedDefault: Schema&lt;RequiredName, OptionalName&gt; = schemaStruct({
+  name: schemaDefaultKey(name, (): Name =&gt; &quot;Anonymous&quot;, { encodingStrategy: &quot;passthrough&quot; })
+})</code></pre></div><div class="code-panel" data-tab="Effect-TS" data-check-id="book-core1-default-encoding"><pre tabindex="0"><code class="language-typescript">import { Effect, Schema } from &quot;effect&quot;
+
+const OmittedDefault = Schema.Struct({
+  name: Schema.String.pipe(Schema.withDecodingDefaultTypeKey(
+    Effect.succeed(&quot;Anonymous&quot;),
+    { encodingStrategy: &quot;omit&quot; }
+  ))
+})
+const PassedDefault = Schema.Struct({
+  name: Schema.String.pipe(Schema.withDecodingDefaultTypeKey(
+    Effect.succeed(&quot;Anonymous&quot;),
+    { encodingStrategy: &quot;passthrough&quot; }
+  ))
+})</code></pre></div></figure>
+<p>Absent names decode to Anonymous. OmittedDefault omits every valid name during encoding; PassedDefault writes it. No third argument means passthrough. Omission skips the encoder but retains static service requirements.</p>
+<figure data-ui class="code" data-tabs data-check="book-core1-null-default"><figcaption>Default absent or null fields <a href="effektive-examples/core1.eff">Source</a></figcaption><div class="code-panel" data-tab="Effektive"><pre tabindex="0"><code class="language-effektive">type Name = string
+type Nil = null
+type RequiredName = { name: Name }
+type NullableRecord = { name?: Name | Nil }
+const name: Schema&lt;Name&gt; = schema()
+
+export const defaultedNull: Schema&lt;RequiredName, NullableRecord&gt; = schemaStruct({
+  name: schemaDefaultKey(name, (): Name =&gt; &quot;Anonymous&quot;, { on: &quot;null&quot; })
+})
+export const readMissingName = (): RequiredName fails SchemaError =&gt; schemaDecode(defaultedNull, {})
+export const readClearedName = (): RequiredName fails SchemaError =&gt; schemaDecode(defaultedNull, { name: null })</code></pre></div><div class="code-panel" data-tab="Effect-TS" data-check-id="book-core1-null-default"><pre tabindex="0"><code class="language-typescript">import { Effect, Option, Schema, SchemaGetter } from &quot;effect&quot;
+
+const DefaultedNull = Schema.Struct({
+  name: Schema.optionalKey(Schema.NullOr(Schema.String)).pipe(
+    Schema.decodeTo(Schema.String, {
+      decode: SchemaGetter.transformOptionalEffect((input) =&gt; {
+        const present = Option.filter(input, (value) =&gt; value !== null)
+        return Option.isSome(present)
+          ? Effect.succeed(present)
+          : Effect.sync(() =&gt; Option.some(&quot;Anonymous&quot;))
+      }),
+      encode: SchemaGetter.passthrough()
+    })
+  )
+})
+const readMissingName = () =&gt; Schema.decodeUnknownEffect(DefaultedNull)({})
+const readClearedName = () =&gt; Schema.decodeUnknownEffect(DefaultedNull)({ name: null })</code></pre></div></figure>
+<p>Both readers produce <code>{ name: "Anonymous" }</code>. Present strings skip defaults; explicit undefined fails. Encoding writes name unless omit is selected. Each missing-or-null decode runs the default, which may require services. The wrapped Schema must exclude null in both directions.</p>
+<figure data-ui class="code" data-tabs data-check="book-core1-encoded-default"><figcaption>Decode wire defaults <a href="effektive-examples/core1.eff">Source</a></figcaption><div class="code-panel" data-tab="Effektive"><pre tabindex="0"><code class="language-effektive">type Text = string
+type Int = int
+type RequiredScore = { score: Int }
+type WireRecord = { score?: Text }
+service Wire {
+  parse(value: Text): Int fails SchemaIssue
+  print(value: Int): Text fails SchemaIssue
+}
+const wireText: Schema&lt;Text&gt; = schema()
+const integer: Schema&lt;Int&gt; = schema()
+const wireScore: Schema&lt;Int, Text, Wire.parse, Wire.print&gt; = schemaTransform(
+  wireText, integer,
+  (value: Text): Int =&gt; Wire.parse(value),
+  (value: Int): Text =&gt; Wire.print(value)
+)
+export const encodedDefault: Schema&lt;RequiredScore, WireRecord, Wire.parse, Wire.print&gt; =
+  schemaStruct({ score: schemaDefaultKey(wireScore,
+    (): Text =&gt; &quot;41&quot;, { on: &quot;encoded&quot;, encodingStrategy: &quot;omit&quot; }) })</code></pre></div><div class="code-panel" data-tab="Effect-TS" data-check-id="book-core1-encoded-default"><pre tabindex="0"><code class="language-typescript">import {
+  Context, Effect, Schema, SchemaIssue, SchemaTransformation
+} from &quot;effect&quot;
+
+class Wire extends Context.Service&lt;Wire, {
+  readonly parse: (value: string) =&gt; Effect.Effect&lt;number, SchemaIssue.Issue&gt;
+  readonly print: (value: number) =&gt; Effect.Effect&lt;string, SchemaIssue.Issue&gt;
+}&gt;()(&quot;Wire&quot;) {}
+
+const WireScore = Schema.String.pipe(Schema.decodeTo(
+  Schema.Int,
+  SchemaTransformation.transformEffect({
+    decode: (value) =&gt; Wire.use((service) =&gt; service.parse(value)),
+    encode: (value) =&gt; Wire.use((service) =&gt; service.print(value))
+  })
+))
+const EncodedDefault = Schema.Struct({
+  score: WireScore.pipe(Schema.withDecodingDefaultKey(
+    Effect.sync(() =&gt; &quot;41&quot;), { encodingStrategy: &quot;omit&quot; }
+  ))
+})</code></pre></div></figure>
+<p>Absent score supplies "41" to Wire.parse; present text skips the default. Encoding runs Wire.print and validates output before omission, retaining encoder failures. Decoded-default omission skips the encoder. Without omit, encoding writes the text.</p>
+<figure data-ui class="code" data-tabs data-check="book-core1-constructor"><figcaption>Factory defaults <a href="effektive-examples/core1.eff">Source</a></figcaption><div class="code-panel" data-tab="Effektive"><pre tabindex="0"><code class="language-effektive">type Int = int
+type ConstructorInput = { score?: Int }
+type ConstructorRecord = { score: Int }
+const integer: Schema&lt;Int&gt; = schema()
+const constructorRecord: Schema&lt;ConstructorRecord&gt; = schemaStruct({ score: integer })
+
+export const makeScore = (input: ConstructorInput): ConstructorRecord fails SchemaIssue =&gt; {
+  const score = match input.score { Some(value) =&gt; value, None =&gt; 4 }
+  schemaMake(constructorRecord, { score: score })
+}</code></pre></div><div class="code-panel" data-tab="Effect-TS" data-check-id="book-core1-constructor"><pre tabindex="0"><code class="language-typescript">import { Effect, Schema } from &quot;effect&quot;
+
+const Integer = Schema.Finite.check(Schema.makeFilter(
+  (value) =&gt; Number.isSafeInteger(value) || &quot;expected a safe integer&quot;
+))
+const ConstructorRecord = Schema.Struct({ score: Integer })
+const makeScore = (input: { readonly score?: number }) =&gt;
+  Effect.suspend(() =&gt; ConstructorRecord.makeEffect({
+    score: input.score === undefined ? 4 : input.score
+  }))</code></pre></div></figure>
+<p>makeScore defaults score to 4 before schemaMake validation. Decoded and wire data require score. Construction may fail with SchemaIssue; neither wire decoder nor encoder runs. These defaults belong to the factory.</p>
+<figure data-ui class="code" data-tabs data-check="book-core1-constructor-metadata"><figcaption>Constructor inputs <a href="effektive-examples/core1.eff">Source</a></figcaption><div class="code-panel" data-tab="Effektive"><pre tabindex="0"><code class="language-effektive">type Int = int
+type DefaultRecord = { score: Int }
+type DefaultInput = { score?: Int }
+type NestedRecord = { settings: DefaultRecord }
+type NestedInput = { settings?: DefaultInput }
+const integer: Schema&lt;Int&gt; = schema()
+
+export const constructorDefaults: Schema&lt;DefaultRecord, DefaultRecord, never, never, DefaultInput&gt; =
+  schemaStruct({ score: schemaConstructorDefault(integer, (): Int =&gt; 4) })
+export const nestedDefaults: Schema&lt;NestedRecord, NestedRecord, never, never, NestedInput&gt; =
+  schemaStruct({ settings: schemaConstructorDefault(constructorDefaults,
+    (): DefaultInput =&gt; ({})) })
+export const constructorDefaultsList: Schema&lt;DefaultRecord[], DefaultRecord[], never, never, DefaultInput[]&gt; =
+  schemaArray(constructorDefaults)
+export const constructDefaults = (input: NestedInput): NestedRecord fails SchemaIssue =&gt;
+  schemaMake(nestedDefaults, input)</code></pre></div><div class="code-panel" data-tab="Effect-TS" data-check-id="book-core1-constructor-metadata"><pre tabindex="0"><code class="language-typescript">import { Effect, Schema } from &quot;effect&quot;
+
+const Integer = Schema.Finite.check(Schema.makeFilter(
+  (value) =&gt; Number.isSafeInteger(value) || &quot;expected a safe integer&quot;
+))
+const ConstructorDefaults = Schema.Struct({
+  score: Integer.pipe(Schema.withConstructorDefault(Effect.succeed(4)))
+})
+const NestedDefaults = Schema.Struct({
+  settings: ConstructorDefaults.pipe(
+    Schema.withConstructorDefault(Effect.succeed({}))
+  )
+})
+const ConstructorDefaultsList = Schema.Array(ConstructorDefaults)
+const constructDefaults = (input: typeof NestedDefaults[&quot;~type.make.in&quot;]) =&gt;
+  NestedDefaults.makeEffect(input)</code></pre></div></figure>
+<p><code>constructDefaults({})</code> builds <code>{ settings: { score: 4 } }</code>. Schema parameter five records make input; decoded and wire records require both fields. Arrays retain element make inputs, so constructorDefaultsList accepts <code>[{}]</code>. Defaults run during construction only.</p>
+<figure data-ui class="code" data-tabs data-check="book-core1-constructor-optional"><figcaption>Wire defaults and constructor inputs <a href="effektive-examples/core1.eff">Source</a></figcaption><div class="code-panel" data-tab="Effektive"><pre tabindex="0"><code class="language-effektive">type Int = int
+type DefaultRecord = { score: Int }
+type DefaultInput = { score?: Int }
+type SettingsRecord = { settings: DefaultRecord }
+type SettingsWire = { settings?: DefaultRecord }
+type SettingsInput = { settings: DefaultInput }
+type OptionalSettingsInput = { settings?: DefaultInput }
+type NullableSettingsWire = { settings?: DefaultRecord | null }
+const integer: Schema&lt;Int&gt; = schema()
+const constructorDefaults: Schema&lt;DefaultRecord, DefaultRecord, never, never, DefaultInput&gt; =
+  schemaStruct({ score: schemaConstructorDefault(integer, (): Int =&gt; 4) })
+
+export const wireDefaultSettings: Schema&lt;SettingsRecord, SettingsWire, never, never, SettingsInput&gt; =
+  schemaStruct({ settings: schemaDefaultKey(constructorDefaults,
+    (): DefaultRecord =&gt; ({ score: 8 })) })
+export const optionalSettings: Schema&lt;SettingsWire, NullableSettingsWire, never, never, OptionalSettingsInput&gt; =
+  schemaStruct({ settings: schemaNullToMissingKey(constructorDefaults) })
+export const constructSettings = (input: SettingsInput): SettingsRecord fails SchemaIssue =&gt;
+  schemaMake(wireDefaultSettings, input)</code></pre></div><div class="code-panel" data-tab="Effect-TS" data-check-id="book-core1-constructor-optional"><pre tabindex="0"><code class="language-typescript">import { Effect, Option, Schema, SchemaGetter } from &quot;effect&quot;
+
+const Integer = Schema.Finite.check(Schema.makeFilter(
+  (value) =&gt; Number.isSafeInteger(value) || &quot;expected a safe integer&quot;
+))
+const ConstructorDefaults = Schema.Struct({
+  score: Integer.pipe(Schema.withConstructorDefault(Effect.succeed(4)))
+})
+const WireDefaultSettings = Schema.Struct({
+  settings: ConstructorDefaults.pipe(
+    Schema.withDecodingDefaultTypeKey(Effect.succeed({ score: 8 }))
+  )
+})
+const OptionalSettings = Schema.Struct({
+  settings: Schema.optionalKey(Schema.NullOr(ConstructorDefaults)).pipe(
+    Schema.decodeTo(Schema.optionalKey(Schema.toType(ConstructorDefaults)), {
+      decode: SchemaGetter.transformOptional(Option.filter((value) =&gt; value !== null)),
+      encode: SchemaGetter.transformOptional((value) =&gt; value)
+    })
+  )
+})
+const constructSettings = (input: typeof WireDefaultSettings[&quot;~type.make.in&quot;]) =&gt;
+  WireDefaultSettings.makeEffect(input)</code></pre></div></figure>
+<p><code>constructSettings({ settings: {} })</code> fills score with 4. Decoding <code>{}</code> defaults settings to <code>{ score: 8 }</code>. Wire defaults leave settings required for construction. optionalSettings permits absence, filling score when settings is present.</p><p>Null means missing only on the wire. Optional transformations use target make inputs. Option fields require None or Some with complete decoded data.</p>
+<figure data-ui class="code" data-tabs data-check="book-core1-constructor-recursive"><figcaption>Recursive constructor inputs <a href="effektive-examples/core1.eff">Source</a></figcaption><div class="code-panel" data-tab="Effektive"><pre tabindex="0"><code class="language-effektive">type Int = int
+type Tree = { score: Int, children: Tree[] }
+type TreeInput = { score?: Int, children?: TreeInput[] }
+const integer: Schema&lt;Int&gt; = schema()
+
+export const treeDefaults: Schema&lt;Tree, Tree, never, never, TreeInput&gt; = schemaRecursive(
+  (self: Schema&lt;Tree, Tree, never, never, TreeInput&gt;): Schema&lt;Tree, Tree, never, never, TreeInput&gt; =&gt;
+    schemaStruct({
+      score: schemaConstructorDefault(integer, (): Int =&gt; 4),
+      children: schemaConstructorDefault(schemaArray(self), (): TreeInput[] =&gt; [])
+    })
+)
+export const constructTree = (input: TreeInput): Tree fails SchemaIssue =&gt;
+  schemaMake(treeDefaults, input)</code></pre></div><div class="code-panel" data-tab="Effect-TS" data-check-id="book-core1-constructor-recursive"><pre tabindex="0"><code class="language-typescript">import { Effect, Schema } from &quot;effect&quot;
+
+type Tree = { readonly score: number; readonly children: ReadonlyArray&lt;Tree&gt; }
+type TreeInput = { readonly score?: number; readonly children?: ReadonlyArray&lt;TreeInput&gt; }
+type TreeSchema = Schema.Codec&lt;Tree&gt; &amp; { readonly &quot;~type.make.in&quot;: TreeInput }
+const Integer = Schema.Finite.check(Schema.makeFilter(
+  (value) =&gt; Number.isSafeInteger(value) || &quot;expected a safe integer&quot;
+))
+let body: TreeSchema
+const TreeDefaults: TreeSchema = Schema.suspend(() =&gt; body)
+body = Schema.make&lt;TreeSchema&gt;(Schema.Struct({
+  score: Integer.pipe(Schema.withConstructorDefault(Effect.succeed(4))),
+  children: Schema.Array(TreeDefaults).pipe(
+    Schema.withConstructorDefault(Effect.succeed([]))
+  )
+}).ast)
+const constructTree = (input: TreeInput) =&gt; TreeDefaults.makeEffect(input)</code></pre></div></figure>
+<p><code>constructTree({ children: [{}] })</code> builds <code>{ score: 4, children: [{ score: 4, children: [] }] }</code>. self retains TreeInput for recursive defaults; decoded and wire nodes require both fields. Arrays, optional keys, and tagged unions with terminal branches guard recursion. Constructor wrappers preserve guards; callbacks cannot capture self.</p>
+<figure data-ui class="code" data-tabs data-check="book-core1-recursive-wire"><figcaption>Recursive wire, decoded, and constructor types <a href="effektive-examples/core1.eff">Source</a></figcaption><div class="code-panel" data-tab="Effektive"><pre tabindex="0"><code class="language-effektive">// core1-services.eff
+export type Int = int
+export type Text = string
+export service Wire {
+  parse(value: Text): Int fails SchemaIssue
+  print(value: Int): Text fails SchemaIssue
+}
+
+// core1.eff
+imports Wire from &quot;./core1-services.eff&quot;
+import { Int, Text } from &quot;./core1-services.eff&quot;
+
+type Tree = { score: Int, children: Tree[] }
+type WireTree = { score: Text, children: WireTree[] }
+type TreeInput = { score?: Int, children?: TreeInput[] }
+const integer: Schema&lt;Int&gt; = schema()
+const wireText: Schema&lt;Text&gt; = schema()
+const wireScore: Schema&lt;Int, Text, Wire.parse, Wire.print&gt; = schemaTransform(
+  wireText, integer,
+  (value: Text): Int =&gt; Wire.parse(value),
+  (value: Int): Text =&gt; Wire.print(value)
+)
+export const wireTree: Schema&lt;Tree, WireTree, Wire.parse, Wire.print, TreeInput&gt; = schemaRecursive(
+  (self: Schema&lt;Tree, WireTree, Wire.parse, Wire.print, TreeInput&gt;): Schema&lt;Tree, WireTree, Wire.parse, Wire.print, TreeInput&gt; =&gt;
+    schemaStruct({
+      score: schemaConstructorDefault(wireScore, (): Int =&gt; 4),
+      children: schemaConstructorDefault(schemaArray(self), (): TreeInput[] =&gt; [])
+    })
+)
+export const readWireTree = (input: unknown): Tree fails SchemaError =&gt;
+  schemaDecode(wireTree, input)
+export const writeWireTree = (input: Tree): WireTree fails SchemaError =&gt;
+  schemaEncode(wireTree, input)
+export const constructWireTree = (input: TreeInput): Tree fails SchemaIssue =&gt;
+  schemaMake(wireTree, input)</code></pre></div><div class="code-panel" data-tab="Effect-TS" data-check-id="book-core1-recursive-wire"><pre tabindex="0"><code class="language-typescript">import { Context, Effect, Schema, SchemaIssue, SchemaTransformation } from &quot;effect&quot;
+
+type Tree = { readonly score: number; readonly children: ReadonlyArray&lt;Tree&gt; }
+type WireTree = { readonly score: string; readonly children: ReadonlyArray&lt;WireTree&gt; }
+type TreeInput = { readonly score?: number; readonly children?: ReadonlyArray&lt;TreeInput&gt; }
+class Wire extends Context.Service&lt;Wire, {
+  readonly parse: (value: string) =&gt; Effect.Effect&lt;number, SchemaIssue.Issue&gt;
+  readonly print: (value: number) =&gt; Effect.Effect&lt;string, SchemaIssue.Issue&gt;
+}&gt;()(&quot;recursive-wire#Wire&quot;) {}
+type TreeCodec = Schema.Codec&lt;Tree, WireTree, Wire, Wire&gt; &amp; { readonly &quot;~type.make.in&quot;: TreeInput }
+const Integer = Schema.Finite.check(Schema.makeFilter(
+  (value) =&gt; Number.isSafeInteger(value) || &quot;expected a safe integer&quot;
+))
+const WireScore = Schema.String.pipe(Schema.decodeTo(Integer,
+  SchemaTransformation.transformEffect({
+    decode: (value) =&gt; Wire.use((service) =&gt; service.parse(value)),
+    encode: (value) =&gt; Wire.use((service) =&gt; service.print(value))
+  })
+))
+let body: TreeCodec
+const WireTreeSchema: TreeCodec = Schema.suspend(() =&gt; body)
+body = Schema.make&lt;TreeCodec&gt;(Schema.Struct({
+  score: WireScore.pipe(Schema.withConstructorDefault(Effect.succeed(4))),
+  children: Schema.Array(WireTreeSchema).pipe(
+    Schema.withConstructorDefault(Effect.succeed([]))
+  )
+}).ast)
+const readWireTree = Schema.decodeUnknownEffect(WireTreeSchema)
+const writeWireTree = Schema.encodeEffect(WireTreeSchema)
+const constructWireTree = (input: TreeInput) =&gt; WireTreeSchema.makeEffect(input)</code></pre></div></figure>
+<p>At each node, readWireTree uses Wire.parse and writeWireTree uses Wire.print. <code>constructWireTree({ children: [{}] })</code> supplies integer defaults without wire services. self retains decoded Tree, encoded WireTree, and partial TreeInput. Optional-key and tagged recursion also support distinct wire types.</p>
+<figure data-ui class="code" data-tabs data-check="book-core1-constructor-fields"><figcaption>Wire and constructor defaults <a href="effektive-examples/core1.eff">Source</a></figcaption><div class="code-panel" data-tab="Effektive"><pre tabindex="0"><code class="language-effektive">type Int = int
+type Required = { score: Int }
+type Optional = { score?: Int }
+const integer: Schema&lt;Int&gt; = schema()
+
+export const dualDefaultField: SchemaEncodedOptionalConstructorDefault&lt;Int&gt; =
+  schemaConstructorDefault(schemaDefaultKey(integer, (): Int =&gt; 8), (): Int =&gt; 4)
+export const dualDefaultScores: Schema&lt;Required, Optional, never, never, Optional&gt; =
+  schemaStruct({ score: dualDefaultField })
+export const optionalDefaultField: SchemaOptionalConstructorDefault&lt;Int&gt; =
+  schemaConstructorDefault(schemaOptionalKey(integer), (): Int =&gt; 4)
+export const optionalDefaultScores: Schema&lt;Optional&gt; =
+  schemaStruct({ score: optionalDefaultField })
+export const makeDualDefaults = (input: Optional): Required fails SchemaIssue =&gt;
+  schemaMake(dualDefaultScores, input)</code></pre></div><div class="code-panel" data-tab="Effect-TS" data-check-id="book-core1-constructor-fields"><pre tabindex="0"><code class="language-typescript">import { Effect, Schema } from &quot;effect&quot;
+
+const Integer = Schema.Finite.check(Schema.makeFilter(
+  (value) =&gt; Number.isSafeInteger(value) || &quot;expected a safe integer&quot;
+))
+const DualDefaultField = Integer.pipe(
+  Schema.withDecodingDefaultTypeKey(Effect.succeed(8)),
+  Schema.withConstructorDefault(Effect.succeed(4))
+)
+const DualDefaultScores = Schema.Struct({ score: DualDefaultField })
+const OptionalDefaultField = Schema.optionalKey(Integer).pipe(
+  Schema.withConstructorDefault(Effect.succeed(4))
+)
+const OptionalDefaultScores = Schema.Struct({ score: OptionalDefaultField })
+const makeDualDefaults = (input: typeof DualDefaultScores[&quot;~type.make.in&quot;]) =&gt;
+  DualDefaultScores.makeEffect(input)</code></pre></div></figure>
+<p><code>makeDualDefaults({})</code> builds <code>{ score: 4 }</code>; dualDefaultScores decodes <code>{}</code> to <code>{ score: 8 }</code>. Decoded data requires score; wire and make inputs permit absence. optionalDefaultScores permits decoded and wire absence: decoding preserves absence, construction supplies 4. Descriptors retain presence and constructor metadata across annotations and imports.</p>
+<figure data-ui class="code" data-tabs data-check="book-core1-constructor-order"><figcaption>Defaults after field adapters <a href="effektive-examples/core1.eff">Source</a></figcaption><div class="code-panel" data-tab="Effektive"><pre tabindex="0"><code class="language-effektive">type Int = int
+type Required = { score: Int }
+type Optional = { score?: Int }
+type OptionScores = { score: Option&lt;Int&gt; }
+const integer: Schema&lt;Int&gt; = schema()
+const constructorFirst: SchemaConstructorDefault&lt;Int&gt; =
+  schemaConstructorDefault(integer, (): Int =&gt; 4)
+
+export const adapterAfterDefault: SchemaEncodedOptionalConstructorDefault&lt;Int&gt; =
+  schemaDefaultKey(constructorFirst, (): Int =&gt; 8)
+export const adapterAfterDefaults: Schema&lt;Required, Optional, never, never, Optional&gt; =
+  schemaStruct({ score: adapterAfterDefault })
+export const optionAfterDefaults: Schema&lt;OptionScores, Optional&gt; =
+  schemaStruct({ score: schemaOptionFromOptionalKey(constructorFirst) })
+export const makeAdapterAfterDefault = (input: Optional): Required fails SchemaIssue =&gt;
+  schemaMake(adapterAfterDefaults, input)
+export const makeAdaptedOption = (input: OptionScores): OptionScores fails SchemaIssue =&gt;
+  schemaMake(optionAfterDefaults, input)</code></pre></div><div class="code-panel" data-tab="Effect-TS" data-check-id="book-core1-constructor-order"><pre tabindex="0"><code class="language-typescript">import { Effect, Option, Schema } from &quot;effect&quot;
+
+const Integer = Schema.Finite.check(Schema.makeFilter(
+  (value) =&gt; Number.isSafeInteger(value) || &quot;expected a safe integer&quot;
+))
+const ConstructorFirst = Integer.pipe(
+  Schema.withConstructorDefault(Effect.succeed(4))
+)
+const AdapterAfterDefault = ConstructorFirst.pipe(
+  Schema.withDecodingDefaultTypeKey(Effect.succeed(8))
+)
+const AdapterAfterDefaults = Schema.Struct({ score: AdapterAfterDefault })
+const OptionAfterDefaults = Schema.Struct({
+  score: Schema.OptionFromOptionalKey(ConstructorFirst)
+})
+const makeAdapterAfterDefault = (input: typeof AdapterAfterDefaults[&quot;~type.make.in&quot;]) =&gt;
+  AdapterAfterDefaults.makeEffect(input)
+const makeAdaptedOption = (input: { readonly score: Option.Option&lt;number&gt; }) =&gt;
+  OptionAfterDefaults.makeEffect(input)</code></pre></div></figure>
+<p><code>makeAdapterAfterDefault({})</code> builds <code>{ score: 4 }</code>; decoding <code>{}</code> supplies score 8. Unary presence and wire-default adapters preserve constructor defaults in either order. Optional bridges inherit defaults from decoded targets only. Option resets inherited defaults: makeAdaptedOption requires <code>score: None</code> or <code>score: Some(value)</code>. An Option constructor default may follow the reset.</p><figure data-ui class="code" data-tabs data-check="book-core1-recursive-adapters"><figcaption>Carry recursive fields through wire defaults <a href="effektive-examples/core1.eff">Source</a></figcaption><div class="code-panel" data-tab="Effektive"><pre tabindex="0"><code class="language-effektive">type Int = int
+type Tree = { score: Int, children: Tree[] }
+type TreeInput = { score?: Int, children?: TreeInput[] }
+const integer: Schema&lt;Int&gt; = schema()
+type DefaultWireTree = { score: Int, children?: DefaultWireTree[] }
+export const defaultedTree: Schema&lt;Tree,DefaultWireTree,never,never,TreeInput&gt; = schemaRecursive(
+  (self: Schema&lt;Tree,DefaultWireTree,never,never,TreeInput&gt;): Schema&lt;Tree,DefaultWireTree,never,never,TreeInput&gt; =&gt;
+    schemaStruct({
+      score: schemaConstructorDefault(integer, (): Int =&gt; 4),
+      children: schemaDefaultKey(
+        schemaConstructorDefault(schemaArray(self), (): TreeInput[] =&gt; []),
+        (): Tree[] =&gt; [{ score: 8, children: [] }])
+    })
+)
+export const makeDefaultedTree = (input: TreeInput): Tree fails SchemaIssue =&gt;
+  schemaMake(defaultedTree, input)
+export const readDefaultedTree = (input: unknown): Tree fails SchemaError =&gt;
+  schemaDecode(defaultedTree, input)</code></pre></div><div class="code-panel" data-tab="Effect-TS" data-check-id="book-core1-recursive-adapters"><pre tabindex="0"><code class="language-typescript">import { Effect, Schema } from &quot;effect&quot;
+
+type Tree = { readonly score: number; readonly children: ReadonlyArray&lt;Tree&gt; }
+type WireTree = { readonly score: number; readonly children?: ReadonlyArray&lt;WireTree&gt; }
+type TreeInput = { readonly score?: number; readonly children?: ReadonlyArray&lt;TreeInput&gt; }
+type View = Schema.Codec&lt;Tree, WireTree&gt; &amp; { readonly &quot;~type.make.in&quot;: TreeInput }
+const Integer = Schema.Finite.check(Schema.makeFilter(
+  (value) =&gt; Number.isSafeInteger(value) || &quot;expected a safe integer&quot;
+))
+let body: View
+const DefaultedTree: View = Schema.suspend(() =&gt; body)
+body = Schema.make&lt;View&gt;(Schema.Struct({
+  score: Integer.pipe(Schema.withConstructorDefault(Effect.succeed(4))),
+  children: Schema.Array(DefaultedTree).pipe(
+    Schema.withConstructorDefault(Effect.succeed([])),
+    Schema.withDecodingDefaultTypeKey(Effect.succeed([{ score: 8, children: [] }]))
+  )
+}).ast)
+const makeDefaultedTree = (input: TreeInput) =&gt; DefaultedTree.makeEffect(input)
+const readDefaultedTree = Schema.decodeUnknownEffect(DefaultedTree)</code></pre></div></figure>
+<p><code>makeDefaultedTree({ children: [{}] })</code> supplies score 4 and empty arrays for leaf children. <code>readDefaultedTree({ score: 1 })</code> uses the wire default: <code>{ score: 1, children: [{ score: 8, children: [] }] }</code>. Arrays preserve guards through default adapters; null-as-missing guards optional recursive links. Optional bridges retain Schema guards; defaults and getters cannot capture self.</p>
+<nav class="section-nav" aria-label="Navigation for section 10"><a href="#nominal-types">Previous: Type identity</a><a href="#modules-reference">Next: Modules and typed IR</a></nav></section>
+<section class="section" id="modules-reference" aria-labelledby="heading-modules-reference"><h2 id="heading-modules-reference">Modules and typed IR</h2><p class="lead">Modules export named declarations. Typed interfaces define host integration.</p><figure data-ui class="code" data-tabs data-check="book-modules" data-check-requires="users-declarations users-lookup"><figcaption>Service headers, imports, and exports</figcaption><div class="code-panel" data-tab="Effektive"><pre tabindex="0"><code class="language-effektive">imports Users from &quot;./users-service.eff&quot;
+import {
+  User,
+  UserId
+} from &quot;./users-service.eff&quot;
+import { getUser } from &quot;./users.eff&quot;
+
+export const load = (id: UserId): User =&gt; getUser(id)</code></pre></div><div class="code-panel" data-tab="Effect-TS"><pre tabindex="0"><code class="language-typescript">import { Effect } from &quot;effect&quot;
+import { type User, type UserId, UserMissing, StoreUnavailable, Users } from &quot;./users-service.ts&quot;
+import { getUser } from &quot;./users.ts&quot;
+
+export const load = (id: UserId): Effect.Effect&lt;
+  User,
+  UserMissing | StoreUnavailable,
+  Users
+&gt; =&gt; getUser(id)</code></pre></div></figure>
+<p>A service header imports a contract by explicit path. Headers precede ordinary imports and declarations.</p>
+<p>Headers bound external requirements from calls and produced output contracts. Ordinary imports grant no service allowance.</p>
+<p>The bound includes deferred values stored or passed to functions, even when the result is void.</p>
+<p>Input types alone need no header. Forwarding inputs and identity updates preserve this exemption.</p>
+<p>Provision around a write does not supply the stored computation. Provision inside that computation can remove its service requirement.</p>
+<p>With service headers, all functions infer omitted with clauses. Written clauses remain optional upper bounds.</p>
+<p>Version 0 permits named imports from relative .eff files and registered host modules. It excludes default imports, namespaces, renaming, re-exports, and package resolution.</p>
+<p>Module constants require pure initializers. Imports cannot execute service operations. The host supplies providers, then calls an entry function.</p>
+<p>The transpiler parses, resolves identities, infers inputs and effects, checks contracts, specializes builtins, and emits typed IR.</p>
+<p>IR version 7 records predicates, checked input contracts, entry validation, and proof certificates. The backend emits TypeScript from checked IR.</p>
+<p>Types, errors, services, capabilities, values, and locals receive stable identities. Equal names in separate modules remain distinct.</p>
+<div class="table-wrap"><table><thead><tr><th scope="col">Source form</th><th scope="col">Meaning</th></tr></thead><tbody><tr><td>A fails E with R</td><td>Result A, failures E, requirements R. The compiler infers omitted fails clauses.</td></tr><tr><td>fail(ErrorName({ fields }))</td><td>Normal execution stops with the declared error.</td></tr><tr><td>match value { Some(x) =&gt; ..., None =&gt; ... }</td><td>Match both option cases.</td></tr><tr><td>try { expression } catch { ErrorName(e) =&gt; ... }</td><td>Catch matching failures from the protected expression.</td></tr><tr><td>value |&gt; f(a)</td><td>Evaluate value once; call f(value, a).</td></tr><tr><td>retry(() =&gt; op(), { times: 2 })</td><td>Allow one attempt and two retries.</td></tr><tr><td>provide(P, () =&gt; op())</td><td>Run op with provider P.</td></tr><tr><td>({ ...record, field: value })</td><td>Create an updated record.</td></tr><tr><td>type Name = T</td><td>Declare identity, except for non-literal unions and bare-name aliases. Records listed by a union in their module receive tags.</td></tr><tr><td>type Name = T where value =&gt; predicate</td><td>Add a checked predicate to an identity or tagged record.</td></tr><tr><td>map, filter, fold</td><td>Traverse left to right. Effectful callbacks give calls effect execution mode.</td></tr></tbody></table></div>
+<p>IR references stable identities and distinguishes ordinary calls from service operations. Nodes preserve retry, provide, catch, identity constructors, and source positions.</p>
+<p>Pipeline lowering creates fresh bindings and call or service-operation nodes, preserving single evaluation, stage order, and diagnostic positions.</p>
+<p>Acceptance fixtures must cover evaluation order, branches, failures, contract rejection, closure deferral, retry, and provider resolution. Pipeline fixtures must also check stage identity.</p>
+<aside class="exercise"><h3>Exercise</h3><p>Why does the independent validator recompute types, effects, and refinement obligations?</p><details><summary>Show the answer</summary><p>IR annotations can be inconsistent; certificates can be forged. Reconstruction checks contracts and proofs against the IR.</p></details></aside>
+<p>The <a href="https://github.com/srdjan/effektive-lang">compiler repository</a> provides parsing, checking, independent IR validation, transpilation, CLI, and runtime fixtures for supported Core 1. The specification defines limits.</p>
+<p>All Effect-TS tabs follow official v4 documentation and pass strict TypeScript checks against Effect 4.1.2 with chapter dependencies.</p>
+<p>References: <a href="https://effect.website/docs/v4/data-types/option">Option</a> and <a href="https://effect.website/docs/v4/schema/basic-usage">Schema</a>.</p>
+<p>Schema references: <a href="https://effect.website/docs/v4/schema/filters">filters</a> and <a href="https://effect.website/docs/v4/schema/advanced-usage">brands</a>.</p>
+<p>The <a href="effektive-spec.html#application-acceptance">acceptance rule</a> requires precise contracts plus failure, cancellation, and cleanup checks. Service workflow, scheduled worker, and stream processor pass using existing forms. Effektive owns orchestration; host adapters supply drivers and entry points. Package interoperability remains deferred as gap item 9.</p>
+<p>The <a href="effektive-examples/scheduled-worker/README.md">scheduled worker</a> meets the language stopping rule with existing forms. Its <a href="effektive-examples/scheduled-worker/worker.eff">source</a> owns repetition, transient retry, validation, and release; the <a href="effektive-examples/scheduled-worker/driver.ts">driver</a> supplies jobs and primitive waits. Ten <a href="effektive-examples/scheduled-worker/checks.ts">checks</a> cover timing, replay, failures, shutdown, and completed cleanup. The <a href="effektive-examples/scheduled-worker/reference.ts">native reference</a> compares Effect repetition and retry policies.</p>
+<p>The <a href="effektive-examples/service-workflow/README.md">service workflow</a> uses existing forms. Its <a href="effektive-examples/service-workflow/workflow.eff">source</a> validates requests, checks rules, obtains prices, and retries transient writes. The registered <a href="effektive-examples/service-workflow/adapter.ts">SQL adapter</a> saves atomically, validates receipts, and releases connections. Fifteen <a href="effektive-examples/service-workflow/checks.ts">checks</a> cover transactions, failures, retry timing, replay, and cancellation.</p><p>Body interruption awaits rollback and release. Cancellation after COMMIT starts may preserve committed rows. The recording driver performs no external I/O.</p>
+<p>The <a href="effektive-examples/stream-processor/README.md">stream processor</a> keeps its pipeline in <a href="effektive-examples/stream-processor/processor.eff">Effektive</a>. It transforms live input at concurrency two, preserves order, selects fallbacks, and batches writes under backpressure. Thirteen <a href="effektive-examples/stream-processor/checks.ts">checks</a> cover success, failures, replay, and awaited shutdown.</p><p>Native transduction may emit partial batches before input failure. Typed recovery retains native mixed-cause limits. The <a href="effektive-examples/stream-processor/driver.ts">recording driver</a> performs no external I/O. The stopping rule requires no automatic API additions; release acceptance remains separate. The <a href="effektive-spec.html#remaining-gaps">gap record</a> lists open APIs, deferred item 9, and evidence limits.</p>
+<p>The <a href="effektive-examples/order-lifecycle/README.md">order lifecycle</a> demonstrates type identity, outside acceptance gates. <a href="effektive-examples/order-lifecycle/contracts.eff">contracts.eff</a> and <a href="effektive-examples/order-lifecycle/orders.eff">orders.eff</a> define four tagged states across two modules, match by name, and price recursive rules. JSON decoding uses an untagged record. Nine <a href="effektive-examples/order-lifecycle/checks.ts">checks</a> cover transitions, InvalidTransition, pricing, decoding, and encoded tags.</p>
+<p>Release checks cover editor references, rename, completion, semantic tokens, contract fixes, bundled local CLI and VSIX, and installed editor startup, save, and restart. Playground keyboard and error recovery pass at 375, 720, and 1280 pixels. Seven <a href="effektive-examples/service-workflow/integration_checks.ts">loopback HTTP and SQLite checks</a> cover persistence, failures, rollback, cancellation, and connection close.</p><p>Full release measurements meet the 100 ms budget for the 90th percentile of diagnostic latency on the large synthetic project. Tests include 10,000 distinct edits across three open documents; finite memory observations establish no bound. Manual editor and playground acceptance remains pending. These checks add no source forms; package interoperability remains deferred.</p>
+<p>The provider illustration declares an adapter interface without an implementation. The Core 1 source passes compiler checks, independent IR validation, and strict checking of emitted TypeScript. These checks do not prove runtime equivalence.</p><nav class="section-nav" aria-label="Navigation for section 11"><a href="#core1-showcase">Previous: Core 1 in practice</a><a href="effektive-spec.html">Read the specification</a></nav></section>
+<div class="document-note"><p>Language core 1. Design draft 0.76. November 4, 2026.</p></div></article></div></main><footer class="footer"><div class="footer-top"><div><a class="button" href="effektive-spec.html">Read the specification <span class="arrow-out" aria-hidden="true">↑</span></a></div><nav aria-label="Source files"><a href="typed-ir.ts">Typed IR model</a><a href="effektive-validation.txt">Validation scope</a><a href="fonts/OFL.txt">Font license</a><a href="#top">Back to top</a></nav></div><div class="footer-name" aria-hidden="true">Effektive.</div></footer></body></html>
