@@ -22,10 +22,13 @@ Do not change the `spec-diagnostics` figure. Its `broken` function shows the `fa
 
 ## Decisions
 
-- D1 (diagnostic example): keep the `spec-diagnostics` figure for now. Ask the user.
-- D2 (rule prose): keep the rule prose that describes `fails` as an optional checked upper bound. The compiler 0.15.1 accepts it. Ask the user about the book sentence that advises a written `fails` clause as a guard (`public/index.html:124`).
-- D3 (Effect-TS tabs): keep them unchanged, because the emitted types are identical.
-- D4 (compiler fixture): no change. No file is added or removed.
+The user accepted the recommendation for D1, D2, and D3 on 2026-11-05.
+
+- D1 (diagnostic example): keep the `spec-diagnostics` figure. It shows `failure-contract/001`, and the language still allows a written `fails` clause as an optional guard.
+- D2 (advice in the book): remove "A written fails clause guards against this" from `public/index.html:124`. Keep "Editor inlay hints show the inferred failures." The rule prose on both pages that describes `fails` as an optional checked upper bound stays.
+- D3 (language rule): the compiler keeps the written `fails` clause as an optional guard. No example uses it. No effektive-lang change.
+- D4 (Effect-TS tabs): keep them unchanged, because the emitted types are identical.
+- D5 (compiler fixture): no change. No file is added or removed.
 
 ## Units
 
@@ -51,4 +54,4 @@ U1 and U2 change separate files and run in parallel. Opus reviews each diff, run
 - The compiler website example test in effektive-lang passes 21 of 21 tests. The `spec-core1-effectful-ref` panel builds alone with 0 diagnostics.
 - `deno task typecheck` passes 65 strict units. `deno task test` passes 11 of 12 tests. The failing test, "pages load assets with the deno.json version", also fails at HEAD: the pages link `?v=0.15.0`, and `deno.json` is at 0.15.1.
 - Book page counts after the change: activation 190 and 304, collection wrapper 62 and 144, collection panel 153 and 266, recovery 135 and 230, retry 88 and 156.
-- D1 and D2 wait for the user.
+- D2 removed the advice sentence from the book. D1 and D3 need no edit.

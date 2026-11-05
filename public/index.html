@@ -121,7 +121,7 @@ export const load = (id: UserId): Effect.Effect&lt;
 <p>A module without service headers keeps the earlier rule. An exported function with no written with clause can require no services.</p>
 <p>A local function can omit its result annotation, parameter annotations, fails clause, and with clause. The body determines each omitted contract part.</p>
 <p>Explicit unknown and an omitted input annotation infer equally. An operator alone cannot select an input type.</p>
-<p>An exported function still requires a result annotation. A new failure in its body reaches host TypeScript with no diagnostic. A written fails clause guards against this, and editor inlay hints show the inferred failures.</p>
+<p>An exported function still requires a result annotation. A new failure in its body reaches host TypeScript with no diagnostic. Editor inlay hints show the inferred failures.</p>
 <p>An inferred exported input validates unknown data inside the Effect.</p>
 <p>That entry check adds SchemaError to the inferred failure set. A written fails clause must list SchemaError. Interfaces without bodies keep omitted inputs as unknown.</p>
 <p>Execution mode is separate from failure and requirement sets. A provider can remove every requirement while the computation remains effectful. Empty sets can therefore describe either execution mode.</p>
