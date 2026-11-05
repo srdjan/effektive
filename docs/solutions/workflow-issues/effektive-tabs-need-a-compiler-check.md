@@ -1,7 +1,7 @@
 ---
 title: The site type check does not check the Effektive tabs, so compile them with effektive-lang
 date: 2026-10-17
-last_updated: 2026-11-04
+last_updated: 2026-11-05
 category: workflow-issues
 module: typecheck harness and Effektive figures
 problem_type: workflow_issue
@@ -13,7 +13,8 @@ applies_when:
   - An Effektive figure, exercise, or example file on the site changes
   - A figure gets a new data-check-requires entry
   - An example file in public/effektive-examples imports another file
-tags: [typecheck, effektive-tabs, data-check-requires, data-check-id, effektive-lang, spec-migration, r1, service-headers, website-examples, with-clause]
+  - An edit removes or changes a written fails or with clause in an Effektive example
+tags: [typecheck, effektive-tabs, data-check-requires, data-check-id, effektive-lang, spec-migration, r1, service-headers, website-examples, with-clause, fails-clause, emitted-typescript]
 ---
 
 # The site type check does not check the Effektive tabs, so compile them with effektive-lang
@@ -44,7 +45,9 @@ After a compiler rule change, check the Effektive side with the compiler itself,
 
    The test stages a single-file unit alone, with only the files in its `companions` list (`tests/website_examples_slow_test.ts:71`). When an example file starts to import another file, add that file to `companions` in `fixtures/website-examples.json`. A census test requires one unit for each `.eff` file and each project directory in `public/effektive-examples/` (`tests/website_examples_slow_test.ts:114`). So a new contract file also needs its own unit. The fixture is in effektive-lang, so this change is a second commit in that repository.
 
-When an Effektive panel on the book page changes, measure its character count again. Some paragraphs state the number of non-whitespace characters in a panel, for example "This pair uses 223 non-whitespace characters in Effektive and 304 in Effect-TS". No check compares these numbers with the panels. Count every non-whitespace character of the panel after HTML decoding. Do not estimate.
+When an edit removes or changes a written contract clause, such as `fails` or `with`, also check the Effect-TS tab. A person writes that tab by hand, and the site type check accepts a tab whose types no longer match the compiler output. Build each changed example with `--tsc` before and after the edit, and compare the emitted `.ts` files byte for byte. Identical output means that the tab needs no change. A difference means that the emitted Effect type changed, so the tab must change too. No automatic check compares the tabs with the emitted types. Such a check needs new tooling that reads both repositories.
+
+When an Effektive panel on the book page changes, measure its character count again. Some paragraphs state the number of non-whitespace characters in a panel, for example "This pair uses 190 non-whitespace characters in Effektive and 304 in Effect-TS". No check compares these numbers with the panels. Count every non-whitespace character of the panel after HTML decoding. Do not estimate.
 
 Also look for Effektive code outside `language-effektive` blocks. An exercise answer in a plain `<pre><code>` escapes both the site check and pass 1. On draft 0.2, the answer `const rename = (user: User, name: string): User => ...` in `index.html` broke R1 until a review found it.
 
@@ -73,5 +76,7 @@ The removal of `with` clauses from the examples on 2026-11-04 (compiler 0.15.0) 
 - A name in a service header must not also be in an ordinary import of the same module (`declaration/001`). Remove the service name from the ordinary import.
 
 A provider declaration in a host interface file keeps its `with` clause, for example `with Runtime.database` in `public/effektive-examples/service-workflow/host.effi`. Host interface files cannot have service headers.
+
+The removal of consumer `fails` clauses on 2026-11-05 (compiler 0.15.1) used the emitted-output comparison. It changed six example files, 21 book panels, and 2 specification panels. The emitted TypeScript of all six files stayed byte-identical, so no Effect-TS tab changed. The edit rule was the regular expression `/\s+fails\s+[\w\s|]+?=>/g`, replaced with ` =>`. In HTML, the arrow is `=&gt;`. The character class stops at `}` and `(`, so the rule skips service method lines such as `find(id: UserId): Option<User> fails StoreUnavailable`. Those lines stay, because they are the service contract. The `spec-diagnostics` figure also keeps its written clause, because it shows `failure-contract/001`. The activation count on the book page fell from 223 to 190.
 
 For a new rule, keep the alias style of the migrated examples. Signatures name a declared type, such as `type Name = string`. The Effect-TS tab uses a plain TypeScript alias, `type Name = string`. The construct table in `docs/plans/2026-10-16-effect-ts-tabs.md` lists these mappings.
