@@ -2555,3 +2555,21 @@ The file-service probe grants Deno read, environment, and uid system permissions
 These checks ran on macOS arm64 with Deno 2.9.8 and Node.js 24.21.0 installed.
 Earlier entries retain their original dependency versions and evidence limits.
 No new performance measurement or independent model review is claimed.
+
+
+Draft 0.77 removal of withResource, November 9, 2026
+
+The specification removes the prelude name withResource and its grammar rule.
+The using block is now the only source form for a scoped resource.
+Its resource contract, borrow rules, and equation are unchanged, and now name the using block.
+The IR keeps version 8 and its with-resource node.
+The edition notes of the specification, the home page, and the mini-book review name draft 0.77.
+
+A program that calls withResource now produces unknown-name/001.
+A using block that acquires an operation record builds with zero diagnostics, including deno check.
+These checks use the current compiler through its command-line tool.
+
+The site passes 12 serving and asset tests and 65 strict TypeScript units, with no missing panel.
+No code panel used withResource, so no panel changed.
+The entry for draft 0.3 keeps its original text about withResource.
+No browser check is claimed for this text-only change.
