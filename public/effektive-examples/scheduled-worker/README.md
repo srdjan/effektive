@@ -16,7 +16,7 @@ Files in this directory:
 - [deno.json](deno.json): pinned Effect imports and strict checking options.
 
 Download these files together. Use the effektive-lang CLI to build this
-directory with --validate --tsc. Build writes contracts.ts and worker.ts beside
+directory with --tsc. Build writes contracts.ts and worker.ts beside
 the source files. From the downloaded directory, run:
 
 ```sh

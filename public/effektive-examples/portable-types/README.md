@@ -10,7 +10,7 @@ Download [domain.eff](domain.eff), [consumer.eff](consumer.eff), [effektive.json
 From the current effektive-lang checkout, build the downloaded directory:
 
 ```sh
-deno task effektive build /path/to/portable-types --validate --tsc
+deno task effektive build /path/to/portable-types --tsc
 ```
 
 From the example directory, run its checks:
