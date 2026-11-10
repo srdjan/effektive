@@ -2594,3 +2594,18 @@ The compiler tests of the website examples pass 21 tests, and the compiler tests
 The three new Effect-TS panels are hand-written and are checked for types only. No runtime equivalence check is claimed for them.
 The order lifecycle README still gives the build flag --validate, which the current command-line tool rejects as an unknown flag. This entry does not fix that text.
 No browser check is claimed for this change.
+
+
+Draft 0.79 core data operations, phase 2, November 10, 2026
+
+The specification adds the builtins at and sort and the list spread, as in [x, ...xs] and [...xs, ...ys].
+The IR stays at version 9. The builtin instance names at, concat, and sort were already part of version 9.
+The published typed IR file is unchanged, and the compiler test of the IR site passes.
+The edition notes of the specification, the home page, and the mini-book review name draft 0.79.
+The README of the repository names draft 0.79 too.
+
+One new Effektive example builds with the current compiler through its command-line tool: spec-lists.
+The build reports 0 diagnostics and passes the strict check of the emitted TypeScript.
+The stream processor example counts a batch with len, as the compiler fixture does, and keeps its service headers. The compiler tests of the website examples pass.
+The new Effect-TS panel is hand-written and is checked for types only. No runtime equivalence check is claimed for it.
+No browser check is claimed for this change.
