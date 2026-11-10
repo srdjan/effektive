@@ -761,10 +761,7 @@ type MaybeCount = typeof MaybeCount.Type
 const next = (count: MaybeCount): Count =&gt;
   (($t0: MaybeCount) =&gt; $t0 === null ? 0 : ((n) =&gt; $int(n + 1))($t0))(count)
 
-const orZero = (count: MaybeCount): Count =&gt;
-  (($t0: MaybeCount) =&gt; $t0 === null ? 0 : (($option98) =&gt; $option98)($t0))(
-    count,
-  )</code></pre></div></figure>
+const orZero = (count: MaybeCount): Count =&gt; count ?? 0</code></pre></div></figure>
 <figure data-ui class="code" data-tabs data-check="spec-shape"><figcaption>Match on a tagged record union</figcaption><div class="code-panel" data-tab="Effektive"><pre tabindex="0"><code class="language-effektive">type Shape = { kind: &quot;circle&quot;, radius: number } | { kind: &quot;square&quot;, side: number }
 type Length = number
 
