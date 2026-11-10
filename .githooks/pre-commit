@@ -1,0 +1,29 @@
+#!/bin/sh
+# Completes a bare version commit. When a commit changes `version` in
+# deno.json, the hook runs `deno task stamp`, which writes the version into the
+# asset links of the pages, and stages the pages.
+
+pages="public/index.html public/effektive-spec.html"
+
+version_of() {
+  sed -n 's/^  "version": "\([0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\)".*$/\1/p' | head -n 1
+}
+
+head_version=$(git show HEAD:deno.json 2>/dev/null | version_of)
+staged_version=$(git show :deno.json 2>/dev/null | version_of)
+
+if [ -z "$head_version" ] || [ -z "$staged_version" ] ||
+  [ "$head_version" = "$staged_version" ]; then
+  exit 0
+fi
+
+# shellcheck disable=SC2086
+if ! git diff --quiet -- deno.json $pages; then
+  echo "version hook: deno.json or a page has edits that are not staged. Stage or stash them first." >&2
+  exit 1
+fi
+
+deno task --quiet stamp || exit 1
+# shellcheck disable=SC2086
+git add $pages || exit 1
+: > "$(git rev-parse --git-dir)/version-hook-staged"

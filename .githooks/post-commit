@@ -1,0 +1,10 @@
+#!/bin/sh
+# Repairs the index after a path-limited commit that the pre-commit hook
+# completed. The hook stages the pages in a temporary index, so the real index
+# still shows the old text. The reset makes it equal to HEAD.
+
+marker="$(git rev-parse --git-dir)/version-hook-staged"
+if [ -f "$marker" ]; then
+  git reset -q -- public/index.html public/effektive-spec.html
+  rm -f "$marker"
+fi

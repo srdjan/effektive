@@ -34,6 +34,8 @@ Each Effektive example on both pages has an Effect-TS tab. Run `deno task typech
 
 The `deno task stamp` task copies the `version` from `deno.json` into the `site.css` and `site.js` links of both pages. The server caches these assets for one hour, so a new version gives returning readers new asset URLs. To publish a CSS or JavaScript change at once, increase the version in `deno.json` and then run `deno task stamp`. `deno task test` fails when a page link does not match `deno.json`.
 
+The pre-commit hook in `.githooks/` runs `deno task stamp` when a commit changes the version, and stages both pages. Each clone activates the hooks once with `git config core.hooksPath .githooks`.
+
 ## Deploy to Deno Deploy
 
 The `deploy` section of `deno.json` sets the runtime: a dynamic app with `main.ts` as the entrypoint. Deno Deploy uses this section on every deploy.
