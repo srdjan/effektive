@@ -2609,3 +2609,16 @@ The build reports 0 diagnostics and passes the strict check of the emitted TypeS
 The stream processor example counts a batch with len, as the compiler fixture does, and keeps its service headers. The compiler tests of the website examples pass.
 The new Effect-TS panel is hand-written and is checked for types only. No runtime equivalence check is claimed for it.
 No browser check is claimed for this change.
+
+
+Draft 0.80 core data operations, phase 3, November 10, 2026
+
+The specification adds the binding arm of a match on a nullable union, and it lets ?? take a nullable union on the left.
+The IR moves to version 10. Version 10 adds the pattern bind, and the validator rejects version 9.
+The edition notes of the specification, the home page, and the mini-book review name draft 0.80.
+The README of the repository names draft 0.80 too.
+
+One new Effektive example builds with the current compiler through its command-line tool: spec-nullable.
+The build reports 0 diagnostics. The Effect-TS panel is the emitted TypeScript of that build, with the export keywords and the header removed.
+The new Effect-TS panel is checked for types only. No runtime equivalence check is claimed for it.
+No browser check is claimed for this change.
