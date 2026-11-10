@@ -9,7 +9,7 @@ Files in this directory:
 - [contracts.eff](contracts.eff): four order states, the InvalidTransition error, the pricing rule tree and the input record.
 - [orders.eff](orders.eff): transitions, match by name, pricing and JSON decoding.
 - [main.ts](main.ts): runnable entry point that prints a JSON report.
-- [checks.ts](checks.ts): nine compiled application checks.
+- [checks.ts](checks.ts): eleven compiled application checks.
 - [effektive.json](effektive.json): compiler project configuration.
 - [deno.json](deno.json): pinned Effect imports and strict checking options.
 
@@ -30,19 +30,20 @@ function that accepts one state, such as pay(order: Pending, ...), rejects the
 other states at compile time. A match over Order has one arm for each state and
 no wildcard arm. A missing state is a compile error.
 
-The pricing rules form a recursive tree of Fixed, Times, Capped and Sum. The
-price of Times is the base price times the factor. The constructor Cents(t.factor)
+The pricing rules form a recursive tree of Fixed, Times, Percent, Capped and Sum.
+The price of Times is the base price times the factor. The constructor Cents(t.factor)
 turns the Count factor into Cents, because two different types with identity
-never mix in an operator. A percent rule is not
-possible, because the division operator always gives number and the prelude has
-no rounding function.
+never mix in an operator. The price of Percent is
+round(base * Cents(p.percent) / 100). The division operator gives number, and the
+builtin round gives an int, with a half rounded away from zero.
 
 The function fromInput decodes the record OrderInput from unknown JSON. No union
 lists OrderInput, so it has no tag. The function then builds a Pending value with
 the constructor. JSON with a wrong or missing tag fails decodeOrder.
 
-The nine checks cover each transition, each stateOf and describe result, isOpen
+The eleven checks cover each transition, each stateOf and describe result, isOpen
 and the InvalidTransition failure. They price the sample rule from source and
-one rule that TypeScript builds with make. They decode valid and invalid input,
+one rule that TypeScript builds with make. Two checks price a percent rule,
+including the rounding of 1.5 to 2 and of 4.5 to 5. They decode valid and invalid input,
 check that the encoded form keeps the tag, and check the rejected decode of a
 wrong tag.

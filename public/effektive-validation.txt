@@ -2573,3 +2573,24 @@ The site passes 12 serving and asset tests and 65 strict TypeScript units, with 
 No code panel used withResource, so no panel changed.
 The entry for draft 0.3 keeps its original text about withResource.
 No browser check is claimed for this text-only change.
+
+
+Draft 0.78 core data operations, November 10, 2026
+
+The specification adds the unary operators - and !, the remainder operator %, the negative number literal pattern, and the builtins div, trunc, floor, round, ceil, text, and len.
+The IR is at version 9, which an earlier entry of this file does not record.
+The compiler version that holds these forms is unreleased. The last release is 0.15.6.
+The edition notes of the specification, the home page, and the mini-book review name draft 0.78.
+The README of the repository names draft 0.78 too. It named draft 0.73 before.
+
+Three new Effektive examples build with the current compiler through its command-line tool: spec-core-data, spec-text-len, and spec-trend.
+Each build reports 0 diagnostics and passes the strict check of the emitted TypeScript.
+A scratch project confirms the diagnostics that the text states: syntax/010 for a unary + and for a block item that starts with -, type-mismatch/007 for a unary - on a Duration, and declaration/018 for ! in a refinement.
+The order lifecycle example gains the Percent rule, which prices with round. Its sources come from the compiler fixture. The copy builds with 0 diagnostics.
+Its checks.ts file now holds eleven checks, and all eleven pass after a build into a scratch directory. Two checks price a percent rule.
+
+The site passes 12 serving and asset tests and 68 strict TypeScript units, with no missing panel.
+The compiler tests of the website examples pass 21 tests, and the compiler tests of the IR site pass 3 tests.
+The three new Effect-TS panels are hand-written and are checked for types only. No runtime equivalence check is claimed for them.
+The order lifecycle README still gives the build flag --validate, which the current command-line tool rejects as an unknown flag. This entry does not fix that text.
+No browser check is claimed for this change.
