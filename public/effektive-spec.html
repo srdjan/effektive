@@ -895,7 +895,7 @@ const main = (): Effect.Effect&lt;Name, StoreUnavailable&gt; =&gt;
   -&gt; validate typed IR
   -&gt; emit Effect-TS code</code></pre></figure>
 <p>The accompanying <a href="typed-ir.ts">typed-ir.ts</a> describes the current compiler payload model. The independent validator lives in the <a href="https://github.com/srdjan/effektive-lang">effektive-lang repository</a>.</p>
-<p>Core 1 requires light-functional-ir version 8. The compiler, validator, and linked model use version 8. Earlier versions are rejected without conversion.</p>
+<p>Core 1 requires light-functional-ir version 9. The compiler, validator, and linked model use version 9. Earlier versions are rejected without conversion.</p>
 <p>Draft 0.62 replaces the function field contract with written. The field holds one flag each for result, fails, and uses. The version stays 3.</p>
 <p>Draft 0.63 exports ClosureExpr and makes closure parameters own scoped identities. Resource acquisition, use, release, fiber use, and grouped-stream callbacks require closures. Read identities from use.parameters[0].id, release.parameters[0].id, and grouped use.parameters[1].id. The duplicate useBinding, releaseBinding, and groupBinding fields are removed. Runtime validation retains closure, arity, type, reference, and borrow checks.</p>
 <p>Draft 0.64 moves the IR to version 5. A nominal definition gets the optional flag tagged, which marks a tagged record. A definition of the kind nominal with a non-record body emits as an alias. Version 4 input produces validation/008.</p>
